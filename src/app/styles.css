@@ -1488,16 +1488,24 @@ input[type='range'] {
 
 /* the scanner: painted car, x-ray layer revealed by a sweeping window */
 
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+/* the picture keeps to its grid cell: whatever slides outside it (the parked x-ray window) is cut off */
 .hero-visual {
   position: relative;
-  margin-right: -5vw;
+  min-width: 0;
+  overflow: clip;
+  overflow-clip-margin: 28px;
 }
 
 .scanner {
   --ease-scan: cubic-bezier(0.65, 0, 0.35, 1);
   position: relative;
   width: 100%;
-  cursor: crosshair;
   touch-action: pan-y;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -1509,6 +1517,10 @@ input[type='range'] {
     opacity: 0;
     translate: 48px 0;
   }
+}
+
+.scanner.open {
+  cursor: crosshair;
 }
 
 .scanner img {
@@ -1556,6 +1568,13 @@ input[type='range'] {
   overflow: hidden;
   transform: translateX(-100%);
   animation-name: scan-window;
+}
+
+/* the sliding layers never take the pointer; only the part markers inside do */
+.xr-window,
+.xr-layer,
+.scanner-floor {
+  pointer-events: none;
 }
 
 .xr-layer {
@@ -1664,6 +1683,7 @@ input[type='range'] {
 
 .spot {
   position: absolute;
+  pointer-events: auto;
   width: 36px;
   height: 36px;
   margin: -18px 0 0 -18px;

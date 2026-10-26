@@ -5,7 +5,7 @@
  * layer, so they appear as the beam passes, and each opens in the 3D viewer.
  */
 import { ArrowUpRight, ScanLine } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import type { CatalogEntry, CatalogImage, CatalogMedia } from '../../shared/manifest';
 import { asset, navigate } from '../router';
 
@@ -73,6 +73,49 @@ function placeLabels(spots: CatalogMedia['hotspots'], width: number, height: num
   return out;
 }
 
+/** Where the car is in a render: its solid pixels, each row filled end to end (windows count), grown a little at the edges. */
+interface Silhouette {
+  w: number;
+  h: number;
+  on: Uint8Array;
+}
+
+function silhouetteOf(img: HTMLImageElement): Silhouette | null {
+  const w = 120;
+  const h = Math.max(1, Math.round((w * img.naturalHeight) / img.naturalWidth));
+  const g = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  if (!g || !img.naturalWidth) return null;
+  g.canvas.width = w;
+  g.canvas.height = h;
+  g.drawImage(img, 0, 0, w, h);
+  const { data } = g.getImageData(0, 0, w, h);
+  // solid paint only: the soft contact shadow under the car stays out
+  const solid = (x: number, y: number) => data[(y * w + x) * 4 + 3] > 200;
+  const rows = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) {
+    let x0 = -1;
+    let x1 = -1;
+    for (let x = 0; x < w; x++)
+      if (solid(x, y)) {
+        if (x0 < 0) x0 = x;
+        x1 = x;
+      }
+    if (x0 >= 0) rows.fill(1, y * w + x0, y * w + x1 + 1);
+  }
+  const on = new Uint8Array(w * h);
+  const grow = 2;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++)
+      if (rows[y * w + x])
+        for (let dy = -grow; dy <= grow; dy++)
+          for (let dx = -grow; dx <= grow; dx++) {
+            const yy = y + dy;
+            const xx = x + dx;
+            if (xx >= 0 && yy >= 0 && xx < w && yy < h) on[yy * w + xx] = 1;
+          }
+  return { w, h, on };
+}
+
 const canHover = typeof matchMedia === 'function' && matchMedia('(hover: hover)').matches;
 
 export function HeroScanner({ entry }: { entry: CatalogEntry }) {
@@ -91,6 +134,23 @@ export function HeroScanner({ entry }: { entry: CatalogEntry }) {
     [candidates, width, aspect, fontsReady],
   );
   const spots = candidates.filter((h) => corners.has(h.id)).slice(0, 5);
+  const base = useRef<HTMLImageElement>(null);
+  const silhouette = useRef<Silhouette | null>(null);
+  const readSilhouette = () => {
+    const img = base.current;
+    if (img?.complete && img.naturalWidth) silhouette.current = silhouetteOf(img);
+  };
+  /** The x-ray opens over the car itself (or a part's label), not over the empty picture around it. */
+  const overCar = (e: PointerEvent<HTMLElement>) => {
+    if ((e.target as HTMLElement).closest('.spot')) return true;
+    const m = silhouette.current;
+    if (!m) return true;
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = Math.floor(((e.clientX - r.left) / r.width) * m.w);
+    const y = Math.floor(((e.clientY - r.top) / r.height) * m.h);
+    return x >= 0 && y >= 0 && x < m.w && y < m.h && m.on[y * m.w + x] === 1;
+  };
+  useEffect(readSilhouette, []);
 
   // labels are placed for the size the picture is shown at
   useEffect(() => {
@@ -117,17 +177,21 @@ export function HeroScanner({ entry }: { entry: CatalogEntry }) {
       ref={ref}
       className={`scanner ${open ? 'open' : ''} ${onScreen ? '' : 'paused'}`}
       style={{ aspectRatio: `${hero.width} / ${hero.height}` }}
-      onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
+      onPointerMove={(e) => e.pointerType === 'mouse' && setOpen(overCar(e))}
       onPointerLeave={(e) => e.pointerType === 'mouse' && setOpen(false)}
       onPointerUp={(e) => {
-        // touch: a tap toggles the x-ray view (taps on a part open it instead)
-        if (e.pointerType !== 'mouse' && !(e.target as HTMLElement).closest('.spot')) setOpen((o) => !o);
+        // touch: a tap on the car toggles the x-ray view, a tap beside it closes it (taps on a part open it instead)
+        if (e.pointerType === 'mouse' || (e.target as HTMLElement).closest('.spot')) return;
+        const onCar = overCar(e);
+        setOpen((o) => !o && onCar);
       }}
       onFocus={() => setOpen(true)}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setOpen(false)}
     >
       <div className="scanner-floor" aria-hidden="true" />
       <img
+        ref={base}
+        onLoad={readSilhouette}
         className="scanner-base"
         src={largest(hero)}
         srcSet={srcSet(hero)}
@@ -163,7 +227,7 @@ export function HeroScanner({ entry }: { entry: CatalogEntry }) {
         <div className="xr-beam" />
       </div>
       <div className="scanner-hint" aria-hidden="true">
-        <ScanLine size={14} /> {open ? 'X-ray · pick a part to open it in 3D' : `${canHover ? 'Hover' : 'Tap'} to see inside`}
+        <ScanLine size={14} /> {open ? 'X-ray · pick a part to open it in 3D' : `${canHover ? 'Point at' : 'Tap'} the car to see inside`}
       </div>
     </div>
   );

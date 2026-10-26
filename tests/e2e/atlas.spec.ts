@@ -26,6 +26,21 @@ test('home: vehicle suggestions open with Enter', async ({ page }) => {
   await expect(page).toHaveURL(new RegExp(`/v/${VEHICLE}$`));
 });
 
+test('home: the x-ray opens over the car only, and the hero buttons stay clickable', async ({ page }) => {
+  await page.goto('/');
+  const scanner = page.locator('.scanner');
+  // the car's outline comes from the painted render, so wait for it
+  await expect.poll(() => page.evaluate(() => document.querySelector<HTMLImageElement>('.scanner-base')?.complete ?? false)).toBe(true);
+  // the top-left corner of the picture is empty (the car rises towards the right in this view)
+  await scanner.hover({ position: { x: 8, y: 8 } });
+  await expect(scanner).not.toHaveClass(/open/);
+  await scanner.hover();
+  await expect(scanner).toHaveClass(/open/);
+  await page.getByRole('button', { name: 'How it is verified' }).click();
+  await page.getByRole('button', { name: /Open the Freelander 2 in 3D/ }).click();
+  await expect(page).toHaveURL(new RegExp(`/v/${VEHICLE}$`));
+});
+
 test('home: a part marked on the x-ray hero opens in 3D', async ({ page }) => {
   await page.goto('/');
   const scanner = page.locator('.scanner');
