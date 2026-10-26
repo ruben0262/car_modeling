@@ -1,0 +1,451 @@
+# Electrical: power distribution, control modules, harnesses and connectors
+# (workshop manual `wsm`, LHD wiring diagrams `ewd`).
+#
+# `ewd:` lists the wiring-diagram component codes a part represents; the
+# viewer shows their connectors, pins and wires. Harness routes are physical
+# trunks (estimated from the manual's harness overview figure, p. 1555);
+# individual wires are in the netlist, not drawn one by one.
+system: electrical
+defaults:
+  material: harness-black
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }, { ref: ewd }]
+
+nodes:
+  # ---------------------------------------------------------------- battery
+  - id: battery
+    kind: assembly
+    name: Battery (12 V)
+    aliases: [car battery, accumulator, starter battery]
+    summary: 12 V lead-acid battery behind a cover on the left of the engine compartment, in a tray with a clamp plate and bolt; feeds the starter, generator and battery junction box.
+    location: { zone: engine-bay-left, text: "Left side of the engine compartment, behind the suspension turret, under a cover" }
+    access:
+      from: [bonnet]
+      removeFirst: [battery-cover]
+      tools: [10 mm socket (clamp), Spanner for terminal clamps]
+      notes: "Disconnect the ground lead first and reconnect it last; wait 2 minutes after switching off before disconnecting. Terminal clamps: the removal procedure gives 5 Nm (p. 1564) but the specifications table gives 10 Nm for the terminal nuts (p. 1554); confirm before tightening."
+      sources: [{ ref: wsm, locator: "pp. 1553, 1564" }]
+    placement: { pos: [-320, 590, 720] }
+    explode: { dir: [0, 0.4, 1], dist: 380 }
+    ewd: [P100]
+    specs:
+      - { label: Type, value: "Exide H7, 80 Ah / 700 CCA, reserve capacity 125 min", source: { ref: wsm, locator: p. 1553 } }
+      - { label: Stop/Start cars, value: "Absorption glass mat (AGM) battery with a battery monitoring module", source: { ref: wsm, locator: p. 1557 } }
+      - { label: Case size (modelled), value: "278 × 175 × 190 mm (EN H7 size)" }
+    manufacturing: [{ label: Make, value: Exide, source: { ref: wsm, locator: p. 1553 } }]
+    verification:
+      placement: estimated
+      notes: "The manual places the battery on the LH side of the engine compartment; its exact fore-aft position against the booster (LHD) is estimated."
+      sources: [{ ref: wsm, locator: "pp. 1553–1555", says: "The battery is located behind a cover on the Left Hand (LH) side of the engine compartment; tray, clamp plate and bolt" }]
+  - { id: battery-case, parent: battery, kind: part, name: Battery case, explode: { dir: [0, 0, -1], dist: 60 }, geometry: { gen: battery, size: [278, 175, 190], part: case } }
+  - { id: battery-terminals, parent: battery, kind: part, name: Battery terminal posts, explode: { dir: [0, 0, 1], dist: 80 }, geometry: { gen: battery, size: [278, 175, 190], part: terminals } }
+  - { id: battery-cover, parent: battery, kind: part, name: Battery cover, material: plastic-black, explode: { dir: [0, 0, 1], dist: 260 }, geometry: { gen: box, size: [292, 188, 36], r: 8, pos: [0, 0, 232] } }
+  - { id: battery-clamp, parent: battery, kind: part, name: Battery clamp plate and bolt, material: steel-black, explode: { dir: [1, 0, 0], dist: 160 }, geometry: { gen: box, size: [24, 120, 18], r: 3, pos: [150, 0, 12] } }
+  - { id: battery-tray, parent: battery, kind: part, name: Battery tray, aliases: [battery shelf], material: plastic-black, explode: { dir: [0, 0, -1], dist: 160 }, specs: [{ label: Fixings, value: "10 Nm", source: { ref: wsm, locator: p. 1565 } }], geometry: { gen: box, size: [290, 190, 24], r: 4, pos: [0, 0, -14] } }
+  - id: battery-positive-clamp
+    parent: battery
+    kind: connector
+    name: Battery positive terminal clamp with CAL3 starter fuse
+    summary: The sealed CAL3 starter fuse is built into the cable assembly next to the positive terminal; if it fails the whole cable is replaced.
+    connector: { ewd: C1DC02A, pins: 1 }
+    material: cable-red
+    explode: { dir: [0.4, -0.4, 1], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: p. 1556, says: "Incorporated in the cable between the battery and the starter motor/generator is a CAL3 starter fuse ... adjacent the battery positive terminal and integral with the cable assembly" }] }
+    geometry: { gen: box, size: [40, 30, 26], r: 4, pos: [109, -61, 205] }
+  - id: battery-negative-clamp
+    parent: battery
+    kind: connector
+    name: Battery ground terminal clamp
+    connector: { ewd: C1D134B, pins: 1 }
+    material: connector-black
+    explode: { dir: [-0.4, -0.4, 1], dist: 160 }
+    geometry: { gen: box, size: [40, 30, 26], r: 4, pos: [-109, -61, 205] }
+  - id: battery-monitoring-module
+    parent: battery
+    kind: part
+    name: Battery monitoring system (BMS) module
+    fitment: Stop/Start vehicles (TD4_e, from 2010MY)
+    summary: Sits on the negative terminal and reports battery state for the Stop/Start strategy; must be recalibrated after a battery change.
+    explode: { dir: [-1, -0.4, 1], dist: 200 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 879, 1557–1558" }] }
+    geometry: { gen: box, size: [56, 34, 30], r: 4, pos: [-109, -61, 240], mat: plastic-black }
+
+  # ---------------------------------------------------------------- junction boxes
+  - id: bjb
+    kind: assembly
+    name: Battery junction box (BJB)
+    aliases: [engine fuse box, under-bonnet fuse box, fusebox, fuse box, relay box, BJB]
+    summary: Engine-compartment fuse and relay box beside the left front suspension turret. Fusible links sit on its inboard side behind removable covers; relays for the starter, glow plugs, A/C, ECM, horns, wipers and washers.
+    location: { zone: engine-bay-left, text: "Adjacent to the LH front suspension turret, behind the air cleaner" }
+    access:
+      from: [bonnet]
+      removeFirst: [air-cleaner]
+      notes: "Fuses: unclip the lid. Removing the box with its harness also needs the bumper armature, secondary bulkhead centre panel, brake booster, ABS module, headlamps and glovebox out."
+      sources: [{ ref: wsm, locator: pp. 1717–1722 }]
+    placement: { pos: [150, 645, 830] }
+    explode: { dir: [0.3, 1, 1], dist: 320 }
+    ewd: [P147, R102, R116, R180, R114, R211, R133, R231, R232, R139, R208, R101, P108]
+    specs:
+      - { label: Relays (TD4), value: "R1 starter, R2 main fuses, R3 A/C clutch, R4 glow plugs, R6 heated windshield, R8/R11 wipers, R9/R12 headlamp washer, R10 horns", source: { ref: wsm, locator: p. 1559 } }
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: "pp. 1555, 1717–1719", says: "The BJB is mounted adjacent the LH front suspension turret" }]
+  - id: bjb-body
+    parent: bjb
+    kind: part
+    name: BJB housing, fuses and relays
+    explode: { dir: [0, 0, -1], dist: 60 }
+    geometry: { gen: enclosure, size: [140, 110, 230], lid: true, sockets: 3, socketFace: x- }
+
+  - id: cjb
+    kind: assembly
+    name: Central junction box (CJB) with central electronics module
+    aliases: [interior fuse box, passenger fuse box, fuse box, body control module, CJB, CEM]
+    summary: Main cabin fuse box and body controller, and gateway between the CAN, LIN and MOST networks. Controls power modes, exterior lighting through FET outputs, and the TPMS software.
+    location: { zone: cabin-passenger-footwell, text: "Passenger footwell, behind the glovebox (right on LHD)" }
+    access: { from: [cabin-front], removeFirst: [glovebox], sources: [{ ref: wsm, locator: p. 1737 }] }
+    handed: true
+    placement: { pos: [-900, -520, 610] }
+    explode: { dir: [0, -1, 0.5], dist: 300 }
+    ewd: [P101, D316, R103, R250, R127, R130, R217, R257, R258, R270, R271, R276, R278]
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 1556, 1800", says: "Passenger footwell, behind glovebox; receives its main power supply from the BJB" }]
+  - id: cjb-body
+    parent: cjb
+    kind: part
+    name: CJB housing and fuses
+    explode: { dir: [0, 0, -1], dist: 60 }
+    geometry: { gen: enclosure, size: [260, 190, 70], lid: false, sockets: 4, socketFace: x- }
+
+  - id: rear-junction-box
+    kind: part
+    name: Auxiliary junction box (AJB, rear fuse box)
+    aliases: [rear fuse box, auxiliary fuse box, luggage compartment fuse box, RJB]
+    summary: Modular box (up to 3 elements) for rear systems, fed from the BJB; contains the heated rear screen relay.
+    location: { zone: luggage, text: "Beneath the luggage compartment carpet, beside the spare wheel well" }
+    access: { from: [luggage] }
+    placement: { pos: [-2830, 400, 650] }
+    explode: { dir: [-0.6, 0.6, 0.6], dist: 300 }
+    ewd: [P107, R138, R137]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1556, 1368", says: "The AJB is located beneath the luggage compartment carpet, adjacent the spare wheel well" }] }
+    geometry: { gen: enclosure, size: [220, 150, 70], lid: true, sockets: 2, socketFace: x+ }
+
+  # ---------------------------------------------------------------- modules
+  - id: ecm
+    kind: assembly
+    name: Engine control module (ECM)
+    aliases: [ECU, engine computer, PCM, DCU]
+    summary: Bosch engine management — injection, boost, EGR, glow plugs and DPF regeneration. Finned case with two harness connectors, 4 bolts (6 Nm).
+    location: { zone: plenum, text: "Between the bulkheads, under the plenum chamber panel" }
+    access: { from: [bonnet], removeFirst: [], notes: "Disconnect the battery ground, remove the plenum chamber panel; reconfigure a new module with the approved diagnostic tool.", sources: [{ ref: wsm, locator: pp. 1002–1003 }] }
+    placement: { pos: [-560, 120, 925], rot: [0, 80, 0] }
+    explode: { dir: [-0.3, 0, 1], dist: 380 }
+    ewd: [D131]
+    verification:
+      placement: estimated
+      notes: "The manual places it between the bulkheads; the lateral position is estimated."
+      sources: [{ ref: wsm, locator: "pp. 1002, 1800", says: "Mounted between the bulkheads in the engine compartment" }]
+  - id: ecm-body
+    parent: ecm
+    kind: part
+    name: ECM housing
+    explode: { dir: [0, 0, -1], dist: 40 }
+    geometry: { gen: enclosure, size: [190, 150, 44], lid: false, fins: true, sockets: 0 }
+  - id: ecm-connector-a
+    parent: ecm
+    kind: connector
+    name: ECM connector C1E109A
+    connector: { ewd: C1E109A }
+    explode: { dir: [0, -1, 0], dist: 120 }
+    placement: { pos: [115, -38, 0] }
+    geometry: { gen: connector, size: [44, 64, 36], mat: connector-black, wireR: 10 }
+  - id: ecm-connector-b
+    parent: ecm
+    kind: connector
+    name: ECM connector C1E109B
+    connector: { ewd: C1E109B }
+    explode: { dir: [0, 1, 0], dist: 120 }
+    placement: { pos: [115, 38, 0] }
+    geometry: { gen: connector, size: [44, 64, 36], mat: connector-grey, wireR: 10 }
+
+  - id: battery-backed-sounder
+    kind: part
+    name: Battery-backed alarm sounder
+    aliases: [BBUS, alarm siren, alarm horn]
+    fitment: Market dependent
+    location: { zone: plenum, text: "LH rear corner of the engine compartment, on the fire shield" }
+    access: { from: [bonnet], removeFirst: [], notes: "Remove the plenum chamber panel.", sources: [{ ref: wsm, locator: p. 1786 }] }
+    explode: { dir: [0, 0.5, 1], dist: 260 }
+    ewd: [D154]
+    verification:
+      placement: estimated
+      notes: "The manual gives two descriptions: 'LH rear corner of the engine compartment, attached to the fire shield' (p. 1780) and 'central position between the bulkheads' (p. 1801)."
+      sources: [{ ref: wsm, locator: "pp. 1780, 1801" }]
+    geometry: { gen: enclosure, size: [110, 90, 80], lid: false, sockets: 1, socketFace: x-, mat: plastic-black }
+    placement: { pos: [-540, 600, 900] }
+
+  - id: restraints-module
+    kind: part
+    name: Restraints control module (RCM)
+    aliases: [airbag module, SRS module, airbag ECU]
+    summary: Airbag and pretensioner controller. Disconnect the battery and wait before working near any SRS part.
+    location: { zone: cabin-centre-console, text: "Rear of the centre console, below the armrest" }
+    access: { from: [cabin-front], notes: "SRS component — follow the manual's disarming procedure." }
+    placement: { pos: [-1700, 0, 515] }
+    explode: { dir: [0, 0, 1], dist: 240 }
+    ewd: [D171]
+    partNumbers: [{ number: LR013363, note: "VIN 9H119214 to AH150338", source: { ref: jlr-parts-airbag } }, { number: LR017825, note: "VIN AH150339 to CH999999", source: { ref: jlr-parts-airbag } }]
+    verification: { sources: [{ ref: wsm, locator: p. 1800, says: "Rear of centre console, below arm rest" }] }
+    geometry: { gen: enclosure, size: [160, 130, 52], lid: false, sockets: 1, socketFace: x- }
+
+  - id: parking-aid-module
+    kind: part
+    name: Parking aid module
+    aliases: [PDC module, park distance control]
+    fitment: Vehicles with parking aid
+    location: { zone: luggage, text: "LH side of the luggage compartment behind the C-pillar trim, on the LH rear suspension turret" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-l], sources: [{ ref: wsm, locator: p. 1533 }] }
+    placement: { pos: [-2950, 660, 900] }
+    explode: { dir: [-0.5, 0.6, 0.5], dist: 260 }
+    ewd: [D184]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1526, 1800" }] }
+    geometry: { gen: enclosure, size: [120, 40, 90], lid: false, sockets: 1, socketFace: x+ }
+
+  - id: rf-receiver
+    kind: part
+    name: RF receiver (remote handset and TPMS)
+    location: { zone: roof, text: "Above the headlining, next to the rear interior lamp" }
+    access: { from: [cabin-rear], notes: "Behind the headlining." }
+    placement: { pos: [-2650, 0, 1665] }
+    contacts: [roof-bows, roof]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    ewd: [T203]
+    verification: { sources: [{ ref: wsm, locator: "pp. 131, 2039, 1801" }] }
+    geometry: { gen: box, size: [80, 60, 18], r: 4, mat: plastic-black }
+
+  - id: intrusion-sensor
+    kind: part
+    name: Intrusion detection module (volumetric sensor)
+    aliases: [volumetric sensor, interior movement sensor]
+    location: { zone: roof, text: "Centre of the headlining" }
+    placement: { pos: [-1850, 0, 1668] }
+    contacts: [roof-bows, roof]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    ewd: [T388]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1781, 1801" }] }
+    geometry: { gen: box, size: [70, 70, 20], r: 6, mat: plastic-grey }
+
+  - id: rain-sensor
+    kind: part
+    name: Rain and light sensor
+    location: { zone: exterior-front, text: "Inside the windshield, below the rear-view mirror" }
+    placement: { pos: [-1065, 0, 1600], rot: [0, -58, 0] }
+    contacts: [windscreen, roof-bows]
+    explode: { dir: [-0.5, 0, 1], dist: 200 }
+    ewd: [T204]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1648, 1801" }] }
+    geometry: { gen: box, size: [60, 50, 14], r: 5, mat: plastic-black }
+
+  - id: diagnostic-socket
+    kind: part
+    name: Diagnostic socket (OBD)
+    aliases: [OBD port, OBD socket, DLC]
+    location: { zone: cabin-driver-footwell, text: "Lower instrument panel closing panel, driver's side, below the steering column" }
+    handed: true
+    placement: { pos: [-740, 350, 560] }
+    explode: { dir: [-1, 0, -0.3], dist: 200 }
+    ewd: [V100]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1643, 1800" }] }
+    geometry: { gen: box, size: [30, 50, 22], r: 3, mat: connector-black }
+
+  - id: light-switch-module
+    kind: part
+    name: Light switch module
+    location: { zone: cabin-dashboard, text: "Driver's side of the instrument panel" }
+    handed: true
+    placement: { pos: [-800, 640, 860], rot: [0, -20, 0] }
+    explode: { dir: [-1, 0.4, 0], dist: 200 }
+    ewd: [D183, S100, S109, S110, S111]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1644, 1801" }] }
+    geometry: { gen: box, size: [40, 70, 70], r: 8, mat: interior-trim }
+
+  - id: start-control-unit
+    kind: part
+    name: Start control unit (keyless start dock)
+    location: { zone: cabin-dashboard, text: "In the instrument panel, next to the steering column" }
+    handed: true
+    placement: { pos: [-820, 210, 905], rot: [0, -20, 0] }
+    contacts: [dash-crossbeam, dashboard]
+    explode: { dir: [-1, 0, 0.3], dist: 200 }
+    ewd: [D391, S449]
+    verification: { sources: [{ ref: wsm, locator: p. 1801 }] }
+    geometry: { gen: box, size: [60, 50, 40], r: 6, mat: interior-trim }
+
+  - id: headlamp-levelling-module
+    kind: part
+    name: Headlamp levelling module
+    fitment: Xenon headlamps only
+    location: { zone: cabin-passenger-footwell, text: "On the bulkhead at the passenger-side A-pillar, behind the glovebox" }
+    handed: true
+    placement: { pos: [-760, -700, 720] }
+    explode: { dir: [0, -1, 0.3], dist: 200 }
+    ewd: [D226, D276]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1644, 1653" }] }
+    geometry: { gen: enclosure, size: [90, 30, 70], lid: false, sockets: 1, socketFace: x+ }
+
+  # ---------------------------------------------------------------- charging & starting (engine mounted)
+  - id: alternator
+    parent: engine-assembly
+    kind: part
+    name: Generator (alternator)
+    aliases: [alternator, generator, charging alternator]
+    summary: Self-exciting generator at the front of the engine on the intake side, with a one-way clutch pulley; regulated over the LIN bus from the ECM.
+    location: { zone: engine-bay-front, text: "Front of the engine, radiator side, belt driven" }
+    access: { from: [bonnet, front-end], removeFirst: [accessory-belt] }
+    explode: { dir: [0, 1, 0.5], dist: 280 }
+    placement: { pos: [451, 190, 175] }
+    ewd: [M100]
+    specs: [{ label: Rating, value: "90/150 A, or 115/180 A on cold-climate vehicles", source: { ref: wsm, locator: p. 1569 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 1569, says: "A single self-exciting generator is located at the front of the engine on the LH side of the cylinder block" }] }
+    geometry: { gen: machine, kind: alternator, r: 62, len: 118, pulleyR: 30 }
+
+  - id: starter-motor
+    parent: engine-assembly
+    kind: part
+    name: Starter motor
+    aliases: [starter]
+    summary: Bosch 2.0 kW offset starter on the LH (radiator side) of the clutch housing, 3 fixings; solenoid directly behind the pinion.
+    location: { zone: engine-bay-front, text: "Low at the front, where the engine meets the transmission" }
+    access: { from: [bonnet, underside], removeFirst: [engine-cover, air-cleaner], sources: [{ ref: wsm, locator: pp. 898–899 }] }
+    explode: { dir: [-0.5, 1, -0.6], dist: 260 }
+    placement: { pos: [-95, 150, -60], rot: [0, 0, 180] }
+    contacts: [gearbox]
+    ewd: [M101]
+    specs:
+      - { label: Make / rating, value: "Bosch, 2.0 kW, 12 V", source: { ref: wsm, locator: p. 877 } }
+      - { label: Torques, value: "Bolts 40 Nm; positive terminal nut 12 Nm", source: { ref: wsm, locator: p. 877 } }
+    manufacturing: [{ label: Make, value: Bosch, source: { ref: wsm, locator: p. 877 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 587, 878", says: "The starter motor is located on the rear LH side of the engine at the cylinder block to oil pan housing split line ... mounted on the LH side of the clutch housing with 3 fixings" }] }
+    geometry: { gen: machine, kind: starter, r: 40, len: 140 }
+
+  # ---------------------------------------------------------------- engine harness & connectors
+  - id: engine-harness
+    parent: engine-assembly
+    kind: harness
+    name: Engine harness (on-engine run)
+    aliases: [engine loom, engine wiring]
+    summary: Clipped along the intake side of the camshaft cover under the acoustic cover; branches to the injectors, sensors and glow plugs.
+    harness: { connects: [injector-connector-1, injector-connector-4, crank-sensor] }
+    explode: { dir: [0, 0.4, 1], dist: 180 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 9, points: [[-60, 40, 452], [96, 52, 455], [189, 52, 455], [282, 52, 455], [375, 52, 455], [455, 110, 380], [480, 120, 200], [470, 112, -20]] }
+  - id: boost-sensor-pigtail
+    parent: engine-assembly
+    kind: harness
+    name: Boost sensor branch
+    harness: { connects: [engine-harness, boost-sensor] }
+    explode: { dir: [0, 0.4, 1], dist: 180 }
+    geometry: { gen: tube, r: 4, points: [[189, 52, 455], [196, 180, 420], [200, 255, 372]] }
+  - id: ecm-engine-harness
+    kind: harness
+    name: Engine harness (ECM to engine)
+    summary: Leaves the ECM in the plenum, passes the secondary bulkhead and drops onto the engine.
+    harness: { connects: [ecm, engine-harness] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 12, points: [[-480, 120, 905], [-420, 120, 925], [-250, 120, 920], [0, 120, 910], [118, 120, 895]] }
+  - { id: injector-connector-1, parent: engine-assembly, kind: connector, name: Injector 1 connector, connector: { pins: 2, mates: injector-1 }, placement: { pos: [96, 5, 452] }, explode: { dir: [0, 0, 1], dist: 380 }, geometry: { gen: connector, size: [26, 20, 18], mat: connector-black } }
+  - { id: injector-connector-2, parent: engine-assembly, kind: connector, name: Injector 2 connector, connector: { pins: 2, mates: injector-2 }, placement: { pos: [189, 5, 452] }, explode: { dir: [0, 0, 1], dist: 380 }, geometry: { gen: connector, size: [26, 20, 18], mat: connector-black } }
+  - { id: injector-connector-3, parent: engine-assembly, kind: connector, name: Injector 3 connector, connector: { pins: 2, mates: injector-3 }, placement: { pos: [282, 5, 452] }, explode: { dir: [0, 0, 1], dist: 380 }, geometry: { gen: connector, size: [26, 20, 18], mat: connector-black } }
+  - { id: injector-connector-4, parent: engine-assembly, kind: connector, name: Injector 4 connector, connector: { pins: 2, mates: injector-4 }, placement: { pos: [375, 5, 452] }, explode: { dir: [0, 0, 1], dist: 380 }, geometry: { gen: connector, size: [26, 20, 18], mat: connector-black } }
+
+  # ---------------------------------------------------------------- power cables
+  - id: battery-positive-cable
+    kind: harness
+    name: Battery positive cable (to BJB)
+    material: cable-red
+    harness: { connects: [battery-positive-clamp, bjb] }
+    explode: { dir: [0, 0.4, 1], dist: 380 }
+    geometry: { gen: tube, r: 8, points: [[-211, 529, 940], [-150, 580, 960], [-20, 640, 900], [70, 640, 830]] }
+  - id: starter-cable
+    kind: harness
+    name: Starter and generator cable (25 mm²)
+    summary: Protected by the CAL3 fuse at the battery end.
+    material: cable-red
+    harness: { connects: [battery-positive-clamp, starter-motor, alternator] }
+    explode: { dir: [0, 0.5, 0.5], dist: 220 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 8, points: [[-211, 540, 930], [-150, 480, 740], [100, 300, 520], [300, 180, 440], [345, 120, 470], [360, -100, 560], [335, -360, 640]] }
+  - id: battery-earth-strap
+    kind: harness
+    name: Battery ground cable (35 mm², to body)
+    aliases: [ground strap, negative cable, earth strap]
+    harness: { connects: [battery-negative-clamp] }
+    explode: { dir: [0, 0.4, 1], dist: 380 }
+    geometry: { gen: tube, r: 7, points: [[-429, 529, 940], [-455, 560, 880], [-470, 590, 800]] }
+
+  # ---------------------------------------------------------------- vehicle harness trunks
+  - id: front-end-harness
+    kind: harness
+    name: Front-end harness
+    summary: From the BJB across the front cross member to the headlamps, horns and cooling fan.
+    harness: { connects: [bjb, headlamp-l, headlamp-r, cooling-fan, horns] }
+    explode: { dir: [1, 0, 0.5], dist: 220 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 9, points: [[220, 660, 830], [400, 700, 760], [690, 600, 760], [720, 300, 700], [700, 0, 520], [720, -300, 700], [690, -600, 760]] }
+  - id: main-harness
+    kind: harness
+    name: Main harness (engine bay to cabin and rear)
+    aliases: [body loom, main loom, body harness]
+    summary: From the BJB through the bulkhead into the cabin, across behind the instrument panel to the CJB, and along the left sill to the auxiliary junction box.
+    harness: { connects: [bjb, rear-junction-box] }
+    explode: { dir: [0, 1, 0.3], dist: 220 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 12, points: [[80, 650, 800], [-300, 690, 870], [-500, 640, 880], [-700, 600, 720], [-760, 700, 460], [-1500, 735, 425], [-2200, 735, 430], [-2550, 660, 600], [-2760, 450, 650], [-2830, 420, 655]] }
+  - id: ip-harness
+    kind: harness
+    name: Instrument panel harness
+    summary: Runs along the cross-car beam behind the instrument panel to the cluster, switches, start control unit and CJB.
+    harness: { connects: [cjb, light-switch-module, start-control-unit, diagnostic-socket] }
+    explode: { dir: [-0.5, 0, 1], dist: 200 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 10, points: [[-700, 620, 760], [-820, 600, 860], [-830, 300, 900], [-760, 330, 640], [-830, 200, 880], [-830, 0, 910], [-830, -300, 900], [-880, -480, 720], [-900, -500, 650]] }
+  - id: roof-harness
+    kind: harness
+    name: Roof harness
+    summary: Up the A-pillar and along the headlining to the rain sensor, interior lamps, intrusion sensor and RF receiver.
+    harness: { connects: [rain-sensor, intrusion-sensor, rf-receiver] }
+    explode: { dir: [0, 0, 1], dist: 220 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 7, points: [[-760, 700, 900], [-1050, 700, 1550], [-1150, 650, 1650], [-1150, 60, 1660], [-1100, 0, 1630], [-1150, 60, 1662], [-1850, 50, 1665], [-2650, 40, 1665], [-3300, 300, 1640]] }
+  - id: rear-underbody-harness
+    kind: harness
+    name: Rear underbody harness
+    summary: Branch from the main harness to the fuel pump module and the active on-demand coupling module.
+    harness: { connects: [haldex-coupling, fuel-pump-connector] }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 6, points: [[-2200, 735, 430], [-2240, 460, 330], [-2150, -250, 500], [-2080, -330, 500], [-2300, -60, 470], [-2420, 30, 470]] }
+
+  - { id: haldex-connector, parent: haldex-coupling, kind: connector, name: Coupling control module connector, connector: {}, explode: { dir: [0, 0, 1], dist: 120 }, placement: { pos: [30, 80, 118] }, geometry: { gen: connector, size: [30, 26, 18], mat: connector-grey, wireR: 5 } }
+
+  # ---------------------------------------------------------------- horns
+  - id: horns
+    kind: part
+    name: Horns (LH and RH)
+    summary: Two horns on brackets at the centre of the front cross member (bumper armature), forward of the radiator; switched by relay R10 in the BJB.
+    location: { zone: front-end, text: "Centre of the front cross member, forward of the radiator" }
+    access: { from: [front-end], removeFirst: [front-bumper], sources: [{ ref: wsm, locator: p. 1514 }] }
+    explode: { dir: [1, 0, 0], dist: 260 }
+    contacts: [front-crash-beam]
+    ewd: [L102, L103]
+    specs: [{ label: Fixing, value: "10 Nm", source: { ref: wsm, locator: p. 1514 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1512, 1776", says: "Both horns are mounted on brackets and secured to the center of the front cross member, forward of the radiator" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 45, h: 30, axis: x, chamfer: 4, pos: [790, 120, 440], mat: steel-black }
+        - { gen: cyl, r: 45, h: 30, axis: x, chamfer: 4, pos: [790, -120, 440], mat: steel-black }

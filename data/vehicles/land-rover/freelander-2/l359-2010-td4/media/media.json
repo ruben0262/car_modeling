@@ -1,0 +1,99 @@
+{
+  "rendered": "2026-10-26",
+  "modelHash": "2332a6cf4944854d0a4051b4f2e24f568d5ffcf3729faaa47c769cb340db9bb01fbd94a04ff34190f09c56b1cdf6ab628685f91e319cee",
+  "images": {
+    "hero": {
+      "width": 1600,
+      "height": 1112,
+      "files": [
+        {
+          "width": 1600,
+          "file": "hero-1600.webp"
+        },
+        {
+          "width": 800,
+          "file": "hero-800.webp"
+        }
+      ]
+    },
+    "xray": {
+      "width": 1600,
+      "height": 1112,
+      "files": [
+        {
+          "width": 1600,
+          "file": "xray-1600.webp"
+        },
+        {
+          "width": 800,
+          "file": "xray-800.webp"
+        }
+      ]
+    },
+    "exploded": {
+      "width": 1200,
+      "height": 1155,
+      "files": [
+        {
+          "width": 1200,
+          "file": "exploded-1200.webp"
+        },
+        {
+          "width": 600,
+          "file": "exploded-600.webp"
+        }
+      ]
+    },
+    "wiring": {
+      "width": 1200,
+      "height": 1055,
+      "files": [
+        {
+          "width": 1200,
+          "file": "wiring-1200.webp"
+        },
+        {
+          "width": 600,
+          "file": "wiring-600.webp"
+        }
+      ]
+    }
+  },
+  "hotspots": [
+    {
+      "id": "battery",
+      "x": 0.4559,
+      "y": 0.5492
+    },
+    {
+      "id": "front-caliper-l",
+      "x": 0.4527,
+      "y": 0.7051
+    },
+    {
+      "id": "haldex-coupling",
+      "x": 0.692,
+      "y": 0.4563
+    },
+    {
+      "id": "ecm",
+      "x": 0.4229,
+      "y": 0.4667
+    },
+    {
+      "id": "fuel-tank",
+      "x": 0.6493,
+      "y": 0.4892
+    },
+    {
+      "id": "abs-module",
+      "x": 0.4715,
+      "y": 0.4691
+    },
+    {
+      "id": "rear-drive-unit",
+      "x": 0.7179,
+      "y": 0.457
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+# Engine cooling, charge-air cooling, air intake, air conditioning and the
+# heater assembly (workshop manual `wsm`, LHD wiring diagrams `ewd`).
+system: cooling
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- front cooling pack
+  - id: cooling-pack
+    kind: assembly
+    name: Front cooling pack
+    summary: A/C condenser immediately in front of the radiator, charge-air cooler low at the front, electric fan module behind the radiator.
+    location: { zone: front-end, text: "Behind the front bumper and grille" }
+    access: { from: [front-end], removeFirst: [front-bumper] }
+    explode: { dir: [1, 0, 0.1], dist: 200 }
+    specs:
+      - { label: Cooling system, value: "Pressurised, thermostatically controlled, remote header tank; 8.5 L", source: { ref: wsm, locator: p. 755 } }
+      - { label: Coolant, value: "50% OAT antifreeze (Texaco XLC or equivalent), protection to −40 °C", source: { ref: wsm, locator: p. 755 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 755, 1375, 946" }] }
+
+  - id: radiator
+    parent: cooling-pack
+    kind: part
+    name: Radiator
+    aliases: [rad, coolant radiator]
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    placement: { pos: [640, 0, 560] }
+    manufacturing: [{ label: Make / core, value: "Valeo, 28 mm core, integrated drain cock, replaceable lower pin", source: { ref: wsm, locator: p. 755 } }]
+    verification: { placement: estimated }
+    geometry:
+      gen: heat-exchanger
+      core: [28, 640, 400]
+      tank: 46
+      ports:
+        - { at: [-10, 360, 175], dir: [-1, 0, 0.2], r: 19, len: 34 }
+        - { at: [-10, -360, -170], dir: [-1, 0, -0.2], r: 19, len: 34 }
+
+  - id: ac-condenser
+    parent: cooling-pack
+    kind: part
+    name: Air-conditioning condenser
+    aliases: [condenser, AC radiator]
+    explode: { dir: [1, 0, 0.3], dist: 160 }
+    placement: { pos: [676, 0, 600] }
+    specs: [{ label: Condenser to radiator, value: "10 Nm", source: { ref: wsm, locator: p. 755 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 1375, says: "The condenser is installed immediately in front of the radiator" }] }
+    geometry: { gen: heat-exchanger, core: [16, 660, 290], tank: 28, tankMat: aluminium-cast }
+
+  - id: receiver-drier
+    parent: cooling-pack
+    kind: part
+    name: Receiver/drier
+    explode: { dir: [1, -0.4, 0.3], dist: 220 }
+    placement: { pos: [690, -370, 560] }
+    verification: { placement: estimated }
+    geometry: { gen: cyl, r: 30, h: 220, axis: z, chamfer: 6, mat: aluminium-cast }
+
+  - id: charge-air-cooler
+    parent: cooling-pack
+    kind: part
+    name: Charge air cooler (intercooler)
+    aliases: [intercooler, CAC]
+    summary: Low across the front; the front bumper comes off to remove it.
+    access: { from: [front-end], removeFirst: [front-bumper], sources: [{ ref: wsm, locator: p. 946 }] }
+    explode: { dir: [1, 0, -0.4], dist: 200 }
+    placement: { pos: [690, 0, 355] }
+    verification: { sources: [{ ref: wsm, locator: p. 946 }] }
+    geometry:
+      gen: heat-exchanger
+      core: [40, 700, 140]
+      tank: 58
+      tankMat: plastic-black
+      ports:
+        - { at: [-10, 400, 0], dir: [-1, 0.25, 0], r: 30, len: 40 }
+        - { at: [-10, -400, 0], dir: [-1, -0.25, 0], r: 30, len: 40 }
+
+  - id: cooling-fan
+    parent: cooling-pack
+    kind: part
+    name: Cooling fan module and control unit
+    aliases: [radiator fan, cooling fan]
+    access: { from: [bonnet, front-end] }
+    explode: { dir: [-1, 0, 0.2], dist: 280 }
+    placement: { pos: [588, 0, 560] }
+    contacts: [radiator]
+    ewd: [D241]
+    specs: [{ label: Fan, value: "750 W / 600 W", source: { ref: wsm, locator: p. 755 } }]
+    geometry: { gen: fan, size: [600, 400], r: 185, blades: 7, depth: 60 }
+
+  - id: coolant-expansion-tank
+    kind: part
+    name: Coolant expansion (header) tank with level sensor
+    aliases: [header tank, coolant reservoir]
+    location: { zone: engine-bay-right, text: "Engine compartment (position estimated)" }
+    access: { from: [bonnet], notes: "Release pressure only when cold — cover the cap with a thick cloth. Pressure cap 145 kPa.", sources: [{ ref: wsm, locator: "pp. 755, 768" }] }
+    explode: { dir: [0.3, -0.5, 1], dist: 300 }
+    ewd: [T220]
+    manufacturing: [{ label: Make, value: "Seeber, with integrated level sensor", source: { ref: wsm, locator: p. 755 } }]
+    verification: { placement: estimated }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [180, 115, 135], r: 18, pos: [-320, -600, 880], mat: plastic-white }
+        - { gen: cyl, r: 30, h: 22, axis: z, chamfer: 4, pos: [-280, -600, 958], mat: plastic-black }
+
+  - id: radiator-top-hose
+    kind: hose
+    name: Radiator top hose
+    material: coolant-hose
+    explode: { dir: [0.5, 0, 1], dist: 200 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 18, points: [[235, 86, 695], [400, 220, 740], [570, 340, 745], [628, 360, 735]] }
+
+  - id: radiator-bottom-hose
+    kind: hose
+    name: Radiator bottom hose
+    material: coolant-hose
+    explode: { dir: [0.5, 0, -1], dist: 200 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 18, points: [[628, -360, 390], [480, -440, 395], [250, -440, 470], [100, -420, 540], [60, -416, 570]] }
+
+  - id: heater-hoses
+    kind: hose
+    name: Heater hoses (to the heater core)
+    material: coolant-hose
+    explode: { dir: [-0.5, 0, 1], dist: 200 }
+    verification: { placement: estimated }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 9, points: [[225, 90, 690], [0, 30, 740], [-300, -20, 760], [-470, -60, 770]] }
+        - { gen: tube, r: 9, points: [[215, 70, 670], [0, 5, 716], [-300, -45, 738], [-470, -85, 750]] }
+
+  # ---------------------------------------------------------------- charge air
+  - id: charge-pipe-hot
+    kind: hose
+    name: Charge-air pipe, turbocharger to charge air cooler
+    aliases: [boost hose, intercooler hose]
+    material: coolant-hose
+    faults: [{ symptom: Loss of power with a whistle under boost, cause: "Split or loose boost hose — check clips and hose ends." }]
+    explode: { dir: [0, -1, -0.5], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 946 }] }
+    geometry: { gen: tube, r: 28, points: [[-120, -150, 600], [-200, -380, 500], [-50, -520, 380], [300, -520, 300], [600, -470, 300], [662, -425, 355]] }
+
+  - id: charge-pipe-cold
+    kind: hose
+    name: Charge-air pipe, charge air cooler to throttle
+    material: coolant-hose
+    explode: { dir: [0, 1, 0.5], dist: 200 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 30, points: [[662, 425, 355], [560, 470, 450], [480, 320, 650], [400, 160, 760], [348, 75, 790]] }
+
+  # ---------------------------------------------------------------- intake
+  - id: air-cleaner
+    kind: assembly
+    name: Air cleaner
+    aliases: [air box, air filter box, airbox]
+    summary: Dirty air is drawn from behind the LH front wing; filtered air goes to the turbocharger compressor behind the engine.
+    location: { zone: engine-bay-left, text: "Front LH corner of the engine compartment" }
+    access: { from: [bonnet], notes: "Lid clips release to reach the paper element." }
+    placement: { pos: [430, 520, 850] }
+    explode: { dir: [0.4, 0.5, 1], dist: 380 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 948–950" }] }
+  - id: air-cleaner-body
+    parent: air-cleaner
+    kind: part
+    name: Air cleaner housing and lid
+    explode: { dir: [0, 0, -1], dist: 80 }
+    geometry: { gen: airbox, size: [340, 260, 200], snorkel: [[170, 40, 30], [230, 110, 50], [210, 180, 50]] }
+  - id: air-filter-element
+    parent: air-cleaner
+    kind: part
+    name: Air filter element (paper)
+    aliases: [air filter]
+    material: label-yellow
+    explode: { dir: [0, 0, 1], dist: 220 }
+    geometry: { gen: box, size: [290, 210, 50], r: 4, pos: [0, 0, 40] }
+
+  - id: clean-air-duct
+    kind: hose
+    name: Clean-air duct to the turbocharger
+    material: rubber
+    explode: { dir: [0, 0, 1], dist: 260 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 34, points: [[262, 430, 862], [100, 380, 880], [-80, 300, 780], [-160, 150, 650], [-150, 10, 566]] }
+
+  - id: maf-sensor
+    kind: part
+    name: Mass air flow sensor with intake air temperature (MAF/IAT)
+    aliases: [MAF, air flow meter]
+    location: { zone: engine-bay-left, text: "In the clean-air duct just after the air cleaner" }
+    access: { from: [bonnet] }
+    explode: { dir: [0, 0, 1], dist: 320 }
+    ewd: [T317]
+    specs: [{ label: Retaining screws, value: "2 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { placement: estimated }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 40, h: 80, axis: x, chamfer: 4, pos: [190, 410, 885], rot: [0, 0, 18], mat: plastic-black }
+        - { gen: box, size: [40, 30, 40], r: 4, pos: [190, 410, 940], mat: plastic-grey }
+  - id: maf-connector
+    parent: maf-sensor
+    kind: connector
+    name: MAF/IAT sensor connector
+    connector: { ewd: C1E807D }
+    explode: { dir: [0, 0, 1], dist: 100 }
+    placement: { pos: [190, 410, 972], rot: [0, -90, 0] }
+    geometry: { gen: connector, size: [26, 22, 16], mat: connector-grey, wireR: 4 }
+
+  # ---------------------------------------------------------------- air conditioning
+  - id: ac-compressor
+    parent: engine-assembly
+    kind: part
+    name: A/C compressor (Visteon VS16, variable displacement)
+    aliases: [AC compressor, aircon pump]
+    location: { zone: engine-bay-front, text: "Low on the front (radiator side) of the engine, belt driven" }
+    access: { from: [underside], removeFirst: [], notes: "Recover the refrigerant first; the engine undershield comes off.", sources: [{ ref: wsm, locator: pp. 1386–1388 }] }
+    explode: { dir: [0, 1, -0.6], dist: 260 }
+    placement: { pos: [445, 175, -95] }
+    ewd: [D149]
+    manufacturing: [{ label: Make / type, value: "Visteon VS16, variable displacement", source: { ref: wsm, locator: p. 1373 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 860, 1373" }] }
+    geometry: { gen: machine, kind: ac-compressor, r: 58, len: 130, pulleyR: 55 }
+
+  - id: ac-pressure-sensor
+    kind: part
+    name: Refrigerant pressure sensor
+    explode: { dir: [0, 0, 1], dist: 200 }
+    ewd: [T283]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1375, says: "Located in the refrigerant line between the condenser and the thermostatic expansion valve" }] }
+    geometry: { gen: cyl, r: 12, h: 40, axis: z, pos: [420, -480, 760], mat: plastic-black }
+  - id: ac-lines
+    kind: pipe
+    name: Refrigerant lines (high and low pressure)
+    summary: Larger-diameter low-pressure lines, smaller high-pressure lines; service connections on each side.
+    material: aluminium-machined
+    explode: { dir: [0, 0, 1], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1376 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 6, points: [[690, -370, 670], [560, -470, 760], [420, -480, 760], [0, -330, 820], [-430, -150, 800], [-470, -120, 790]] }
+        - { gen: tube, r: 9, points: [[-470, -90, 770], [-300, -150, 700], [200, -250, 560], [440, 120, 400], [480, 250, 380]] }
+        - { gen: tube, r: 6, points: [[480, 260, 360], [600, 200, 420], [675, -330, 470]] }
+  - id: expansion-valve
+    kind: part
+    name: Thermostatic expansion valve (block type)
+    aliases: [TXV]
+    location: { zone: engine-bay-rear, text: "Behind the heater assembly, at the evaporator ports (bulkhead)" }
+    explode: { dir: [1, 0, 0.5], dist: 200 }
+    verification: { sources: [{ ref: wsm, locator: p. 1376 }] }
+    contacts: [bulkhead, heater-assembly]
+    geometry: { gen: box, size: [40, 50, 60], r: 4, pos: [-465, -105, 760], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- heater assembly (cabin)
+  - id: heater-assembly
+    kind: assembly
+    name: Heater assembly (HVAC unit)
+    aliases: [HVAC, heater box, climate unit]
+    summary: On the vehicle centreline between the instrument panel and the bulkhead; houses the blower, evaporator, heater core, cabin filter, blend flaps and their actuators.
+    location: { zone: cabin-dashboard, text: "Centre, behind the instrument panel" }
+    access: { from: [cabin-front], notes: "Heater core and evaporator housing work is a major instrument-panel job." }
+    explode: { dir: [0, 0, 1], dist: 420 }
+    ewd: [M279, M259, M141, M138, M203, M204, T165]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1370–1380", says: "The heater assembly for both systems is installed on the vehicle center line, between the instrument panel and the engine bulkhead" }] }
+  - id: heater-casing
+    parent: heater-assembly
+    kind: part
+    name: Heater casing with evaporator and heater core
+    explode: { dir: [0, 0, 1], dist: 120 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [240, 440, 320], r: 24, pos: [-640, 0, 652], mat: plastic-black }
+        - { gen: box, size: [70, 260, 200], r: 4, pos: [-540, -30, 680], mat: radiator-core }
+        - { gen: box, size: [50, 200, 160], r: 4, pos: [-720, 60, 660], mat: copper }
+  - id: blower-motor
+    parent: heater-assembly
+    kind: part
+    name: Blower motor and control module
+    handed: true
+    explode: { dir: [0, -1, 0], dist: 200 }
+    ewd: [M132, D258]
+    verification: { sources: [{ ref: wsm, locator: p. 1370, says: "The blower motor control module is mounted on the bulkhead side of the heater assembly casing" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 85, h: 120, axis: z, chamfer: 8, pos: [-640, -310, 640], mat: plastic-black }
+        - { gen: box, size: [60, 50, 30], r: 4, pos: [-540, -300, 560], mat: aluminium-cast }
+  - id: cabin-air-filter
+    parent: heater-assembly
+    kind: part
+    name: Cabin air filter
+    aliases: [pollen filter]
+    handed: true
+    location: { zone: cabin-passenger-footwell, text: "Behind the RH side of the instrument panel, in the heater assembly" }
+    explode: { dir: [0, -1, 0.3], dist: 260 }
+    verification: { sources: [{ ref: wsm, locator: p. 1379 }] }
+    geometry: { gen: box, size: [200, 30, 230], r: 4, pos: [-660, -235, 690], mat: label-yellow }
+  - id: climate-control-module
+    kind: part
+    name: Automatic temperature control (ATC) module and panel
+    aliases: [climate control panel, HVAC controls]
+    location: { zone: cabin-centre-console, text: "In the centre console, integral with the control panel" }
+    explode: { dir: [-1, 0, 0.2], dist: 260 }
+    ewd: [D243, S120, S261, S161, S162]
+    verification: { sources: [{ ref: wsm, locator: p. 1358 }] }
+    geometry: { gen: box, size: [60, 260, 90], r: 10, pos: [-1000, 0, 780], rot: [0, -15, 0], mat: interior-trim }

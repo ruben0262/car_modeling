@@ -1,0 +1,164 @@
+# Documented joins between components: which part is fixed to which, how and
+# at what torque. Each comes from a torque table or procedure in the workshop
+# manual (`wsm`, PDF page). A mirrored part named by its authored id is joined
+# on both sides. "(new)" marks fixings the manual says must be renewed.
+#
+# Where two sections of the manual disagree, both values are given in `note`.
+joints:
+  # ---------------------------------------------------------------- front suspension (p. 52)
+  - { a: front-subframe, b: front-longitudinal, type: bolted, torque: "140 Nm + 240° (new)", note: "Front subframe to body bolts", source: { ref: wsm, locator: "pp. 52, 2419" } }
+  - { a: front-lower-arm, b: front-subframe, type: bolted, torque: "Front bolt 140 Nm + 45°; rear nut and bolt 175 Nm", note: "Lower control arm pivots", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-lower-arm, b: front-knuckle, type: bolted, torque: "100 Nm (new)", note: "Taper ball joint locknut", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-strut, b: front-knuckle, type: bolted, torque: "110 Nm", note: "Wheel knuckle to damper clamp bolt", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-strut, b: strut-tower, type: bolted, torque: "30 Nm", note: "Spring and damper assembly top mounting nuts", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-damper, b: front-top-mount, type: bolted, torque: "80 Nm (new)", note: "Damper locknut", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-anti-roll-bar, b: front-subframe, type: bolted, torque: "175 Nm", note: "Stabilizer bar clamp bolts", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-drop-link, b: front-anti-roll-bar, type: bolted, torque: "60 Nm (new)", note: "Stabilizer bar link nuts", source: { ref: wsm, locator: p. 52 } }
+  - { a: front-drop-link, b: front-strut, type: bolted, torque: "60 Nm (new)", note: "Stabilizer bar link nuts", source: { ref: wsm, locator: p. 52 } }
+  - { a: driveshaft-front-left, b: front-hub-l, type: bolted, torque: "45 Nm + 80° (new)", note: "Halfshaft to hub bolt", source: { ref: wsm, locator: "pp. 52, 213" } }
+  - { a: driveshaft-front-right, b: front-hub-r, type: bolted, torque: "45 Nm + 80° (new)", note: "Halfshaft to hub bolt", source: { ref: wsm, locator: "pp. 52, 213" } }
+  - { a: driveshaft-front-right, b: cylinder-block, type: bolted, torque: "65 Nm (to block); 25 Nm (to transmission)", note: "Extension shaft bearing anchorage, 2.2 diesel", source: { ref: wsm, locator: p. 213 } }
+
+  # ---------------------------------------------------------------- rear suspension (p. 83) and subframe (p. 2419)
+  - { a: rear-subframe, b: rear-longitudinal, type: bolted, torque: "175 Nm (new)", note: "Rear subframe bolts", source: { ref: wsm, locator: p. 2419 } }
+  - { a: front-transverse-link, b: rear-subframe, type: bolted, torque: "175 Nm", note: "Front lower arm (transverse link) nuts and bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: front-transverse-link, b: rear-knuckle, type: bolted, torque: "175 Nm", note: "Front lower arm (transverse link) nuts and bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: rear-transverse-link, b: rear-subframe, type: bolted, torque: "175 Nm", note: "Rear lower arm nuts and bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: rear-transverse-link, b: rear-knuckle, type: bolted, torque: "175 Nm", note: "Rear lower arm nuts and bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: longitudinal-link, b: rear-knuckle, type: bolted, torque: "270 Nm", note: "Trailing arm nuts and bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: longitudinal-link, b: sill, type: bolted, torque: "110 Nm (new)", note: "Trailing arm bracket to body bolts", source: { ref: wsm, locator: "pp. 83, 2419" } }
+  - { a: rear-strut, b: rear-knuckle, type: bolted, torque: "110 Nm", note: "Wheel knuckle to damper clamp bolt", source: { ref: wsm, locator: p. 83 } }
+  - { a: rear-damper, b: rear-top-mount, type: bolted, torque: "80 Nm", note: "Damper locknut; top mounting nuts to the body 32 Nm", source: { ref: wsm, locator: p. 83 } }
+  - { a: rear-anti-roll-bar, b: rear-subframe, type: bolted, torque: "60 Nm (new)", note: "Stabilizer bar bushing clamp bolts", source: { ref: wsm, locator: p. 83 } }
+  - { a: rear-drop-link, b: rear-anti-roll-bar, type: bolted, torque: "60 Nm (new)", note: "Stabilizer link nuts", source: { ref: wsm, locator: p. 83 } }
+
+  # ---------------------------------------------------------------- wheels (p. 127)
+  - { a: rim-front, b: front-hub, type: bolted, torque: "133 Nm (new), diagonal sequence", note: "Road wheel nuts", source: { ref: wsm, locator: p. 127 } }
+  - { a: rim-rear, b: rear-hub, type: bolted, torque: "133 Nm (new), diagonal sequence", note: "Road wheel nuts", source: { ref: wsm, locator: p. 127 } }
+  - { a: tpms-sensor, b: rim-front, type: screwed, torque: "8 Nm", note: "Tire low pressure sensor", source: { ref: wsm, locator: p. 127 } }
+  - { a: tpms-sensor-rear, b: rim-rear, type: screwed, torque: "8 Nm", note: "Tire low pressure sensor", source: { ref: wsm, locator: p. 127 } }
+
+  # ---------------------------------------------------------------- brakes (pp. 258, 270, 303, 318, 326)
+  - { a: front-caliper-carrier, b: front-knuckle, type: bolted, torque: "200 Nm (new)", note: "Caliper mounting plate to wheel knuckle bolts", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-caliper-housing, b: front-caliper-carrier, type: bolted, torque: "28 Nm", note: "Guide pin bolts", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-bleed-nipple, b: front-caliper-housing, type: screwed, torque: "8 Nm", note: "Caliper bleed screw", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-brake-hose, b: front-caliper-housing, type: hose, torque: "32 Nm", note: "Flexible hose union to caliper", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-brake-hose, b: front-damper, type: clipped, torque: "22 Nm", note: "Brake hose retaining bracket to damper bolt", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-brake-disc, b: front-hub, type: screwed, torque: "35 Nm", note: "Disc Torx screw", source: { ref: wsm, locator: p. 258 } }
+  - { a: front-dust-shield, b: front-knuckle, type: bolted, torque: "10 Nm", note: "Disc dust shield bolts", source: { ref: wsm, locator: p. 258 } }
+  - { a: rear-caliper-carrier, b: rear-knuckle, type: bolted, torque: "110 Nm (new)", note: "Fixed carrier to wheel knuckle bolts", source: { ref: wsm, locator: p. 270 } }
+  - { a: rear-caliper-housing, b: rear-caliper-carrier, type: bolted, torque: "30 Nm", note: "Guide pin bolts", source: { ref: wsm, locator: p. 270 } }
+  - { a: rear-bleed-nipple, b: rear-caliper-housing, type: screwed, torque: "10 Nm", note: "Caliper bleed screw", source: { ref: wsm, locator: p. 270 } }
+  - { a: rear-brake-disc, b: rear-hub, type: screwed, torque: "35 Nm", note: "Disc Torx screw", source: { ref: wsm, locator: p. 270 } }
+  - { a: rear-dust-shield, b: rear-knuckle, type: bolted, torque: "13 Nm", note: "Disc dust shield bolts", source: { ref: wsm, locator: p. 270 } }
+  - { a: parking-brake-cable-front, b: parking-brake-lever, type: cable, note: "Single cable with a threaded rod end from the lever quadrant", source: { ref: wsm, locator: "pp. 286–288" } }
+  - { a: parking-brake-cable-front, b: parking-brake-cable-rear, type: cable, note: "Joined at the cable equalizer, which splits the pull between the two rear cables", source: { ref: wsm, locator: "pp. 286–288" } }
+  - { a: parking-brake-cable-rear, b: rear-parking-brake-shoes, type: cable, note: "Inner cable operates the shoe expander inside the disc's drum section", source: { ref: wsm, locator: "pp. 286–288, 298–301" } }
+  - { a: master-cylinder, b: brake-booster, type: bolted, torque: "26 Nm", note: "Master cylinder nuts", source: { ref: wsm, locator: "pp. 303, 318" } }
+  - { a: brake-booster, b: pedal-box, type: bolted, torque: "22 Nm", note: "Booster to brake pedal bracket nuts (through the bulkhead)", source: { ref: wsm, locator: "pp. 303, 318" } }
+  - { a: brake-fluid-reservoir, b: master-cylinder, type: screwed, torque: "6 Nm", note: "Fluid reservoir to master cylinder", source: { ref: wsm, locator: p. 303 } }
+  - { a: vacuum-pump, b: cylinder-head, type: bolted, torque: "9 Nm", note: "Brake vacuum pump bolts, 2.2 diesel", source: { ref: wsm, locator: "pp. 318, 575" } }
+  - { a: abs-module, b: bulkhead, type: bolted, torque: "10 Nm", note: "ABS module to mounting bracket nuts", source: { ref: wsm, locator: p. 326 } }
+  - { a: front-wheel-speed-sensor, b: front-knuckle, type: bolted, torque: "5 Nm", note: "Wheel speed sensor to knuckle bolt", source: { ref: wsm, locator: p. 326 } }
+  - { a: rear-wheel-speed-sensor, b: rear-knuckle, type: bolted, torque: "5 Nm", note: "Wheel speed sensor to knuckle bolt", source: { ref: wsm, locator: p. 326 } }
+  - { a: sensor-cluster, b: tunnel, type: bolted, torque: "6 Nm", note: "Accelerometer (sensor cluster) bolts", source: { ref: wsm, locator: p. 326 } }
+
+  # ---------------------------------------------------------------- steering (pp. 360, 389)
+  - { a: steering-rack, b: front-subframe, type: bolted, torque: "105 Nm", note: "Power steering gear to cross member nuts", source: { ref: wsm, locator: p. 360 } }
+  - { a: tie-rod, b: front-knuckle, type: bolted, torque: "70 Nm", note: "Tie-rod end nut (locknut on the rack side 55 Nm)", source: { ref: wsm, locator: p. 389 } }
+  - { a: power-steering-pump, b: cylinder-block, type: bolted, torque: "25 Nm", note: "Power steering pump bolts", source: { ref: wsm, locator: p. 360 } }
+  - { a: power-steering-hoses, b: power-steering-pump, type: hose, torque: "20 Nm", note: "High-pressure line to pump, 2.2 diesel", source: { ref: wsm, locator: p. 360 } }
+
+  # ---------------------------------------------------------------- driveline (pp. 150, 165, 232, 1136)
+  - { a: propshaft, b: ptu, type: bolted, torque: "40 Nm (new)", note: "Driveshaft to power transfer unit Torx bolts", source: { ref: wsm, locator: p. 150 } }
+  - { a: propshaft, b: haldex-coupling, type: bolted, torque: "40 Nm (new)", note: "Driveshaft to rear flange Torx bolts", source: { ref: wsm, locator: "pp. 150, 165" } }
+  - { a: propshaft, b: tunnel, type: bolted, torque: "25 Nm", note: "Centre bearing (CV joint support) brackets to floor; bracket to CV joint 24 Nm", source: { ref: wsm, locator: p. 150 } }
+  - { a: haldex-coupling, b: rear-drive-unit, type: bolted, torque: "24 Nm", note: "Active on-demand coupling to differential", source: { ref: wsm, locator: p. 165 } }
+  - { a: rear-drive-unit, b: rear-subframe, type: bolted, torque: "Front bush 175 Nm (new); rear bush 110 Nm (new)", note: "Differential bush retaining bolts", source: { ref: wsm, locator: p. 165 } }
+  - { a: driveshaft-rear, b: rear-hub, type: bolted, torque: "395 Nm (new), staked", note: "Halfshaft nut", source: { ref: wsm, locator: p. 232 } }
+  - { a: gearbox, b: engine-assembly, type: bolted, torque: "65 Nm", note: "Transmission bolts (to the engine)", source: { ref: wsm, locator: p. 1136 } }
+  - { a: gearbox-mount, b: gearbox-case, type: bolted, torque: "M8 24 Nm; M12 80 Nm", note: "Mounting bracket to transmission; the mounting to the body is 175 Nm", source: { ref: wsm, locator: "pp. 575, 1136" } }
+  - { a: engine-mount-rh, b: cylinder-block, type: bolted, torque: "M12 80 Nm; M14 175 Nm (new)", note: "Engine mount bracket RH; mount bolts 80 Nm", source: { ref: wsm, locator: p. 575 } }
+  - { a: engine-roll-restrictor, b: front-subframe, type: bolted, torque: "110 Nm", note: "Engine lower insulator and link brackets", source: { ref: wsm, locator: p. 574 } }
+
+  # ---------------------------------------------------------------- engine (pp. 574–575, 755, 824, 859, 877, 1258, 1566)
+  - { a: cylinder-head, b: cylinder-block, type: bolted, note: "Cylinder head bolts: torque sequence in the procedure", source: { ref: wsm, locator: p. 574 } }
+  - { a: cam-cover, b: cylinder-head, type: bolted, torque: "10 Nm", note: "Valve cover bolts", source: { ref: wsm, locator: p. 575 } }
+  - { a: oil-sump, b: cylinder-block, type: bolted, torque: "9 Nm", note: "Oil pan bolts; drain plug 20 Nm", source: { ref: wsm, locator: p. 575 } }
+  - { a: oil-level-sensor, b: oil-sump, type: bolted, torque: "8 Nm", note: "Oil level sensor", source: { ref: wsm, locator: p. 575 } }
+  - { a: intake-manifold, b: cylinder-head, type: bolted, torque: "9 Nm", note: "Intake manifold bolts", source: { ref: wsm, locator: p. 575 } }
+  - { a: exhaust-manifold, b: cylinder-head, type: bolted, torque: "24 Nm", note: "Exhaust manifold retaining nuts (studs 7 Nm)", source: { ref: wsm, locator: p. 1258 } }
+  - { a: egr-cooler, b: exhaust-manifold, type: bolted, torque: "25 Nm", note: "Exhaust manifold elbow to EGR cooler", source: { ref: wsm, locator: p. 1258 } }
+  - { a: turbocharger, b: exhaust-manifold, type: bolted, torque: "24 Nm (new)", note: "Turbocharger bolts", source: { ref: wsm, locator: p. 824 } }
+  - { a: catalytic-converter, b: turbocharger, type: bolted, torque: "10 Nm (clamp); converter fixings 25 Nm", note: "Catalytic converter to turbocharger housing retaining clamp", source: { ref: wsm, locator: "pp. 824, 1258" } }
+  - { a: catalytic-converter, b: diesel-particulate-filter, type: bolted, torque: "40 Nm", note: "Catalytic converter to centre section retaining clamp", source: { ref: wsm, locator: p. 1258 } }
+  - { a: crank-pulley, b: crankshaft, type: bolted, torque: "70 Nm + 60°", note: "Crankshaft pulley bolt", source: { ref: wsm, locator: p. 574 } }
+  - { a: exhaust-cam-pulley, b: camshafts, type: bolted, torque: "20 Nm + 60°", note: "Camshaft pulley bolt", source: { ref: wsm, locator: p. 574 } }
+  - { a: timing-belt-tensioner, b: cylinder-block, type: bolted, torque: "25 Nm", note: "Timing belt tensioner bolt", source: { ref: wsm, locator: p. 575 } }
+  - { a: timing-belt-cover, b: cylinder-block, type: bolted, torque: "6 Nm", note: "Camshaft timing belt cover bolts", source: { ref: wsm, locator: p. 574 } }
+  - { a: belt-tensioner, b: cylinder-block, type: bolted, torque: "48 Nm", note: "Accessory drive belt tensioner bolt: 48 Nm in the engine table (p. 574), 45 Nm in the accessory drive table (p. 859)", source: { ref: wsm, locator: "pp. 574, 859" } }
+  - { a: belt-idler, b: cylinder-block, type: bolted, torque: "48 Nm", note: "Accessory drive belt idler bolt: 48 Nm (pp. 574, 1566), 45 Nm in the accessory drive table (p. 859)", source: { ref: wsm, locator: "pp. 574, 859, 1566" } }
+  - { a: coolant-pump, b: cylinder-block, type: bolted, torque: "17 Nm", note: "Coolant pump bolts", source: { ref: wsm, locator: p. 755 } }
+  - { a: thermostat-housing, b: cylinder-head, type: bolted, torque: "8 Nm", note: "Thermostat housing bolts", source: { ref: wsm, locator: p. 755 } }
+  - { a: alternator, b: cylinder-block, type: bolted, torque: "48 Nm", note: "Generator bolts, 2.2 diesel", source: { ref: wsm, locator: p. 1566 } }
+  - { a: starter-cable, b: alternator, type: cable, torque: "24 Nm", note: "Battery cable to the generator nut", source: { ref: wsm, locator: p. 1566 } }
+  - { a: starter-motor, b: gearbox, type: bolted, torque: "40 Nm", note: "Starter motor bolts", source: { ref: wsm, locator: p. 877 } }
+  - { a: starter-cable, b: starter-motor, type: cable, torque: "12 Nm", note: "Starter positive terminal nut — exceeding it damages the internal connections", source: { ref: wsm, locator: p. 877 } }
+
+  # ---------------------------------------------------------------- cooling, fuel, battery (pp. 755, 1304, 1554)
+  - { a: radiator, b: radiator-support, type: bolted, torque: "6 Nm", note: "Radiator bolts", source: { ref: wsm, locator: p. 755 } }
+  - { a: ac-condenser, b: radiator, type: bolted, torque: "10 Nm", note: "A/C condenser to radiator", source: { ref: wsm, locator: p. 755 } }
+  - { a: fuel-tank, b: floor-rear-seat, type: bolted, torque: "25 Nm (new)", note: "Fuel tank bolts", source: { ref: wsm, locator: p. 1304 } }
+
+  # ---------------------------------------------------------------- body closures, panels and trim (pp. 1811, 1827, 1839, 1964, 1992, 2038, 2071, 2151)
+  - { a: front-door-hinges, b: a-pillar, type: bolted, torque: "30 Nm", note: "Front door hinge bolts", source: { ref: wsm, locator: p. 1827 } }
+  - { a: front-door-check-strap, b: a-pillar, type: bolted, torque: "24 Nm", note: "Front door check strap", source: { ref: wsm, locator: p. 1827 } }
+  - { a: rear-door-hinges, b: b-pillar, type: bolted, torque: "30 Nm", note: "Rear door hinge bolts", source: { ref: wsm, locator: p. 1827 } }
+  - { a: rear-door-check-strap, b: b-pillar, type: bolted, torque: "24 Nm", note: "Rear door check strap", source: { ref: wsm, locator: p. 1827 } }
+  - { a: front-door-latch, b: front-door-skin, type: screwed, torque: "10 Nm", note: "Front door latch Torx screws (to the door shell)", source: { ref: wsm, locator: p. 2038 } }
+  - { a: rear-door-latch, b: rear-door-skin, type: screwed, torque: "10 Nm", note: "Rear door latch Torx screws (to the door shell)", source: { ref: wsm, locator: p. 2038 } }
+  - { a: front-door-window-regulator, b: front-door-skin, type: bolted, torque: "10 Nm", note: "Window motor and regulator to door", source: { ref: wsm, locator: p. 1964 } }
+  - { a: rear-door-window-regulator, b: rear-door-skin, type: bolted, torque: "10 Nm", note: "Window motor and regulator to door", source: { ref: wsm, locator: p. 1964 } }
+  - { a: bonnet-hinge, b: bonnet, type: bolted, torque: "24 Nm", note: "Hood hinge bolts", source: { ref: wsm, locator: "pp. 1811, 1827" } }
+  - { a: bonnet-hinge, b: upper-rail, type: bolted, torque: "24 Nm", note: "Hood hinges to body", source: { ref: wsm, locator: "pp. 1811, 1827" } }
+  - { a: tailgate-hinges, b: roof, type: bolted, torque: "24 Nm", note: "Liftgate hinge bolts", source: { ref: wsm, locator: p. 1827 } }
+  - { a: tailgate-gas-strut, b: d-pillar-inner, type: bolted, torque: "24 Nm", note: "Liftgate support strut spigot", source: { ref: wsm, locator: p. 1827 } }
+  - { a: tailgate-latch, b: tailgate-skin, type: screwed, torque: "20 Nm", note: "Liftgate latch Torx screws", source: { ref: wsm, locator: p. 2038 } }
+  - { a: tailgate-latch, b: tailgate-striker, type: clipped, note: "Latch engages the striker; striker bolts 25 Nm", source: { ref: wsm, locator: p. 2038 } }
+  - { a: tailgate-handle, b: tailgate-skin, type: bolted, torque: "4 Nm", note: "Liftgate handle bolts", source: { ref: wsm, locator: p. 2038 } }
+  - { a: rear-wiper-motor, b: tailgate-skin, type: bolted, torque: "10 Nm", note: "Rear window wiper motor nuts", source: { ref: wsm, locator: p. 2071 } }
+  - { a: rear-wiper-arm, b: rear-wiper-motor, type: bolted, torque: "7 Nm", note: "Rear wiper arm to motor nut", source: { ref: wsm, locator: p. 2071 } }
+  - { a: wiper-arms, b: wiper-linkage, type: bolted, torque: "45 Nm", note: "Front wiper arms to linkage nut", source: { ref: wsm, locator: p. 2071 } }
+  - { a: wiper-linkage, b: bulkhead, type: bolted, torque: "8 Nm", note: "Wiper linkage to body bolts; wiper motor bolts 10 Nm", source: { ref: wsm, locator: p. 2071 } }
+  - { a: washer-reservoir, b: front-crash-beam, type: bolted, torque: "6 Nm", note: "Washer reservoir and pump assembly to bumper armature (and to body, 6 Nm)", source: { ref: wsm, locator: p. 2071 } }
+  - { a: engine-undershield, b: front-subframe, type: bolted, torque: "60 Nm", note: "Engine undershield bolts", source: { ref: wsm, locator: p. 1811 } }
+  - { a: front-crash-beam, b: front-longitudinal, type: bolted, torque: "48 Nm", note: "Front bumper bolts to body", source: { ref: wsm, locator: p. 2151 } }
+  - { a: rear-crash-beam, b: rear-longitudinal, type: bolted, torque: "30 Nm", note: "Rear bumper bolts to body", source: { ref: wsm, locator: p. 2151 } }
+  - { a: dashboard, b: dash-crossbeam, type: bolted, torque: "M8 24 Nm; M12 40 Nm", note: "Instrument panel bolts", source: { ref: wsm, locator: p. 1992 } }
+  - { a: a-pillar-trim, b: a-pillar, type: screwed, torque: "3 Nm", note: "A-pillar trim panel Torx screw (clips elsewhere)", source: { ref: wsm, locator: p. 1839 } }
+  - { a: b-pillar-trim-upper, b: b-pillar, type: bolted, torque: "25 Nm", note: "B-pillar trim panel upper Torx bolt", source: { ref: wsm, locator: p. 1839 } }
+  - { a: c-pillar-trim-inner, b: c-pillar, type: screwed, torque: "3 Nm", note: "C-pillar upper trim panel Torx screw", source: { ref: wsm, locator: p. 1839 } }
+  - { a: sun-visor, b: roof-bows, type: screwed, torque: "2 Nm", note: "Sun visors", source: { ref: wsm, locator: p. 1839 } }
+  - { a: engine-cover, b: cam-cover, type: bolted, torque: "10 Nm", note: "Engine cover, 2.2 diesel", source: { ref: wsm, locator: p. 1839 } }
+  - { a: liftgate-trim-panel, b: tailgate-skin, type: clipped, torque: "1 Nm", note: "Liftgate trim panel fixing", source: { ref: wsm, locator: p. 1839 } }
+
+  # ---------------------------------------------------------------- seats and seat belts (pp. 1902, 2166)
+  - { a: seat-driver, b: floor-front-l, type: bolted, torque: "40 Nm (new)", note: "Front seat Torx bolts", source: { ref: wsm, locator: p. 1902 } }
+  - { a: seat-passenger, b: floor-front-r, type: bolted, torque: "40 Nm (new)", note: "Front seat Torx bolts", source: { ref: wsm, locator: p. 1902 } }
+  - { a: side-airbag-l, b: seat-driver, type: bolted, torque: "9 Nm", note: "Squab frame – side airbag nut", source: { ref: wsm, locator: p. 1902 } }
+  - { a: side-airbag-r, b: seat-passenger, type: bolted, torque: "9 Nm", note: "Squab frame – side airbag nut", source: { ref: wsm, locator: p. 1902 } }
+  - { a: belt-pretensioner-l, b: seat-driver, type: bolted, torque: "40 Nm", note: "Front safety belt buckle to seat Torx bolt (cushion frame – pretensioner bolt 45 Nm)", source: { ref: wsm, locator: "pp. 1902, 2166" } }
+  - { a: belt-pretensioner-r, b: seat-passenger, type: bolted, torque: "40 Nm", note: "Front safety belt buckle to seat Torx bolt (cushion frame – pretensioner bolt 45 Nm)", source: { ref: wsm, locator: "pp. 1902, 2166" } }
+  - { a: front-seat-belts, b: b-pillar, type: bolted, torque: "40 Nm (new)", note: "Front safety belt retractor, upper and lower anchor Torx bolts", source: { ref: wsm, locator: p. 2166 } }
+  - { a: rear-seat-belts, b: c-pillar, type: bolted, torque: "40 Nm", note: "Rear seat belt retractor and anchors", source: { ref: wsm, locator: p. 2166 } }
+  - { a: rear-centre-seat-belt, b: rear-seat, type: bolted, torque: "35 Nm", note: "Rear centre safety belt retractor Torx bolt; buckle and lower anchor 55 Nm", source: { ref: wsm, locator: p. 2166 } }
+  - { a: driver-seat-height-motor, b: seat-driver, type: bolted, torque: "25 Nm", note: "Front seat height adjustment motor nuts", source: { ref: wsm, locator: p. 1902 } }
+  - { a: passenger-seat-height-motor, b: seat-passenger, type: bolted, torque: "25 Nm", note: "Front seat height adjustment motor nuts", source: { ref: wsm, locator: p. 1902 } }
+  - { a: driver-seat-tilt-motor, b: seat-driver, type: bolted, torque: "10 Nm", note: "Front seat tilt motor bolts", source: { ref: wsm, locator: p. 1902 } }
+
+  # ---------------------------------------------------------------- engine ancillaries (pp. 575, 824, 918)
+  - { a: oil-cooler, b: cylinder-block, type: bolted, torque: "20 Nm", note: "Oil cooler to cylinder block bolts", source: { ref: wsm, locator: p. 575 } }
+  - { a: crankcase-vent-oil-separator, b: cylinder-block, type: bolted, torque: "9 Nm", note: "Crankcase vent oil separator; bracket to block M6 10 Nm, M8 25 Nm", source: { ref: wsm, locator: p. 918 } }
+  - { a: valve-cover-vent-oil-separator, b: cam-cover, type: clipped, note: "Valve cover vent oil separator", source: { ref: wsm, locator: p. 926 } }
+  - { a: turbo-oil-feed-line, b: turbocharger, type: pipe, torque: "17 or 24 Nm (by line kit / engine number)", note: "Turbocharger oil feed line bolt", source: { ref: wsm, locator: p. 824 } }
+  - { a: turbo-oil-return-line, b: turbocharger, type: pipe, torque: "10 Nm", note: "Turbocharger oil return line", source: { ref: wsm, locator: p. 824 } }

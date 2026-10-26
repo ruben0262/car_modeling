@@ -1,0 +1,23 @@
+# docker compose up -d --build                 → http://<server>:8080
+#
+# On a server with a domain pointing at it, for HTTPS with an automatic certificate:
+#   SITE_ADDRESS=atlas.example.com HTTP_PORT=80 HTTPS_PORT=443 docker compose up -d --build
+services:
+  atlas:
+    build: .
+    image: vehicle-atlas
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - '${HTTP_PORT:-8080}:80'
+      - '${HTTPS_PORT:-8443}:443'
+      - '${HTTPS_PORT:-8443}:443/udp'
+    volumes:
+      # certificates and keys, kept across restarts and upgrades
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  caddy-data:
+  caddy-config:

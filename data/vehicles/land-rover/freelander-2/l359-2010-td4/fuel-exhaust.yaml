@@ -1,0 +1,179 @@
+# Fuel system and exhaust (workshop manual `wsm`). The close-coupled
+# catalytic converter lives with the engine (engine.yaml); everything
+# downstream of it is here.
+system: fuel-exhaust
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- fuel tank
+  - id: fuel-tank
+    kind: assembly
+    name: Fuel tank (saddle type)
+    aliases: [diesel tank, gas tank, petrol tank]
+    summary: Sealed saddle tank centrally below the rear seat, straddling the propshaft and exhaust; carried in a support cradle with foam pads and a saddle-shaped exhaust heat shield.
+    location: { zone: underbody-centre, text: "Centrally below the rear seat" }
+    access: { from: [underside] }
+    placement: { pos: [-2110, 0, 372] }
+    explode: { dir: [0, 0, -1], dist: 240 }
+    ewd: [D179]
+    specs: [{ label: Usable capacity, value: "68 L", source: { ref: handbook, locator: Capacities } }]
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 1305–1311", says: "The fuel tank is located centrally below the rear seat position and is formed to straddle the driveshaft and exhaust system" }]
+  - id: fuel-tank-shell
+    parent: fuel-tank
+    kind: part
+    name: Fuel tank shell, cradle and heat shield
+    explode: { dir: [0, 0, -1], dist: 100 }
+    manufacturing: [{ label: Senders, value: "Two MAPPS (magnetic passive position) senders, one each side of the saddle", source: { ref: wsm, locator: p. 1310 } }]
+    geometry: { gen: saddle-tank, len: 460, lobeW: 420, gap: 300, h: 200, bridgeH: 56 }
+  - id: fuel-pump-module
+    parent: fuel-tank
+    kind: part
+    name: Fuel delivery module (in-tank pump)
+    aliases: [fuel pump, lift pump, fuel sender]
+    summary: In the RH side of the tank; the in-tank pump fills the swirl pot — the engine draws fuel through the filter with its own pump. Energised by the fuel pump relay in the CJB.
+    access: { from: [cabin-rear, underside] }
+    explode: { dir: [0, 0, 1], dist: 260 }
+    contacts: [fuel-tank-shell]
+    ewd: [M151]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1306–1310", says: "The fuel delivery module is located in the RH side of the tank; the in-tank pump is energized by the fuel pump relay located in the CJB" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 62, h: 190, axis: z, chamfer: 6, pos: [40, -360, 0], mat: plastic-grey }
+        - { gen: cyl, r: 74, h: 14, axis: z, chamfer: 3, pos: [40, -360, 104], mat: plastic-black }
+  - id: fuel-pump-connector
+    parent: fuel-tank
+    kind: connector
+    name: Fuel delivery module connector
+    connector: { ewd: C4E515 }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    placement: { pos: [60, -330, 122] }
+    geometry: { gen: connector, size: [30, 24, 18], mat: connector-grey, wireR: 4 }
+
+  - id: fuel-filler-pipe
+    kind: hose
+    name: Fuel tank filler pipe
+    summary: Inline spring-loaded check valve in the filler stub hose at the tank; screw cap with lanyard.
+    material: plastic-black
+    location: { zone: exterior-side, text: "From the tank up to the filler flap in the rear quarter (side to be confirmed)" }
+    explode: { dir: [0, -1, 0.5], dist: 220 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1311 }] }
+    geometry: { gen: tube, r: 26, points: [[-2060, -470, 462], [-2300, -640, 520], [-2700, -800, 720], [-2950, -868, 975]] }
+
+  - id: fuel-lines
+    kind: assembly
+    name: Fuel supply and return lines
+    summary: Tank to the engine-bay filter and back, under a clipped underfloor protection tray.
+    explode: { dir: [0, 0, -1], dist: 120 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1305–1309" }] }
+  - { id: fuel-feed-line, parent: fuel-lines, kind: pipe, name: Fuel supply line, material: fuel-line, geometry: { gen: tube, r: 4, points: [[-2070, -330, 472], [-1900, -560, 330], [-600, -600, 300], [-480, -560, 430], [-100, -560, 600], [200, -560, 600], [300, -600, 560]] } }
+  - { id: fuel-return-line, parent: fuel-lines, kind: pipe, name: Fuel return line, material: fuel-line, geometry: { gen: tube, r: 4, points: [[-2050, -315, 472], [-1900, -545, 330], [-600, -585, 296], [-480, -545, 430], [-100, -546, 590], [200, -546, 590], [290, -586, 550]] } }
+
+  - id: fuel-filter
+    kind: part
+    name: Fuel filter canister
+    aliases: [diesel filter]
+    summary: Heat-resistant, flame-proof plastic canister with a paper element, mounted in an engine support bracket behind a crash shield; the fuel temperature sensor is in its supply connection; bleed screw and drain point on the canister.
+    location: { zone: engine-bay-front, text: "Front RH side of the engine compartment" }
+    access:
+      from: [bonnet]
+      removeFirst: [engine-cover]
+      notes: "Fixings 9 Nm. Bleed the fuel system after renewal or the engine will not start."
+      sources: [{ ref: wsm, locator: pp. 1329–1331 }]
+    explode: { dir: [0.5, -0.5, 0.6], dist: 300 }
+    placement: { pos: [330, -600, 600] }
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: "pp. 1313–1314", says: "The fuel filter canister is located at the front RH side of the engine compartment, and mounted within an engine support bracket. A crash shield is installed to protect the filter canister" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 45, h: 140, axis: z, chamfer: 5, mat: plastic-grey }
+        - { gen: cyl, r: 50, h: 26, axis: z, chamfer: 4, pos: [0, 0, 80], mat: plastic-black }
+        - { gen: box, size: [14, 110, 130], r: 4, pos: [58, 0, 20], mat: steel-zinc }
+
+  # ---------------------------------------------------------------- exhaust (downstream of the catalytic converter)
+  - id: diesel-particulate-filter
+    kind: part
+    name: Diesel particulate filter (DPF)
+    aliases: [DPF, particulate filter, soot filter]
+    fitment: Vehicles with DPF (market / emissions dependent)
+    summary: Downstream of the catalytic converter in the front of the floor tunnel, flanged with 3 nuts; monitored by a differential-pressure sensor and temperature sensors.
+    location: { zone: underbody-centre, text: "Under the floor behind the engine, after the catalytic converter" }
+    access: { from: [underside], removeFirst: [exhaust-rear-section], notes: "Engine undershield off first; new nuts and gasket; temperature sensor 35 Nm, pressure pipes 25 Nm, DPF nuts 25 Nm.", sources: [{ ref: wsm, locator: pp. 1261–1264 }] }
+    placement: { pos: [-790, -95, 398] }
+    contacts: [catalytic-converter, exhaust-intermediate-pipe]
+    explode: { dir: [0, -0.5, -1], dist: 260 }
+    ewd: [T404]
+    faults:
+      - { symptom: "DPF warning lamp, reduced power", cause: "Soot loading from repeated short journeys — needs a regeneration; check the differential-pressure sensor and its pipes." }
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: "pp. 1261–1264", says: "Raise on a lift; remove the engine undershield; remove the exhaust system; DPF secured with nuts (discard)" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: canister, len: 300, r: 62, cones: 40, stubR: 30, stubLen: 30, shield: true }
+        - { gen: tube, r: 27, points: [[620, -145, -148], [480, -50, -140], [300, -40, -120], [230, -5, -50], [195, 0, 0]], mat: exhaust-steel }
+
+  - id: dpf-pressure-sensor
+    kind: part
+    name: DPF differential pressure sensor
+    aliases: [DPF sensor, delta-P sensor]
+    fitment: Vehicles with DPF
+    location: { zone: engine-bay-right, text: "Engine compartment, lower right side" }
+    explode: { dir: [0, -1, 1], dist: 260 }
+    ewd: [T398]
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: pp. 1272 }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [50, 22, 40], r: 4, pos: [-260, -380, 470], mat: plastic-black }
+        - { gen: tube, r: 3, points: [[-270, -380, 450], [-420, -300, 420], [-500, -150, 415], [-600, -105, 410]], mat: steel-zinc }
+        - { gen: tube, r: 3, points: [[-250, -380, 450], [-480, -320, 425], [-510, -150, 430], [-900, -130, 440], [-985, -105, 420]], mat: steel-zinc }
+
+  - id: oxygen-sensor
+    kind: part
+    name: Heated oxygen sensor (HO2S)
+    aliases: [lambda sensor, HO2S]
+    explode: { dir: [0, -1, 0.5], dist: 200 }
+    ewd: [T133]
+    verification: { placement: estimated }
+    geometry: { gen: cyl, r: 11, h: 60, axis: y, pos: [-220, -300, 300], mat: steel-zinc }
+
+  - id: exhaust-rear-section
+    kind: assembly
+    name: Exhaust rear section (pipes and rear silencer)
+    aliases: [exhaust system, back box, rear muffler]
+    summary: Stainless-steel rear assembly from the DPF to the tailpipe on rubber mounts; the joint behind the DPF is clamped (40 Nm).
+    location: { zone: underbody-rear, text: "Along the tunnel, under the fuel tank bridge, to the rear silencer behind the rear axle" }
+    access: { from: [underside], sources: [{ ref: wsm, locator: pp. 1259–1260 }] }
+    explode: { dir: [-0.3, 0, -1], dist: 260 }
+    manufacturing: [{ label: Material, value: "Stainless steel; front section (catalytic converter) and rear section (rear silencer) as separate assemblies", source: { ref: wsm, locator: p. 1258 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1258–1260" }] }
+  - id: exhaust-intermediate-pipe
+    parent: exhaust-rear-section
+    kind: pipe
+    name: Intermediate pipe
+    material: exhaust-steel
+    geometry: { gen: tube, r: 27, points: [[-1020, -95, 398], [-1300, -115, 385], [-1750, -115, 378], [-2300, -120, 378], [-2450, -260, 345], [-2700, -280, 340], [-2860, -260, 372], [-3010, -240, 365]] }
+  - id: rear-silencer
+    parent: exhaust-rear-section
+    kind: part
+    name: Rear silencer and tailpipe
+    location: { zone: underbody-rear, text: "Across the car behind the rear axle; tailpipe side to be confirmed" }
+    explode: { dir: [-1, 0, -0.4], dist: 160 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: canister, len: 500, r: 94, oval: 0.62, stubR: 27, stubLen: 26, rot: [0, 0, 90], pos: [-3150, -150, 352] }
+        - { gen: tube, r: 27, points: [[-3150, -420, 352], [-3300, -500, 340], [-3560, -560, 330]], mat: exhaust-steel }
+        - { gen: cyl, r: 32, h: 60, axis: x, pos: [-3590, -560, 330], mat: chrome }

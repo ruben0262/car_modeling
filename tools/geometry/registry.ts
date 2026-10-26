@@ -1,0 +1,86 @@
+/**
+ * Generator registry: the `gen` names usable in vehicle YAML.
+ * A part either names a generator here or (later) points at a source mesh.
+ */
+import { archFlare, archLiner, bodyCap, bodyPanel } from './body';
+import { coilSpring, driveshaft, link, propshaft, steeringRack, strut } from './chassis';
+import { airbox, battery, canister, connector, enclosure, fan, heatExchanger, lamp, mirror, pedal, saddleTank, seat, steeringWheel } from './misc';
+import { box, cyl, frame, latheGen, makeCompound, prismGen, sphereGen, torusGen, tubeGen } from './primitives';
+import {
+  belt,
+  bevelHousing,
+  camCover,
+  coupling,
+  cylinderHead,
+  engineBlock,
+  engineCover,
+  glowPlug,
+  injector,
+  machine,
+  mount,
+  oilSump,
+  pulley,
+  serpentine,
+  transaxle,
+  turbo,
+} from './powertrain';
+import type { GeneratorDef } from './util';
+import { brakeDisc, caliper, hub, knuckle, rim, tyre, wheelSpeedSensor } from './wheels';
+
+export const GENERATORS: Record<string, GeneratorDef> = {
+  box,
+  cyl,
+  lathe: latheGen,
+  tube: tubeGen,
+  prism: prismGen,
+  sphere: sphereGen,
+  torus: torusGen,
+  frame,
+  'body-panel': bodyPanel,
+  'body-cap': bodyCap,
+  'arch-flare': archFlare,
+  'arch-liner': archLiner,
+  tyre,
+  rim,
+  'brake-disc': brakeDisc,
+  caliper,
+  hub,
+  knuckle,
+  'wheel-speed-sensor': wheelSpeedSensor,
+  'coil-spring': coilSpring,
+  strut,
+  link,
+  driveshaft,
+  propshaft,
+  'steering-rack': steeringRack,
+  'engine-block': engineBlock,
+  'oil-sump': oilSump,
+  'cylinder-head': cylinderHead,
+  'cam-cover': camCover,
+  'engine-cover': engineCover,
+  pulley,
+  belt,
+  serpentine,
+  turbo,
+  machine,
+  injector,
+  'glow-plug': glowPlug,
+  transaxle,
+  'bevel-housing': bevelHousing,
+  coupling,
+  mount,
+  battery,
+  enclosure,
+  connector,
+  'heat-exchanger': heatExchanger,
+  fan,
+  canister,
+  'saddle-tank': saddleTank,
+  seat,
+  'steering-wheel': steeringWheel,
+  lamp,
+  mirror,
+  airbox,
+  pedal,
+};
+GENERATORS.compound = makeCompound(GENERATORS);

@@ -1,0 +1,986 @@
+# Body, comfort, restraint and infotainment electrics: the wiring-diagram
+# components that are not part of another system's file, plus the harness
+# trunks that reach them (seats, doors, tailgate, bumpers, right-hand floor).
+#
+# Locations come from the workshop manual (`wsm`, cited by PDF page). Where the
+# manual names only the area, `placement: estimated` says so. Optional
+# equipment carries a `fitment` note: the car's specification is unknown
+# without a VIN.
+system: electrical
+defaults:
+  material: plastic-black
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }, { ref: ewd }]
+
+nodes:
+  # ================================================================ restraints (crash sensing)
+  - id: front-impact-sensor
+    kind: part
+    sides: [left, right]
+    handed: true
+    name: Front impact sensor
+    aliases: [front crash sensor, airbag crash sensor, front airbag sensor]
+    summary: Accelerometer with its own microchip, powered by the restraints control module (RCM). It continuously sends 'digital acceleration' messages to the RCM, which decides whether to fire the airbags and pretensioners. On a fault it sends a fault message instead, and the RCM lights the airbag warning lamp.
+    location: { zone: front-end, text: "Front end behind the bumper cover, one each side (driver's side and passenger's side)" }
+    access: { from: [front-end], notes: "The manual gives no removal procedure; disconnect the battery and wait before working on any SRS part." }
+    placement: { pos: [742, 515, 690] }
+    contacts: [radiator-support]
+    explode: { dir: [1, 0.3, 0.2], dist: 200 }
+    ewd: [T392:l, T393:r]
+    partNumbers: [{ number: YDB500410, note: "Crash sensor, front (listed as no longer available)", source: { ref: jlr-parts-airbag } }]
+    verification:
+      placement: estimated
+      sources:
+        - { ref: wsm, locator: "pp. 2199–2200", says: "16 - Impact sensor - left-hand front; 17 - Impact sensor - right-hand front. The impact sensors are installed in the front and both sides of the vehicle." }
+        - { ref: jlr-parts-airbag }
+        - { ref: fixya-crash-sensor }
+    geometry: { gen: box, size: [40, 50, 40], r: 5 }
+
+  - id: side-impact-sensor-b-pillar
+    kind: part
+    sides: [left, right]
+    handed: true
+    name: Side impact sensor (B-pillar)
+    aliases: [side crash sensor, B-pillar crash sensor]
+    summary: Lateral accelerometer at the foot of the B-pillar. Together with the C-pillar sensor it lets the RCM detect a side impact quickly enough to fire that side's seat airbag and curtain.
+    location: { zone: cabin-front, text: "Base of the B-pillar, under the front scuff plate trim" }
+    access: { from: [cabin-front], removeFirst: [front-scuff-plate], tools: [Torx socket], notes: "Remove the front scuff plate trim panel. Sensor fixing 10 Nm.", sources: [{ ref: wsm, locator: p. 2209 }] }
+    placement: { pos: [-1410, 790, 530] }
+    contacts: [b-pillar, sill, b-pillar-trim]
+    explode: { dir: [0, -1, 0.3], dist: 160 }
+    ewd: [T394:l, T395:r]
+    specs: [{ label: Fixing torque, value: "10 Nm", source: { ref: wsm, locator: p. 2209 } }]
+    partNumbers: [{ number: YDB500400, note: "Crash sensor, side (the catalogue lists one side sensor part)", source: { ref: jlr-parts-airbag } }]
+    verification:
+      sources:
+        - { ref: wsm, locator: "pp. 2197, 2200, 2209", says: "Side impact sensor - B-pillar ... Remove the front scuff plate trim panel" }
+        - { ref: jlr-parts-airbag }
+    geometry: { gen: box, size: [50, 30, 45], r: 5 }
+
+  - id: side-impact-sensor-c-pillar
+    kind: part
+    sides: [left, right]
+    handed: true
+    name: Side impact sensor (C-pillar)
+    aliases: [rear side crash sensor, C-pillar crash sensor]
+    summary: Second lateral accelerometer each side, at the lower C-pillar behind the rear quarter trim. Gives the RCM a rear reference for side impacts and rear-door intrusions.
+    location: { zone: cabin-rear, text: "Lower C-pillar, behind the rear quarter trim panel" }
+    access: { from: [cabin-rear], removeFirst: [rear-quarter-trim], notes: "Remove the rear quarter trim panel. Sensor fixing 10 Nm.", sources: [{ ref: wsm, locator: p. 2211 }] }
+    placement: { pos: [-2440, 790, 930] }
+    contacts: [c-pillar, c-pillar-trim]
+    explode: { dir: [0, -1, 0.3], dist: 160 }
+    ewd: [T396:l, T397:r]
+    specs: [{ label: Fixing torque, value: "10 Nm", source: { ref: wsm, locator: p. 2211 } }]
+    partNumbers: [{ number: YDB500400, note: "Crash sensor, side (the catalogue lists one side sensor part)", source: { ref: jlr-parts-airbag } }]
+    verification:
+      placement: estimated
+      sources:
+        - { ref: wsm, locator: "pp. 2197, 2200, 2211", says: "Side impact sensor - C-pillar ... Remove the rear quarter trim panel" }
+        - { ref: jlr-parts-airbag }
+    geometry: { gen: box, size: [50, 30, 45], r: 5 }
+
+  - id: belt-minder-mat
+    parent: seat-passenger
+    kind: part
+    name: Belt-minder occupancy mat
+    aliases: [occupancy sensor, seat occupancy mat, seat belt reminder sensor]
+    summary: Foil contact circuit in a plastic sheet. Weight on the seat lowers its resistance, so the RCM knows the passenger seat is occupied and sounds the belt-minder if the belt is not fastened (markets other than North America and Australia).
+    location: { zone: cabin-front, text: "In the front passenger seat cushion, between the foam padding and the cover" }
+    access: { from: [cabin-front], notes: "Part of the seat cushion; the cushion cover must come off." }
+    placement: { pos: [40, 0, 433] }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [D358]
+    verification: { sources: [{ ref: wsm, locator: "pp. 2199, 2202", says: "The occupancy sensor is installed in the cushion of the front passenger seat between the foam padding and the cover" }] }
+    geometry: { gen: box, size: [300, 300, 4], mat: plastic-white }
+
+  - id: seat-position-sensor
+    parent: seat-driver
+    kind: part
+    name: Driver seat position sensor
+    aliases: [seat track sensor, seat track position sensor]
+    summary: Hall-effect sensor actuated by a target bracket on the seat slide. It tells the RCM whether the driver sits forward or rearward, so the RCM can choose the driver airbag's inflation stage.
+    location: { zone: cabin-front, text: "Underside of the driver's seat, on the seat slide" }
+    access: { from: [cabin-front] }
+    placement: { pos: [120, -200, 45] }
+    explode: { dir: [0, -0.5, -1], dist: 120 }
+    ewd: [T360]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 2203, says: "fitted to the underside of the driver's seat. The sensor is actuated by the target bracket attached to the seat slide" }] }
+    geometry: { gen: box, size: [40, 25, 30], r: 4 }
+
+  # ================================================================ driver's seat (power, memory, heating — optional in Europe)
+  - id: driver-seat-height-motor
+    parent: seat-driver
+    kind: part
+    name: Driver's seat height motor
+    fitment: Power-adjusted seats (option outside North America)
+    summary: Permanent-magnet motor driving a rack-and-pinion adjuster. On memory seats a Hall sensor inside the motor reports its position to the power seat module.
+    location: { zone: cabin-front, text: "Under the driver's seat cushion, on the seat frame" }
+    placement: { pos: [-140, 150, 225] }
+    explode: { dir: [0, 0.3, -1], dist: 120 }
+    ewd: [M221]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1907–1908" }] }
+    geometry: { gen: cyl, r: 22, h: 80, axis: y, mat: steel-black }
+  - id: driver-seat-slide-motor
+    parent: seat-driver
+    kind: part
+    name: Driver's seat slide motor
+    fitment: Power-adjusted seats (option outside North America)
+    summary: Drives both seat runners through flexible shafts to move the seat forward and rearward.
+    location: { zone: cabin-front, text: "Front of the driver's seat frame, between the runners" }
+    placement: { pos: [170, 0, 70] }
+    explode: { dir: [0.4, 0, -1], dist: 120 }
+    ewd: [M241]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1907" }] }
+    geometry: { gen: cyl, r: 22, h: 90, axis: y, mat: steel-black }
+  - id: driver-seat-tilt-motor
+    parent: seat-driver
+    kind: part
+    name: Driver's seat cushion tilt motor
+    fitment: Driver's memory seat
+    summary: Raises or lowers the front edge of the cushion.
+    location: { zone: cabin-front, text: "Front of the driver's seat frame, outboard" }
+    placement: { pos: [210, 150, 225] }
+    explode: { dir: [0.4, 0.3, -1], dist: 120 }
+    ewd: [M311]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1908 }] }
+    geometry: { gen: cyl, r: 20, h: 70, axis: y, mat: steel-black }
+  - id: driver-seat-recline-motor
+    parent: seat-driver
+    kind: part
+    name: Driver's seat backrest recline motor
+    fitment: Power-adjusted seats (option outside North America)
+    summary: Turns the backrest recliner mechanism at the backrest pivot.
+    location: { zone: cabin-front, text: "At the driver's seat backrest pivot, outboard side" }
+    placement: { pos: [-200, 232, 330] }
+    explode: { dir: [-0.3, 1, 0], dist: 120 }
+    ewd: [M312]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1907" }] }
+    geometry: { gen: cyl, r: 22, h: 60, axis: y, mat: steel-black }
+  - id: driver-lumbar-pump
+    parent: seat-driver
+    kind: part
+    name: Driver's lumbar support pump
+    fitment: Electric lumbar support (driver's seat only)
+    summary: Small pump that inflates the lumbar bladders in the backrest. Lumbar position is not stored by the memory system.
+    location: { zone: cabin-front, text: "Inside the driver's seat backrest" }
+    placement: { pos: [-300, 0, 560] }
+    explode: { dir: [-1, 0, 0.3], dist: 140 }
+    ewd: [M286]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1910" }] }
+    geometry: { gen: box, size: [50, 90, 60], r: 8 }
+  - id: driver-seat-switch-pack
+    parent: seat-driver
+    kind: part
+    name: Driver's seat switch pack
+    aliases: [seat control switch, seat adjustment switch]
+    fitment: Power-adjusted seats (option outside North America)
+    summary: Switch pack on the outboard side of the seat base. Non-memory seats switch the motors directly; memory seats route the switches through the power seat module, and the pack carries the memory buttons. Includes the lumbar switch. The wiring diagrams draw the same individual height, slide, recline and tilt switches inside both front seat packs.
+    location: { zone: cabin-front, text: "Outboard side of the driver's seat base" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: p. 1931 }] }
+    placement: { pos: [120, 262, 225] }
+    explode: { dir: [0, 1, 0], dist: 140 }
+    ewd: [S391, S389, S435, S436, S437, S438, S439, S440, S441, S442]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1907–1909", says: "Movement of the seat is achieved using the control switch pack located on the outboard side of the seat" }] }
+    geometry: { gen: box, size: [150, 22, 60], r: 8, mat: interior-trim }
+  - id: memory-seat-module
+    parent: seat-driver
+    kind: part
+    name: Power seat module (memory)
+    aliases: [driver seat module, DSM, seat memory module]
+    fitment: Driver's memory seat
+    summary: Stores up to three seat positions using the Hall sensors in the seat motors, and asks the door modules to recall the matching mirror positions. Connected on the medium-speed CAN bus and powered directly from the AJB.
+    location: { zone: cabin-front, text: "Under the driver's seat frame" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: p. 1809 }] }
+    placement: { pos: [-60, 0, 110] }
+    explode: { dir: [0, 0, -1], dist: 140 }
+    ewd: [D119]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1908, 1915", says: "The seat incorporates a power seat module located under the seat frame" }] }
+    geometry: { gen: enclosure, size: [160, 110, 35], lid: false, sockets: 3, socketFace: x+ }
+  - id: driver-seat-heating-module
+    parent: seat-driver
+    kind: part
+    name: Driver's seat heating module
+    fitment: Heated front seats
+    summary: Switches the cushion and backrest heater elements. Takes its demand from the climate control (ATC) module on the LIN bus; powered from the AJB and grounded locally.
+    location: { zone: cabin-front, text: "Beneath the driver's seat" }
+    placement: { pos: [110, -90, 100] }
+    explode: { dir: [0.3, -0.3, -1], dist: 140 }
+    ewd: [D408]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1801, 1910", says: "A seat heating module and electrical wiring is located beneath each front seat" }] }
+    geometry: { gen: enclosure, size: [110, 70, 28], lid: false, sockets: 2, socketFace: x+ }
+  - id: driver-seat-heater-elements
+    parent: seat-driver
+    kind: part
+    name: Driver's seat heater elements (cushion and backrest)
+    fitment: Heated front seats
+    summary: Heating mats under the cushion and backrest covers. The cushion mat carries the thermistor that the heating module uses to regulate temperature.
+    location: { zone: cabin-front, text: "Under the driver's seat cushion and backrest covers" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: p. 1930 }] }
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [H148, H149, H139]
+    verification: { sources: [{ ref: wsm, locator: p. 1910, says: "A heating element is incorporated within each seat cushion and squab" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [400, 380, 3], pos: [30, 0, 436], mat: plastic-grey }
+        - { gen: box, size: [3, 380, 470], pos: [-240, 0, 730], rot: [0, -18, 0], mat: plastic-grey }
+
+  # ================================================================ passenger's seat
+  - id: passenger-seat-height-motor
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat height motor
+    fitment: Power-adjusted seats (option outside North America)
+    location: { zone: cabin-front, text: "Under the passenger seat cushion, on the seat frame" }
+    placement: { pos: [-140, -150, 225] }
+    explode: { dir: [0, -0.3, -1], dist: 120 }
+    ewd: [M222]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1907 }] }
+    geometry: { gen: cyl, r: 22, h: 80, axis: y, mat: steel-black }
+  - id: passenger-seat-slide-motor
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat slide motor
+    fitment: Power-adjusted seats (option outside North America)
+    location: { zone: cabin-front, text: "Front of the passenger seat frame, between the runners" }
+    placement: { pos: [170, 0, 70] }
+    explode: { dir: [0.4, 0, -1], dist: 120 }
+    ewd: [M240]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1907" }] }
+    geometry: { gen: cyl, r: 22, h: 90, axis: y, mat: steel-black }
+  - id: passenger-seat-recline-motor
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat backrest recline motor
+    fitment: Power-adjusted seats (option outside North America)
+    location: { zone: cabin-front, text: "At the passenger seat backrest pivot, outboard side" }
+    placement: { pos: [-200, -232, 330] }
+    explode: { dir: [-0.3, -1, 0], dist: 120 }
+    ewd: [M313]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1904, 1907" }] }
+    geometry: { gen: cyl, r: 22, h: 60, axis: y, mat: steel-black }
+  - id: passenger-seat-switch-pack
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat switch pack
+    fitment: Power-adjusted seats (option outside North America)
+    location: { zone: cabin-front, text: "Outboard side of the passenger seat base" }
+    placement: { pos: [120, -262, 225] }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    ewd: [S392]
+    verification: { sources: [{ ref: wsm, locator: p. 1907 }] }
+    geometry: { gen: box, size: [150, 22, 60], r: 8, mat: interior-trim }
+  - id: passenger-seat-heating-module
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat heating module
+    fitment: Heated front seats
+    location: { zone: cabin-front, text: "Beneath the passenger seat" }
+    placement: { pos: [110, 90, 100] }
+    explode: { dir: [0.3, 0.3, -1], dist: 140 }
+    ewd: [D409]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1801, 1910" }] }
+    geometry: { gen: enclosure, size: [110, 70, 28], lid: false, sockets: 2, socketFace: x+ }
+  - id: passenger-seat-heater-elements
+    parent: seat-passenger
+    kind: part
+    name: Passenger seat heater elements (cushion and backrest)
+    fitment: Heated front seats
+    location: { zone: cabin-front, text: "Under the passenger seat cushion and backrest covers" }
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [H150, H151]
+    verification: { sources: [{ ref: wsm, locator: p. 1910 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [400, 380, 3], pos: [30, 0, 437], mat: plastic-grey }
+        - { gen: box, size: [3, 380, 470], pos: [-240, 0, 730], rot: [0, -18, 0], mat: plastic-grey }
+  - id: power-seat-relay
+    parent: seat-passenger
+    kind: part
+    name: Power seat relay (RH seat)
+    fitment: Power-adjusted passenger seat
+    summary: Relay in the right-hand seat feed, drawn on the auxiliary junction box and seat sheets with its own connectors in the seat harness.
+    location: { zone: cabin-front, text: "Seat harness under the right-hand front seat" }
+    placement: { pos: [-110, 80, 95] }
+    explode: { dir: [-0.3, 0.3, -1], dist: 120 }
+    ewd: [R210]
+    verification: { placement: estimated, sources: [{ ref: ewd, locator: "414-01 Auxiliary junction box 02/03; 501-10 Memory 02/02" }] }
+    geometry: { gen: box, size: [30, 30, 40], r: 3 }
+
+  # ================================================================ seat harnesses (to the floor harness)
+  - id: driver-seat-harness
+    parent: seat-driver
+    kind: harness
+    name: Driver's seat harness
+    summary: Under-seat harness to the motors, modules, side airbag, pretensioner and sensors; joins the floor harness at the seat connector block under the seat.
+    location: { zone: cabin-front, text: "Under the driver's seat" }
+    harness: { connects: [memory-seat-module, driver-seat-heating-module, seat-position-sensor] }
+    explode: { dir: [0, 0, -1], dist: 100 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 2205, says: "a connector in the main seat harness connector block located under the front seat" }] }
+    geometry: { gen: tube, r: 7, points: [[60, 300, 105], [40, 160, 95], [-20, 40, 95], [-60, 0, 100], [60, -60, 100], [120, -180, 50]] }
+  - id: passenger-seat-harness
+    parent: seat-passenger
+    kind: harness
+    name: Passenger seat harness
+    location: { zone: cabin-front, text: "Under the passenger seat" }
+    harness: { connects: [passenger-seat-heating-module, power-seat-relay] }
+    explode: { dir: [0, 0, -1], dist: 100 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 2205 }] }
+    geometry: { gen: tube, r: 7, points: [[60, -300, 105], [40, -160, 95], [-60, -40, 95], [-110, 60, 95], [80, 80, 100]] }
+
+  # ================================================================ navigation and infotainment
+  - id: navigation-computer
+    kind: part
+    name: Navigation computer (DVD map drive)
+    aliases: [sat nav unit, navigation module, DVD drive]
+    fitment: Satellite navigation
+    summary: Reads the map DVD and calculates the route; on the MOST fibre-optic ring with the touch screen and audio units. Uses the GPS antenna, wheel speeds from the ABS module and, in Europe, TMC traffic messages.
+    location: { zone: cabin-front, text: "Under the right-hand front seat" }
+    access: { from: [cabin-front], notes: "Fixings 6 Nm. Configure a new unit with the approved diagnostic system.", sources: [{ ref: wsm, locator: p. 1629 }] }
+    placement: { pos: [-1560, -430, 380] }
+    contacts: [floor-front-r, seat-passenger]
+    explode: { dir: [0, -0.4, -1], dist: 200 }
+    ewd: [D325]
+    specs: [{ label: Fixings, value: "6 Nm", source: { ref: wsm, locator: p. 1629 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1609, 1629", says: "The navigation computer located under the right-hand front seat, houses the DVD drive" }] }
+    geometry: { gen: enclosure, size: [250, 190, 60], lid: false, sockets: 4, socketFace: x+, mat: steel-black }
+  - id: voice-recognition-module
+    kind: part
+    name: Voice recognition module
+    fitment: Satellite navigation / telephone with voice control
+    summary: Drawn only on the ground distribution sheet, next to the navigation module. The manual does not describe its location; it is shown beside the navigation computer until a reviewer confirms it.
+    location: { zone: cabin-front, text: "Not described in the manual (shown next to the navigation computer)" }
+    placement: { pos: [-1360, -430, 365] }
+    contacts: [floor-front-r, seat-passenger, seat-crossmember-r]
+    explode: { dir: [0, -0.4, -1], dist: 200 }
+    ewd: [D262]
+    verification: { placement: estimated, notes: "Location unknown — placeholder position.", sources: [{ ref: ewd, locator: "414-01 Ground distribution 03/05" }] }
+    geometry: { gen: box, size: [120, 90, 35], r: 4, mat: steel-black }
+  - id: touch-screen-display
+    kind: part
+    name: Touch screen display
+    aliases: [TSD, sat nav screen, centre screen]
+    fitment: Satellite navigation
+    summary: The navigation and infotainment interface in the centre of the instrument panel, on the MOST ring.
+    location: { zone: cabin-dashboard, text: "Centre of the instrument panel" }
+    access: { from: [cabin-front], removeFirst: [audio-head-unit], sources: [{ ref: wsm, locator: p. 1635 }] }
+    placement: { pos: [-1003, 0, 1048], rot: [0, -12, 0] }
+    contacts: [dashboard, audio-head-unit]
+    explode: { dir: [-1, 0, 0.3], dist: 220 }
+    ewd: [D326]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1610, 1635", says: "The touch screen display is located in the center of the instrument panel" }] }
+    geometry: { gen: box, size: [30, 230, 130], r: 6, mat: trim-black }
+  - id: centre-switch-pack
+    kind: part
+    name: Instrument panel centre switch pack
+    aliases: [hazard switch, central locking switch, park aid switch]
+    summary: Row of switches above the touch screen. The wiring diagrams draw the hazard warning switch and the central lock and unlock switches inside it; the parking aid switch is the left-hand switch.
+    location: { zone: cabin-dashboard, text: "Centre of the instrument panel, above the touch screen" }
+    access: { from: [cabin-front] }
+    placement: { pos: [-956, 0, 1126], rot: [0, -35, 0] }
+    contacts: [dashboard]
+    explode: { dir: [-1, 0, 0.5], dist: 220 }
+    ewd: [S425, S121, S319, S381]
+    verification: { sources: [{ ref: wsm, locator: p. 1528, says: "The parking aid switch is located in the instrument panel switch pack, above the touch screen. The switch is the LH switch" }, { ref: ewd, locator: "413-00 01/01; 501-14 Central locking system 01/03" }] }
+    geometry: { gen: box, size: [30, 230, 40], r: 6, mat: interior-trim }
+  - id: ip-speaker
+    kind: part
+    sides: [left, right]
+    name: Instrument panel mid-range speaker
+    fitment: Premium (surround) audio
+    summary: Mid-range speaker in the top of the instrument panel, part of the surround-sound configuration.
+    location: { zone: cabin-dashboard, text: "Top of the instrument panel, near the windscreen corner" }
+    placement: { pos: [-730, 600, 1150] }
+    contacts: [dashboard]
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [F104:l, F103:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1616, says: "2 Mid range speakers mounted on the instrument panel" }] }
+    geometry: { gen: cyl, r: 42, h: 30, axis: z, mat: interior-dark }
+  - id: centre-speaker
+    kind: part
+    name: Centre fill speaker
+    fitment: Premium (surround) audio
+    location: { zone: cabin-dashboard, text: "Centre of the instrument panel top" }
+    placement: { pos: [-730, 0, 1150] }
+    contacts: [dashboard]
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [F187]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1616, says: "1 center fill speaker centrally located in the instrument panel" }] }
+    geometry: { gen: box, size: [80, 150, 30], r: 8, mat: interior-dark }
+  - id: surround-speaker
+    kind: part
+    sides: [left, right]
+    name: Rear surround speaker
+    fitment: Premium (surround) audio
+    location: { zone: cabin-rear, text: "Rear C-pillar trim" }
+    placement: { pos: [-2470, 712, 1300] }
+    contacts: [c-pillar, c-pillar-trim]
+    explode: { dir: [0, -1, 0], dist: 160 }
+    ewd: [F198:l, F199:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1616, says: "2 rear surround speakers mounted in the rear C pillars" }] }
+    geometry: { gen: cyl, r: 40, h: 36, axis: y, mat: interior-dark }
+  - id: subwoofer
+    kind: part
+    name: Subwoofer enclosure
+    fitment: Premium audio
+    location: { zone: luggage, text: "Right-hand rear quarter of the loadspace, behind the trim" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-r], notes: "Remove the RH rear quarter trim panel.", sources: [{ ref: wsm, locator: p. 1622 }] }
+    placement: { pos: [-3150, -630, 820] }
+    explode: { dir: [-0.5, -1, 0.3], dist: 220 }
+    ewd: [F145]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1616, 1622", says: "Rear loadspace mounted sub-woofer enclosure ... Remove the RH rear quarter trim panel" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [240, 130, 220], r: 14, mat: plastic-black }
+        - { gen: cyl, r: 80, h: 8, axis: y, pos: [0, 66, 0], mat: interior-dark }
+  - id: power-amplifier
+    kind: part
+    name: Audio power amplifier
+    aliases: [amplifier, amp, Harman Kardon amplifier]
+    fitment: Harman Kardon / Logic 7 audio
+    summary: Separate amplifier for the premium systems, on the MOST bus. Powers all speakers in the car.
+    location: { zone: luggage, text: "Right-hand rear corner of the luggage compartment" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-r] }
+    placement: { pos: [-3330, -735, 1000] }
+    explode: { dir: [-0.6, -1, 0.3], dist: 240 }
+    ewd: [F142]
+    verification: { sources: [{ ref: wsm, locator: p. 1594, says: "The amplifier is located in the Right Hand (RH) corner of the luggage compartment and is connected to the audio system via the MOST bus" }, { ref: freel2-sound-system }] }
+    geometry: { gen: enclosure, size: [200, 40, 150], fins: true, lid: false, sockets: 3, socketFace: x+, mat: aluminium-cast }
+  - id: telephone-module
+    kind: part
+    name: Bluetooth telephone module
+    aliases: [telephone control module, Bluetooth module]
+    fitment: Bluetooth telephone
+    summary: Links a paired phone to the audio system; uses the overhead microphone and the steering wheel phone buttons.
+    location: { zone: luggage, text: "Behind the right-hand rear quarter trim panel" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-r], notes: "Remove the RH rear quarter trim panel. Fixings 10 Nm; configure a new unit with the approved diagnostic system.", sources: [{ ref: wsm, locator: p. 1626 }] }
+    placement: { pos: [-2950, -722, 1010] }
+    explode: { dir: [-0.3, -1, 0.3], dist: 220 }
+    ewd: [D261]
+    specs: [{ label: Fixings, value: "10 Nm", source: { ref: wsm, locator: p. 1626 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1603, 1626" }] }
+    geometry: { gen: enclosure, size: [130, 35, 90], lid: false, sockets: 2, socketFace: x+ }
+  - id: dab-tuner
+    kind: part
+    name: DAB radio tuner
+    aliases: [digital radio module, DAB receiver]
+    fitment: Digital radio (DAB)
+    summary: Receives DAB band III from the antenna in the left rear quarter glass; on the MOST ring. The wiring diagrams name it DAB/SDARS tuner; SDARS is the North American satellite-radio variant.
+    location: { zone: luggage, text: "Behind the left-hand rear quarter trim panel" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-l], notes: "Remove the LH rear quarter trim panel. M5 fixings 6 Nm, M6 fixings 10 Nm.", sources: [{ ref: wsm, locator: p. 1632 }] }
+    placement: { pos: [-3120, 690, 965] }
+    explode: { dir: [-0.3, 1, 0.3], dist: 220 }
+    ewd: [D350]
+    specs: [{ label: Fixings, value: "M5 6 Nm · M6 10 Nm", source: { ref: wsm, locator: p. 1632 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1632, 1639" }] }
+    geometry: { gen: enclosure, size: [150, 40, 110], lid: false, sockets: 3, socketFace: x+, mat: steel-black }
+  - id: rear-audio-controls
+    kind: part
+    name: Rear seat audio controls and AUX input
+    aliases: [headphone sockets, rear entertainment controls, aux socket]
+    summary: Rear headphone units (left and right) with their own source and volume controls, plus the auxiliary audio input socket, at the rear of the centre console.
+    location: { zone: cabin-centre-console, text: "Rear of the centre console" }
+    access: { from: [cabin-rear], notes: "Remove the coin tray, then the control switch.", sources: [{ ref: wsm, locator: "pp. 1598, 1630" }] }
+    placement: { pos: [-1805, 0, 650] }
+    contacts: [centre-console, restraints-module]
+    explode: { dir: [-1, 0, 0.2], dist: 200 }
+    ewd: [D334, D335, V105]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1594, 1598, 1630", says: "The auxiliary connector is located at the rear of the center console" }] }
+    geometry: { gen: box, size: [24, 190, 80], r: 6, mat: interior-trim }
+
+  # ================================================================ antennas
+  - id: quarter-glass-antenna-amplifier
+    kind: part
+    sides: [left, right]
+    name: Rear quarter glass antenna amplifier
+    summary: The rear quarter windows carry printed antenna elements. The left one receives DAB band III and is shared by the fuel-fired heater remote; the right one is the AM/FM antenna. Each has an amplifier just above the glass, behind the headlining.
+    location: { zone: roof, text: "Above the rear quarter window, behind the headlining" }
+    access: { from: [cabin-rear], notes: "Behind the rear of the headlining." }
+    placement: { pos: [-2800, 640, 1640] }
+    contacts: [cantrail]
+    explode: { dir: [0, 0.5, 1], dist: 160 }
+    ewd: [F221:l, F212:r]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1473, 1639", says: "The AM/FM antenna is etched onto the RH side window glass. The antenna has an amplifier located just above the window ... The LH side window antenna is used for DAB band III signal reception" }, { ref: landyzone-dab-aerial }] }
+    geometry: { gen: box, size: [90, 50, 30], r: 4 }
+  - id: rear-screen-antenna-amplifiers
+    parent: tailgate
+    kind: part
+    name: Rear screen FM diversity and TMC antenna amplifiers
+    summary: The tailgate glass carries two FM antennas, used for diversity reception, and a TMC traffic-message antenna. Their amplifiers sit at the top of the glass under the tailgate upper trim.
+    location: { zone: exterior-rear, text: "Top of the tailgate glass, under the upper trim panel" }
+    access: { from: [luggage], notes: "Remove the liftgate upper trim panel. Fixing 10 Nm.", sources: [{ ref: wsm, locator: p. 1625 }] }
+    explode: { dir: [-1, 0, 0.5], dist: 160 }
+    ewd: [F213, F211]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1608, 1638–1639", says: "The rear window incorporates 2 FM antennae and a VICS/TMC antenna etched onto the glass" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [30, 90, 50], r: 4, pos: [-3455, 250, 1600] }
+        - { gen: box, size: [30, 90, 50], r: 4, pos: [-3455, -250, 1600] }
+  - id: roof-antenna-pod
+    parent: roof
+    kind: part
+    name: Roof antenna pod (GPS)
+    aliases: [shark fin, GPS antenna]
+    fitment: Satellite navigation
+    summary: Roof-mounted pod for the GPS antenna (and the DAB L-band or North American SDARS antennas where fitted), hard-wired to the navigation computer.
+    location: { zone: roof, text: "Rear of the roof" }
+    access: { from: [cabin-rear], notes: "Remove both D-pillar upper trim panels and release the rear of the headlining.", sources: [{ ref: wsm, locator: p. 1627 }] }
+    placement: { pos: [-3200, 0, 1726] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    ewd: [F208]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1608, 1638", says: "The Global Positioning System (GPS) antenna is located on the rear of the vehicle's roof" }] }
+    geometry: { gen: box, size: [170, 75, 45], r: 20, mat: trim-black }
+
+  # ================================================================ trailer and parking aid
+  - id: trailer-module
+    kind: part
+    name: Trailer module
+    aliases: [towing module, trailer ECU, tow bar module]
+    fitment: Factory tow bar electrics
+    summary: Drives the trailer lamps from CAN messages and tells the other systems that a trailer is connected (for example, to disable the rear parking aid). Has a replaceable fuse.
+    location: { zone: luggage, text: "Behind the left-hand rear quarter trim panel" }
+    access: { from: [luggage], removeFirst: [rear-quarter-trim-l], notes: "Remove the LH rear quarter trim panel.", sources: [{ ref: wsm, locator: p. 1677 }] }
+    placement: { pos: [-3270, 700, 880] }
+    explode: { dir: [-0.5, 1, 0.3], dist: 220 }
+    ewd: [D221]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1527, 1677" }] }
+    geometry: { gen: enclosure, size: [140, 40, 100], lid: false, sockets: 3, socketFace: x+ }
+  - id: trailer-socket-relay
+    kind: part
+    name: Trailer socket relay
+    fitment: Factory tow bar electrics (Europe)
+    location: { zone: luggage, text: "Trailer harness in the left-hand rear quarter" }
+    placement: { pos: [-3270, 700, 790] }
+    explode: { dir: [-0.5, 1, 0], dist: 200 }
+    ewd: [R252]
+    verification: { placement: estimated, sources: [{ ref: ewd, locator: "417-01 Trailer socket - Europe 01/01" }] }
+    geometry: { gen: box, size: [30, 30, 40], r: 3 }
+  - id: trailer-pickup
+    kind: part
+    name: Trailer harness pick-up
+    fitment: Factory tow bar electrics
+    summary: Connection point where the tow bar socket harness joins the vehicle harness.
+    location: { zone: exterior-rear, text: "Rear of the vehicle, behind the bumper on the left" }
+    placement: { pos: [-3480, 500, 640] }
+    explode: { dir: [-1, 0.4, -0.3], dist: 200 }
+    ewd: [P124]
+    verification: { placement: estimated, notes: "Not located by the manual.", sources: [{ ref: ewd, locator: "417-01 Trailer socket - Europe 01/01" }] }
+    geometry: { gen: box, size: [50, 40, 30], r: 4, mat: connector-black }
+  - id: front-parking-sensor-outer
+    parent: front-bumper
+    kind: part
+    sides: [left, right]
+    name: Front parking aid sensor (outer)
+    aliases: [PDC sensor, parking sensor]
+    fitment: Front parking aid (option; the rear system is fitted alone or with front sensors)
+    summary: Ultrasonic sensor clipped into a bumper insert that sets its angle. Three-pin connector to the bumper harness.
+    location: { zone: front-end, text: "Front bumper, outer position" }
+    access: { from: [front-end], removeFirst: [front-bumper], notes: "The RH outer sensor needs the bumper cover removed; the LH one is reached through the wheel arch.", sources: [{ ref: wsm, locator: p. 1536 }] }
+    placement: { pos: [858, 600, 470] }
+    explode: { dir: [1, 0.3, 0], dist: 140 }
+    ewd: [T212:l, T211:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1526–1527, 1536", says: "Four ultrasonic sensors are located in the front and rear bumpers. Each sensor comprises a sensor and a bumper insert" }] }
+    geometry: { gen: cyl, r: 11, h: 30, axis: x, mat: plastic-black }
+  - id: front-parking-sensor-inner
+    parent: front-bumper
+    kind: part
+    sides: [left, right]
+    name: Front parking aid sensor (inner)
+    fitment: Front parking aid
+    location: { zone: front-end, text: "Front bumper, inner position" }
+    access: { from: [front-end], removeFirst: [front-bumper], sources: [{ ref: wsm, locator: p. 1535 }] }
+    placement: { pos: [868, 220, 470] }
+    explode: { dir: [1, 0.1, 0], dist: 140 }
+    ewd: [T214:l, T213:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1526, 1535" }] }
+    geometry: { gen: cyl, r: 11, h: 30, axis: x, mat: plastic-black }
+  - id: rear-parking-sensor-outer
+    parent: rear-bumper
+    kind: part
+    sides: [left, right]
+    name: Rear parking aid sensor (outer)
+    fitment: Parking aid
+    location: { zone: exterior-rear, text: "Rear bumper, outer position" }
+    access: { from: [exterior], removeFirst: [rear-bumper], sources: [{ ref: wsm, locator: p. 1534 }] }
+    placement: { pos: [-3598, 600, 640] }
+    explode: { dir: [-1, 0.3, 0], dist: 140 }
+    ewd: [T216:l, T215:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1526, 1534" }] }
+    geometry: { gen: cyl, r: 11, h: 30, axis: x, mat: plastic-black }
+  - id: rear-parking-sensor-inner
+    parent: rear-bumper
+    kind: part
+    sides: [left, right]
+    name: Rear parking aid sensor (inner)
+    fitment: Parking aid
+    location: { zone: exterior-rear, text: "Rear bumper, inner position" }
+    access: { from: [exterior], removeFirst: [rear-bumper], sources: [{ ref: wsm, locator: p. 1537 }] }
+    placement: { pos: [-3612, 220, 640] }
+    explode: { dir: [-1, 0.1, 0], dist: 140 }
+    ewd: [T218:l, T217:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1526, 1537" }] }
+    geometry: { gen: cyl, r: 11, h: 30, axis: x, mat: plastic-black }
+
+  # ================================================================ climate sensors and auxiliary heating
+  - id: passenger-airbag-switch
+    kind: part
+    handed: true
+    name: Passenger airbag deactivation switch
+    aliases: [airbag off switch, airbag key switch, PAD switch]
+    fitment: Specified markets (key-operated)
+    summary: Turned with the emergency key from the remote handset. It changes a ground connection between two pins of the RCM connectors; with the airbag disabled and the seat occupied the RCM lights the deactivation lamp in the overhead console.
+    location: { zone: cabin-dashboard, text: "Passenger end of the instrument panel" }
+    access: { from: [cabin-front] }
+    placement: { pos: [-870, -712, 960] }
+    contacts: [dashboard]
+    explode: { dir: [0, -1, 0], dist: 140 }
+    ewd: [S426]
+    verification:
+      placement: estimated
+      notes: "The manual shows the switch only in its component-location figure (p. 2196); the position is taken from the shared Land Rover switch."
+      sources: [{ ref: wsm, locator: "pp. 2196, 2205", says: "A key-operated passenger air bag disable switch is installed in specified markets ... operated by the emergency key located in the remote control" }]
+    geometry: { gen: box, size: [50, 20, 50], r: 6, mat: trim-black }
+
+  - id: cabin-temperature-sensor
+    kind: part
+    handed: true
+    name: Cabin (in-car) temperature sensor
+    aliases: [in-car temperature sensor, interior temperature sensor]
+    summary: Thermistor fed with a 5 V reference by the ATC module, which reads the returned voltage as cabin air temperature.
+    location: { zone: cabin-dashboard, text: "Behind a grille on the driver's side of the instrument panel, next to the steering column" }
+    placement: { pos: [-998, 230, 1000] }
+    contacts: [dashboard]
+    explode: { dir: [-1, 0, 0], dist: 140 }
+    ewd: [T164]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1352, 1362", says: "Mounted behind a grill on the drivers side of the instrument panel, adjacent the steering column" }] }
+    geometry: { gen: box, size: [16, 40, 25], r: 3, mat: interior-trim }
+  - id: sunload-sensor
+    kind: part
+    name: Sunload sensor
+    aliases: [solar sensor, sunlight sensor]
+    summary: Photoelectric cell giving the CJB the light intensity, used by the climate control and (with the rain/light sensor) the automatic lamps.
+    location: { zone: cabin-dashboard, text: "Centre of the instrument panel upper surface" }
+    access: { from: [cabin-front], notes: "Connected under the instrument panel upper section.", sources: [{ ref: wsm, locator: p. 2017 }] }
+    placement: { pos: [-850, 0, 1172] }
+    contacts: [dashboard]
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [T166]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1352, 1363", says: "The sunload sensor is mounted in the center of the instrument panel upper surface" }] }
+    geometry: { gen: cyl, r: 16, h: 14, axis: z, mat: trim-black }
+  - id: air-quality-sensor
+    kind: part
+    handed: true
+    name: Air quality (pollution) sensor
+    aliases: [pollution sensor, AQS]
+    fitment: Automatic climate control with air quality sensing
+    summary: Measures pollution in the incoming air so the ATC can switch to recirculation; on the LIN bus.
+    location: { zone: cabin-passenger-footwell, text: "Right-hand side of the heater assembly, at the air intake (behind the CJB on LHD)" }
+    access: { from: [cabin-front], removeFirst: [cjb], sources: [{ ref: wsm, locator: p. 1390 }] }
+    placement: { pos: [-700, -470, 690] }
+    contacts: [heater-assembly, cjb, dashboard]
+    explode: { dir: [0, -1, 0.3], dist: 160 }
+    ewd: [T306]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1352, 1390, 1801", says: "Pollution sensor RH side of the heater casing" }] }
+    geometry: { gen: box, size: [40, 50, 40], r: 4 }
+  - id: electric-booster-heater
+    parent: heater-assembly
+    kind: part
+    name: Electric booster heater (PTC)
+    aliases: [PTC heater, auxiliary electric heater]
+    fitment: Diesel vehicles with electric booster heater
+    summary: Ceramic-coated thermistor elements and a microcontroller that heat the air leaving the heater assembly, up to 1.25 kW. The CJB drives it with a PWM signal on request from the ATC; it needs a minimum blower speed and is cut back under electrical load management. Cars with this heater and a heated windscreen get a 180 A generator.
+    location: { zone: cabin-centre-console, text: "Heater assembly outlet, at the front of the floor console" }
+    access: { from: [cabin-front], removeFirst: [gear-lever, centre-console], notes: "Remove the gear lever and both floor console extensions. Fixings 2 Nm.", sources: [{ ref: wsm, locator: "pp. 1484–1485" }] }
+    placement: { pos: [-800, 0, 560] }
+    contacts: [centre-console, tunnel, dashboard]
+    explode: { dir: [-1, 0, -0.3], dist: 200 }
+    ewd: [H137]
+    specs:
+      - { label: Maximum output, value: "1.25 kW", source: { ref: wsm, locator: p. 1481 } }
+      - { label: Fixings, value: "2 Nm", source: { ref: wsm, locator: p. 1485 } }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1480–1481, 1484" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [60, 220, 80], r: 4, mat: aluminium-machined }
+        - { gen: box, size: [30, 60, 40], r: 4, pos: [-40, 80, 0], mat: plastic-black }
+  - id: ffbh-coolant-pump
+    parent: heater-assembly
+    kind: part
+    name: Fuel-fired heater coolant pump
+    aliases: [auxiliary coolant pump, FFBH water pump]
+    fitment: Fuel-fired booster heater
+    summary: Electric pump that keeps coolant flowing through the fuel-fired heater and heater core while the heater runs. On Stop/Start cars with a fuel-fired heater it also circulates coolant while the engine is stopped (activated through the heater by the CJB).
+    location: { zone: engine-bay-rear, text: "At the heater pipes on the bulkhead, behind the secondary bulkhead centre panel" }
+    access: { from: [bonnet], notes: "Remove the secondary bulkhead centre panel.", sources: [{ ref: wsm, locator: p. 1488 }] }
+    placement: { pos: [-420, 80, 690] }
+    contacts: [bulkhead, heater-hoses]
+    explode: { dir: [1, 0, 0.5], dist: 200 }
+    ewd: [M202]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1470, 1488", says: "The auxiliary coolant pump is mounted on the heater casing and is used to assist coolant flow through the FFBH and the heater core" }] }
+    geometry: { gen: cyl, r: 30, h: 110, axis: y, mat: plastic-black }
+  - id: fuel-fired-heater
+    kind: part
+    name: Fuel-fired booster heater (FFBH)
+    aliases: [FFBH, Webasto heater, diesel heater, auxiliary heater]
+    fitment: Fuel-fired booster heater (diesel; remote control from 2009 MY on some markets)
+    summary: Burns diesel to heat engine coolant in the heater supply line, compensating for the diesel's slow warm-up. Contains a combustion-air fan, glow plug and burner, heat exchanger and temperature sensors; talks to the ATC module on the medium-speed CAN bus.
+    location: { zone: wheel-arch-front-right, text: "Behind the RH front fender splash shield" }
+    access: { from: [wheel-arch-front-right], removeFirst: [arch-liner-front-r], notes: "Remove the RH fender splash shield. Fixings 10 Nm.", sources: [{ ref: wsm, locator: "pp. 1486–1487" }] }
+    placement: { pos: [600, -690, 300] }
+    contacts: [arch-liner-front-r, front-bumper, front-longitudinal-r]
+    explode: { dir: [0.5, -1, -0.3], dist: 260 }
+    ewd: [H115]
+    specs: [{ label: Fixings, value: "10 Nm", source: { ref: wsm, locator: p. 1486 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1466, 1468–1469, 1486", says: "The unit is located behind the Right Hand (RH) front fender splash shield and heats engine coolant" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 55, h: 210, axis: x, mat: aluminium-cast }
+        - { gen: box, size: [80, 90, 70], r: 8, pos: [-100, 0, 30], mat: plastic-black }
+  - id: ffbh-fuel-pump
+    kind: part
+    name: Fuel-fired heater dosing pump
+    aliases: [FFBH fuel pump, auxiliary fuel pump]
+    fitment: Fuel-fired booster heater
+    summary: Solenoid piston pump that meters fuel to the fuel-fired heater; filter insert at the inlet, non-return valve at the outlet.
+    location: { zone: underbody-centre, text: "Right-hand side of the fuel tank" }
+    access: { from: [underside], sources: [{ ref: wsm, locator: "pp. 1482–1483" }] }
+    placement: { pos: [-2000, -610, 350] }
+    contacts: [fuel-tank]
+    explode: { dir: [0, -1, -0.5], dist: 200 }
+    ewd: [H111]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1467–1468", says: "The auxiliary fuel pump is mounted on the RH side of the fuel tank and regulates the fuel supply to the FFBH" }] }
+    geometry: { gen: cyl, r: 18, h: 90, axis: x, mat: steel-black }
+  - id: washer-jet
+    parent: bonnet
+    kind: part
+    sides: [left, right]
+    name: Windscreen washer jet (heated)
+    fitment: Heated washer jets (cold-climate specification)
+    summary: Washer jet with a heating element, fed from the BJB, that stops the nozzle freezing. Its harness joins the body harness near the headlamp.
+    location: { zone: engine-bay, text: "Rear edge of the bonnet" }
+    access: { from: [bonnet], sources: [{ ref: wsm, locator: p. 1714 }] }
+    placement: { pos: [-390, 300, 1078] }
+    explode: { dir: [0, 0, 1], dist: 120 }
+    ewd: [H127:l, H128:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1714, says: "Connect the heated washer jet electrical connection and secure the harness to the vehicle body" }] }
+    geometry: { gen: box, size: [40, 25, 18], r: 4 }
+
+  # ================================================================ interior lighting, mirrors and sockets
+  - id: overhead-console
+    kind: part
+    name: Overhead console (front interior lamp)
+    aliases: [front interior lamp, map lamps, courtesy lamp, roof console]
+    summary: Front interior lamp with map-reading lamps from 2009 MY. It also houses the hands-free microphone, the passenger airbag deactivation lamp and the sunroof switch. The CJB controls the interior lamps; a 3-position rocker overrides courtesy operation.
+    location: { zone: roof, text: "Headlining, between the sun visors, near the interior mirror" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: "pp. 1995–1996" }] }
+    placement: { pos: [-1235, 0, 1612] }
+    contacts: [roof-bows]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [B100, F172, J214, S171]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1603, 1680, 2205", says: "The microphone is located in the overhead console which surrounds the front interior lamp ... warning light, located in the roof console near the interior rear view mirror" }] }
+    geometry: { gen: box, size: [200, 220, 36], r: 12, mat: interior-trim }
+  - id: rear-interior-lamp
+    kind: part
+    name: Rear interior lamp
+    location: { zone: roof, text: "Headlining over the rear seats, next to the RF receiver" }
+    placement: { pos: [-2540, 0, 1648] }
+    contacts: [roof-bows]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [B104]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1679–1680" }] }
+    geometry: { gen: box, size: [120, 160, 24], r: 10, mat: lens-clear }
+  - id: loadspace-lamp
+    kind: part
+    name: Luggage compartment lamp
+    location: { zone: luggage, text: "Luggage compartment side trim" }
+    placement: { pos: [-3240, 760, 1010] }
+    explode: { dir: [0, 1, 0], dist: 140 }
+    ewd: [B140]
+    verification: { placement: estimated, notes: "Side not stated in the manual.", sources: [{ ref: wsm, locator: "pp. 1678, 1680" }] }
+    geometry: { gen: box, size: [90, 20, 40], r: 6, mat: lens-clear }
+  - id: footwell-lamp
+    kind: part
+    sides: [left, right]
+    name: Front footwell lamp
+    location: { zone: cabin-driver-footwell, text: "Under the instrument panel lower edge" }
+    placement: { pos: [-960, 660, 905] }
+    contacts: [dashboard]
+    explode: { dir: [0, 0, -1], dist: 120 }
+    ewd: [B136:l, B135:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1678, 1680" }] }
+    geometry: { gen: box, size: [50, 40, 18], r: 4, mat: lens-clear }
+  - id: sun-visor
+    kind: part
+    sides: [left, right]
+    name: Sun visor with illuminated vanity mirror
+    location: { zone: roof, text: "Headlining above the windscreen" }
+    placement: { pos: [-1240, 370, 1605] }
+    contacts: [roof-bows]
+    material: interior-trim
+    explode: { dir: [0, 0, -1], dist: 140 }
+    ewd: [B152:l, B153:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1678–1680" }] }
+    geometry: { gen: box, size: [170, 340, 22], r: 10 }
+  - id: interior-mirror
+    kind: part
+    name: Interior mirror (automatic dimming)
+    aliases: [rear view mirror, electrochromic mirror, auto-dimming mirror]
+    summary: Electrochromic glass that darkens against glare; it clears when reverse is selected (on manual cars, signalled by the reverse lamp switch through the CJB). Depending on specification its rear casing also holds the cabin humidity sensor used for automatic demisting.
+    location: { zone: cabin-front, text: "Windscreen, below the rain sensor" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: p. 1897 }] }
+    placement: { pos: [-1150, 0, 1545] }
+    contacts: [rain-sensor, windscreen]
+    explode: { dir: [-1, 0, -0.3], dist: 160 }
+    ewd: [B179]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1358, 1889–1891", says: "the automatic dimming interior mirror may also incorporate a cabin humidity sensor" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [40, 260, 72], r: 14, pos: [-15, 0, -10], mat: trim-black }
+        - { gen: box, size: [70, 40, 30], r: 8, pos: [55, 0, 40], mat: trim-black }
+  - id: front-power-socket
+    kind: part
+    name: Front cigar lighter / power socket
+    location: { zone: cabin-centre-console, text: "Front of the centre console" }
+    placement: { pos: [-1040, -70, 690] }
+    contacts: [centre-console]
+    explode: { dir: [1, 0, 0.3], dist: 140 }
+    ewd: [J112]
+    verification: { placement: estimated, sources: [{ ref: ewd, locator: "413-00 01/01" }] }
+    geometry: { gen: cyl, r: 14, h: 50, axis: x, mat: chrome }
+  - id: rear-power-socket
+    kind: part
+    name: Rear power socket
+    aliases: [rear cigar lighter, rear accessory socket]
+    summary: Socket at the rear of the centre console. The wiring diagrams draw it as a rear cigar lighter or an accessory socket on the same connector.
+    location: { zone: cabin-centre-console, text: "Rear of the centre console" }
+    placement: { pos: [-1805, 0, 580] }
+    contacts: [centre-console, restraints-module]
+    explode: { dir: [-1, 0, 0], dist: 140 }
+    ewd: [J113, V113]
+    verification: { placement: estimated, sources: [{ ref: ewd, locator: "501-12 INSTRUMENT PANEL AND CONSOLE 01/01" }] }
+    geometry: { gen: cyl, r: 14, h: 40, axis: x, mat: chrome }
+  - id: sunroof-motor
+    kind: part
+    name: Roof opening panel motor and control module
+    aliases: [sunroof motor, sunroof module]
+    fitment: Tilting / sliding roof opening panel
+    summary: Motor with integral control unit at the front of the roof opening. It drives the glass panel and must be synchronised after replacement or power loss. The roof is not part of the global closing feature.
+    location: { zone: roof, text: "Front of the roof opening, above the headlining" }
+    access: { from: [cabin-front], notes: "Reached with the headlining lowered. Motor Torx screws 5 Nm.", sources: [{ ref: wsm, locator: "pp. 2085, 2120–2124" }] }
+    placement: { pos: [-1420, 0, 1652] }
+    contacts: [roof, roof-bows]
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [D117, D173]
+    specs: [{ label: Motor Torx screws, value: "5 Nm", source: { ref: wsm, locator: p. 2085 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1869, 2085, 2121" }] }
+    geometry: { gen: box, size: [120, 160, 36], r: 6 }
+
+  # ================================================================ engine sensor
+  - id: fuel-temperature-sensor
+    parent: engine-assembly
+    kind: part
+    name: Fuel temperature sensor
+    aliases: [fuel rail temperature sensor]
+    summary: Thermistor in the fuel circuit on top of the engine; the ECM corrects injection quantity for fuel density. Reached after removing the engine cover.
+    location: { zone: engine-bay, text: "Top of the engine, at the fuel rail end (under the engine cover)" }
+    access: { from: [bonnet], removeFirst: [engine-cover], tools: [Blanking caps], notes: "Clean the area first and wait a minute after stopping the engine before opening the fuel system. Fixing 10 Nm.", sources: [{ ref: wsm, locator: "pp. 1010–1011" }] }
+    placement: { pos: [30, 150, 400] }
+    explode: { dir: [0, 0.5, 1], dist: 160 }
+    ewd: [T125]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1010, 1306" }] }
+    geometry: { gen: cyl, r: 10, h: 40, axis: z, mat: connector-grey }
+
+  # ================================================================ harness trunks reaching these parts (routes estimated)
+  - id: floor-harness-rh
+    kind: harness
+    name: Floor harness, right-hand side
+    summary: From the CJB down the right-hand sill to the right-hand rear quarter (navigation computer, telephone module, amplifier, subwoofer, fuel-fired heater pump).
+    location: { zone: cabin-front, text: "Under the right-hand sill trim and carpet" }
+    harness: { connects: [cjb, telephone-module, power-amplifier] }
+    explode: { dir: [0, -1, -0.3], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 10, points: [[-900, -560, 600], [-950, -720, 470], [-1500, -735, 425], [-2200, -735, 430], [-2550, -660, 600], [-2900, -700, 940], [-3250, -700, 940]] }
+  - id: console-harness
+    kind: harness
+    name: Floor console harness
+    summary: From the instrument panel harness down the centre stack and along the tunnel inside the floor console (RCM, sensor cluster, sockets, rear audio controls).
+    location: { zone: cabin-centre-console, text: "Inside the floor console, on the tunnel" }
+    harness: { connects: [ip-harness, restraints-module, sensor-cluster, rear-audio-controls] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 9, points: [[-830, 0, 910], [-900, 60, 760], [-1060, 60, 560], [-1300, 60, 520], [-1700, 60, 520], [-1790, 0, 600]] }
+  - id: engine-bay-harness-rh
+    kind: harness
+    name: Engine compartment harness, right-hand side
+    summary: Along the right-hand apron from the front end to the bulkhead (coolant tank, A/C pressure sensor, washer pump, fuel-fired heater).
+    location: { zone: engine-bay-right, text: "Right-hand apron" }
+    harness: { connects: [coolant-expansion-tank] }
+    explode: { dir: [0, -0.5, 1], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 8, points: [[690, -600, 760], [450, -640, 820], [100, -680, 900], [-300, -650, 930], [-480, -580, 900], [-700, -560, 760]] }
+  - id: front-door-harness
+    parent: front-door
+    kind: harness
+    name: Front door harness
+    summary: Passes from the A-pillar through the hinge-side grommet to the door module, window motor, latch, mirror and speakers.
+    location: { zone: exterior-side, text: "Front door, from the A-pillar grommet to the door module" }
+    harness: { connects: [front-door-electrics] }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 8, points: [[-760, 720, 560], [-705, 820, 720], [-760, 812, 800], [-880, 805, 820]] }
+  - id: rear-door-harness
+    parent: rear-door
+    kind: harness
+    name: Rear door harness
+    location: { zone: exterior-side, text: "Rear door, from the B-pillar grommet to the door module" }
+    harness: { connects: [rear-door-electrics] }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 7, points: [[-1500, 740, 440], [-1545, 835, 700], [-1700, 818, 800], [-1830, 812, 820]] }
+  - id: tailgate-harness
+    parent: tailgate
+    kind: harness
+    name: Tailgate harness
+    summary: From the roof harness through the hinge-side grommet down the tailgate to the wiper motor, high-mounted stop lamp, latch, handle switch and number-plate lamps.
+    location: { zone: exterior-rear, text: "Inside the tailgate" }
+    harness: { connects: [tailgate-handle, tailgate-latch, rear-wiper-motor, rear-screen-antenna-amplifiers] }
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 7, points: [[-3330, 300, 1650], [-3440, 280, 1630], [-3470, 150, 1560], [-3520, 0, 1300], [-3555, 0, 950]] }
+  - id: front-bumper-harness
+    parent: front-bumper
+    kind: harness
+    name: Front bumper harness
+    summary: Clipped inside the bumper cover to the parking aid sensors and fog lamps; joins the front-end harness at the left-hand side.
+    location: { zone: front-end, text: "Inside the front bumper cover" }
+    harness: { connects: [front-parking-sensor-outer-l, front-parking-sensor-inner-l, front-parking-sensor-inner-r, front-parking-sensor-outer-r] }
+    explode: { dir: [1, 0, 0], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1527, says: "Each sensor has a three pin connector which mates with a bumper harness" }] }
+    geometry: { gen: tube, r: 6, points: [[690, 600, 700], [760, 640, 520], [838, 600, 470], [850, 220, 470], [850, -220, 470], [838, -600, 470]] }
+  - id: rear-body-harness
+    kind: harness
+    name: Rear body harness
+    summary: From the auxiliary junction box round the rear panel to both tail lamps, the luggage compartment modules and the rear bumper harness.
+    location: { zone: luggage, text: "Behind the luggage compartment trim and rear panel" }
+    harness: { connects: [rear-junction-box, trailer-module] }
+    explode: { dir: [-1, 0, 0.3], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1555 }] }
+    geometry: { gen: tube, r: 9, points: [[-2830, 420, 655], [-3100, 650, 780], [-3380, 720, 880], [-3450, 720, 1020], [-3500, 500, 720], [-3500, -500, 720], [-3380, -720, 880], [-3450, -720, 1020]] }
+  - id: rear-bumper-harness
+    parent: rear-bumper
+    kind: harness
+    name: Rear bumper harness
+    location: { zone: exterior-rear, text: "Inside the rear bumper cover" }
+    harness: { connects: [rear-parking-sensor-outer-l, rear-parking-sensor-inner-l, rear-parking-sensor-inner-r, rear-parking-sensor-outer-r] }
+    explode: { dir: [-1, 0, 0], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1527 }] }
+    geometry: { gen: tube, r: 6, points: [[-3500, 500, 720], [-3570, 600, 650], [-3585, 220, 650], [-3585, -220, 650], [-3570, -600, 650]] }

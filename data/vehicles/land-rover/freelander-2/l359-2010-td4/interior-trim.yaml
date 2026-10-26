@@ -1,0 +1,204 @@
+# Interior trim, rear seat belts and the bonnet release: the panels a mechanic
+# removes to reach modules, sensors and harnesses. Each has a removal
+# procedure in the workshop manual (cited by page); positions follow the
+# structure they cover and are estimated.
+system: interior
+defaults:
+  material: interior-trim
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- pillar and side trims
+  - id: a-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: A-pillar trim panel
+    summary: Covers the A-pillar and the front end of the side curtain airbag; held by clips and one Torx screw.
+    location: { zone: cabin-front, text: "Inside the A-pillar" }
+    access: { from: [cabin-front], notes: "Torx screw 3 Nm. The curtain airbag deploys behind it; refit the airbag deflector bracket (9 Nm).", sources: [{ ref: wsm, locator: "pp. 1839, 1844" }] }
+    contacts: [a-pillar, curtain-airbag, dashboard]
+    explode: { dir: [0, -1, 0.3], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1839, 1844" }] }
+    geometry: { gen: tube, r: 24, points: [[-700, 758, 1140], [-900, 712, 1380], [-1075, 660, 1565]] }
+  - id: b-pillar-trim-upper
+    kind: part
+    sides: [left, right]
+    name: B-pillar upper trim panel
+    summary: Covers the upper B-pillar and the front seat belt height adjuster.
+    location: { zone: cabin-front, text: "Inside the B-pillar, above the belt line" }
+    access: { from: [cabin-front], notes: "Torx bolt 25 Nm.", sources: [{ ref: wsm, locator: "pp. 1839, 1846" }] }
+    contacts: [b-pillar, front-seat-belts, curtain-airbag]
+    explode: { dir: [0, -1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1839, 1846" }] }
+    geometry: { gen: tube, r: 28, points: [[-1490, 780, 1060], [-1494, 700, 1555]] }
+  - id: b-pillar-trim-lower
+    kind: part
+    sides: [left, right]
+    name: B-pillar lower trim panel
+    summary: Covers the lower B-pillar and the front seat belt retractor.
+    location: { zone: cabin-front, text: "Inside the B-pillar, below the belt line" }
+    access: { from: [cabin-front], removeFirst: [front-scuff-plate], sources: [{ ref: wsm, locator: p. 1845 }] }
+    contacts: [b-pillar, front-seat-belts, side-impact-sensor-b-pillar, sill]
+    explode: { dir: [0, -1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: p. 1845 }] }
+    geometry: { gen: tube, r: 30, points: [[-1490, 790, 520], [-1490, 775, 1040]] }
+  - id: front-scuff-plate
+    kind: part
+    sides: [left, right]
+    name: Front scuff plate trim panel
+    aliases: [sill trim, kick plate, tread plate]
+    summary: Trim along the front door sill; it covers the B-pillar side impact sensor and the harness running along the sill.
+    location: { zone: cabin-front, text: "Front door sill" }
+    access: { from: [cabin-front], sources: [{ ref: wsm, locator: "pp. 1861–1862" }] }
+    contacts: [sill, side-impact-sensor-b-pillar, b-pillar-trim-lower]
+    explode: { dir: [0, 0, 1], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1861–1862" }] }
+    geometry: { gen: box, size: [980, 70, 18], r: 6, pos: [-990, 770, 470] }
+  - id: c-pillar-trim-inner
+    kind: part
+    sides: [left, right]
+    name: C-pillar trim panel (interior)
+    location: { zone: cabin-rear, text: "Inside the C-pillar, behind the rear door" }
+    access: { from: [cabin-rear], notes: "Upper Torx screw 3 Nm.", sources: [{ ref: wsm, locator: "pp. 1839, 1849" }] }
+    contacts: [c-pillar, surround-speaker, curtain-airbag, side-impact-sensor-c-pillar]
+    explode: { dir: [0, -1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1839, 1849" }] }
+    geometry: { gen: tube, r: 30, points: [[-2440, 765, 1000], [-2445, 700, 1550]] }
+  - id: d-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: D-pillar trim panel
+    location: { zone: luggage, text: "Inside the D-pillar, beside the tailgate opening" }
+    access: { from: [luggage], sources: [{ ref: wsm, locator: "pp. 1852–1854" }] }
+    contacts: [d-pillar-inner, tailgate-gas-strut]
+    explode: { dir: [0, -1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1852–1854" }] }
+    geometry: { gen: tube, r: 30, points: [[-3380, 800, 1000], [-3372, 690, 1600]] }
+  - id: rear-quarter-trim
+    kind: part
+    sides: [left, right]
+    name: Rear quarter trim panel (luggage compartment side)
+    aliases: [boot side trim, luggage side trim]
+    summary: Side trim of the luggage compartment. Behind it are the parking aid module, DAB tuner and trailer module (left), and the amplifier, subwoofer and Bluetooth module (right).
+    location: { zone: luggage, text: "Side of the luggage compartment, each side" }
+    access: { from: [luggage], notes: "Loadspace securing ring 25 Nm.", sources: [{ ref: wsm, locator: "pp. 1839, 1840–1843" }] }
+    material: interior-dark
+    contacts: [rear-quarter, c-pillar, d-pillar-inner, arch-liner-rear, rear-strut]
+    explode: { dir: [0, -1, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1840–1843" }] }
+    geometry: { gen: box, size: [1000, 22, 460], r: 12, pos: [-2920, 545, 940] }
+  - id: headliner
+    kind: part
+    name: Headlining
+    aliases: [headliner, roof lining]
+    summary: Moulded roof lining. The rain sensor, interior lamps, RF receiver, intrusion sensor, antenna amplifiers and the sunroof motor are reached by lowering it; vehicles with and without a roof opening panel have different headlinings.
+    location: { zone: roof, text: "Under the roof panel" }
+    access: { from: [cabin-front], removeFirst: [a-pillar-trim-l, a-pillar-trim-r, b-pillar-trim-upper-l, b-pillar-trim-upper-r, sun-visor-l, sun-visor-r, overhead-console], sources: [{ ref: wsm, locator: "pp. 1863–1881" }] }
+    contacts: [roof-bows, cantrail-l, cantrail-r, roof, overhead-console, rear-interior-lamp, rf-receiver, intrusion-sensor, sunroof-motor, sun-visor-l, sun-visor-r, quarter-glass-antenna-amplifier-l, quarter-glass-antenna-amplifier-r, rain-sensor]
+    explode: { dir: [0, 0, -1], dist: 240 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1863–1881" }] }
+    geometry: { gen: box, size: [2220, 1280, 8], r: 30, pos: [-2280, 0, 1630] }
+
+  # ---------------------------------------------------------------- door and tailgate trims
+  - id: front-door-trim-panel
+    parent: front-door
+    kind: part
+    name: Front door trim panel
+    summary: Inner door panel with the armrest and switch pack; it covers the door module, window regulator, latch and speaker.
+    location: { zone: exterior-side, text: "Inside face of the front door" }
+    access: { from: [exterior], sources: [{ ref: wsm, locator: "pp. 1858–1860" }] }
+    material: interior-dark
+    explode: { dir: [0, -1, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1858–1860" }] }
+    geometry: { gen: box, size: [920, 30, 520], r: 30, pos: [-980, 752, 780] }
+  - id: rear-door-trim-panel
+    parent: rear-door
+    kind: part
+    name: Rear door trim panel
+    location: { zone: exterior-side, text: "Inside face of the rear door" }
+    access: { from: [exterior], sources: [{ ref: wsm, locator: "pp. 1883–1885" }] }
+    material: interior-dark
+    explode: { dir: [0, -1, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1883–1885" }] }
+    geometry: { gen: box, size: [595, 30, 430], r: 30, pos: [-1852, 762, 815] }
+  - id: liftgate-trim-panel
+    parent: tailgate
+    kind: part
+    name: Tailgate trim panel
+    location: { zone: luggage, text: "Inside face of the tailgate" }
+    access: { from: [luggage], notes: "Trim fixing 1 Nm.", sources: [{ ref: wsm, locator: "pp. 1839, 1882" }] }
+    material: interior-dark
+    explode: { dir: [1, 0, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1839, 1882" }] }
+    geometry: { gen: box, size: [30, 1100, 470], r: 20, pos: [-3445, 0, 1140] }
+
+  # ---------------------------------------------------------------- rear seat belts
+  - id: rear-seat-belts
+    kind: part
+    sides: [left, right]
+    name: Rear outer seat belt and retractor
+    location: { zone: cabin-rear, text: "Retractor behind the C-pillar trim; buckle on the rear seat frame" }
+    access: { from: [cabin-rear], removeFirst: [c-pillar-trim-inner], notes: "Retractor 40 Nm; upper and lower anchors 40 Nm.", sources: [{ ref: wsm, locator: "pp. 2166, 2192" }] }
+    contacts: [c-pillar, c-pillar-trim-inner, rear-seat, floor-rear-seat, surround-speaker, curtain-airbag]
+    explode: { dir: [0, -1, 0.2], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2166, 2168–2169, 2192" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [70, 60, 120], r: 8, pos: [-2475, 690, 1060], mat: steel-black }
+        - { gen: tube, r: 3, points: [[-2475, 690, 1120], [-2470, 650, 1400], [-2300, 520, 900], [-2180, 420, 600]], mat: interior-fabric }
+  - id: rear-centre-seat-belt
+    kind: part
+    name: Rear centre seat belt and retractor
+    location: { zone: cabin-rear, text: "Retractor in the rear seat backrest" }
+    access: { from: [cabin-rear], notes: "Retractor Torx bolt 35 Nm; buckle and lower anchor 55 Nm.", sources: [{ ref: wsm, locator: "pp. 2166, 2178" }] }
+    contacts: [rear-seat]
+    explode: { dir: [0, 0, 1], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2166, 2178" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [60, 70, 90], r: 8, pos: [-2390, 120, 1120], mat: steel-black }
+        - { gen: tube, r: 3, points: [[-2390, 120, 1160], [-2300, 0, 900], [-2180, -150, 600]], mat: interior-fabric }
+  - id: rear-seat-belt-buckles
+    kind: part
+    name: Rear seat belt buckles
+    location: { zone: cabin-rear, text: "Between the rear seat cushion and backrest" }
+    access: { from: [cabin-rear], removeFirst: [rear-seat], sources: [{ ref: wsm, locator: "pp. 2169, 2191" }] }
+    contacts: [rear-seat]
+    explode: { dir: [0, 0, 1], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2169, 2191", says: "The buckles for the second row safety belts are attached to the related seat frame" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [40, 30, 70], r: 6, pos: [-2160, 420, 580], mat: trim-black }
+        - { gen: box, size: [40, 30, 70], r: 6, pos: [-2160, 40, 580], mat: trim-black }
+        - { gen: box, size: [40, 30, 70], r: 6, pos: [-2160, -330, 580], mat: trim-black }
+
+  # ---------------------------------------------------------------- bonnet release
+  - id: bonnet-release-handle
+    kind: part
+    handed: true
+    name: Bonnet release handle
+    aliases: [hood release]
+    location: { zone: cabin-driver-footwell, text: "Driver's footwell, on the side trim" }
+    access: { from: [cabin-front], notes: "Handle bolt 10 Nm.", sources: [{ ref: wsm, locator: p. 2038 }] }
+    material: interior-dark
+    contacts: [dashboard]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: p. 2038 }] }
+    geometry: { gen: box, size: [70, 34, 40], r: 8, pos: [-700, 700, 620] }
+  - id: bonnet-release-cable
+    kind: harness
+    handed: true
+    name: Bonnet release cable
+    summary: Bowden cable from the release handle through the bulkhead and along the inner wing to the two bonnet latches.
+    location: { zone: engine-bay-left, text: "Driver's footwell, through the bulkhead, along the inner wing to the front" }
+    material: steel-black
+    explode: { dir: [0, 0, 1], dist: 100 }
+    verification: { sources: [{ ref: wsm, locator: p. 2038 }] }
+    geometry: { gen: tube, r: 3, points: [[-700, 700, 620], [-560, 730, 700], [-250, 735, 820], [300, 690, 800], [700, 460, 795], [760, 330, 800]] }

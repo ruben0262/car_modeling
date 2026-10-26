@@ -1,0 +1,284 @@
+# Interior, controls and restraints — authored for LEFT-hand drive (EU).
+# Parts marked `handed: true` are reflected automatically for a RHD variant.
+system: interior
+defaults:
+  verification:
+    geometry: placeholder
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+    notes: Interior trim is blocked out for orientation only.
+
+nodes:
+  - id: dashboard
+    kind: part
+    name: Instrument panel
+    aliases: [dash, fascia, IP, dashboard]
+    summary: Carried on the cross-car beam; houses the passenger airbag, heater assembly, centre stack and glovebox.
+    location: { zone: cabin-dashboard, text: "Across the front of the cabin" }
+    explode: { dir: [0.4, 0, 1], dist: 260 }
+    material: interior-dark
+    contacts: [dash-crossbeam, cjb, heater-assembly, headlamp-levelling-module, light-switch-module, start-control-unit, diagnostic-socket]
+    specs: [{ label: Carrier fixings, value: "Top and bottom fixing holes 1447 mm apart", source: { ref: wsm, locator: p. 2253 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1993–1994, 2253" }] }
+    geometry:
+      gen: prism
+      plane: xz
+      thickness: 1430
+      bevel: 18
+      outline: [[-680, 1120], [-740, 1182], [-880, 1172], [-1000, 1085], [-1012, 985], [-905, 860], [-760, 720], [-690, 700], [-680, 820]]
+
+  - id: glovebox
+    kind: part
+    name: Glove compartment
+    aliases: [glovebox, glove box]
+    handed: true
+    location: { zone: cabin-passenger-footwell, text: "Passenger side of the instrument panel; the CJB is behind it" }
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    material: interior-trim
+    contacts: [dashboard, cjb, dash-crossbeam]
+    ewd: [B109]
+    verification: { sources: [{ ref: wsm, locator: p. 1737 }] }
+    geometry: { gen: box, size: [140, 380, 170], r: 12, pos: [-930, -430, 820] }
+
+  - id: instrument-cluster
+    kind: part
+    name: Instrument cluster with message centre
+    aliases: [dials, speedometer, IPC, message centre]
+    summary: Tachometer left (to 6000 rpm on diesels), speedometer right, temperature and fuel gauges and the message centre in the middle.
+    location: { zone: cabin-dashboard, text: "Behind the steering wheel (left on LHD)" }
+    handed: true
+    explode: { dir: [-0.4, 0, 1], dist: 320 }
+    contacts: [dashboard]
+    placement: { pos: [-960, 380, 1130], rot: [0, -20, 0] }
+    ewd: [D107, D347, J114, J139, J198, G171]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1495–1506, 1517" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [70, 330, 130], r: 16, mat: interior-trim }
+        - { gen: box, size: [6, 300, 104], r: 10, pos: [-36, 0, 0], mat: glass }
+
+  - id: steering-wheel
+    kind: assembly
+    name: Steering wheel, driver airbag and switch modules
+    aliases: [wheel, steering]
+    location: { zone: cabin-front, text: "Driver's side (left on LHD)" }
+    access: { from: [cabin-front], notes: "Airbag module — follow the SRS disarming procedure first." }
+    handed: true
+    explode: { dir: [-1, 0, 0.5], dist: 360 }
+    placement: { pos: [-1110, 380, 1010], rot: [0, 25, 0] }
+    ewd: [D407, D256, D257, S340, S341, Y202, Y263, Y264, Y265, Y266, Y267, Y276, Y277, Y278, Y279, Y280, Y281, Y282, Y283]
+    verification: { sources: [{ ref: wsm, locator: "pp. 341, 395–397" }] }
+  - { id: steering-wheel-rim, parent: steering-wheel, kind: part, name: Steering wheel, explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: steering-wheel, r: 185, grip: 15 } }
+  - id: driver-airbag
+    parent: steering-wheel
+    kind: part
+    name: Driver airbag
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    ewd: [U106]
+    partNumbers: [{ number: LR012988, note: "Steering wheel airbag module, MY2010 (VIN AH000001–AH999999)", source: { ref: jlr-parts-airbag } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 2196–2207" }] }
+    geometry: { gen: box, size: [40, 150, 120], r: 24, pos: [-24, 0, 0], mat: interior-dark }
+
+  - id: steering-column
+    kind: part
+    name: Steering column with clockspring and multifunction switches
+    summary: Bolted to the magnesium steering column frame that is part of the cross-car beam; the clockspring carries the steering angle sensor.
+    handed: true
+    explode: { dir: [-1, 0, 0.6], dist: 300 }
+    material: steel-black
+    contacts: [dashboard, dash-crossbeam, steering-intermediate-shaft, instrument-cluster, steering-wheel, light-switch-module, start-control-unit, diagnostic-socket]
+    ewd: [S227, D401, S174, S175, S239, S114, S116, Y152, Y155, Y156, Y157, Y159]
+    verification: { sources: [{ ref: wsm, locator: "pp. 395–397, 1801", says: "The steering column is bolted to a magnesium steering column frame which is an integral part of the cross-car beam" }] }
+    geometry: { gen: tube, r: 30, points: [[-1095, 380, 1003], [-820, 372, 880], [-640, 340, 720], [-600, 330, 700]] }
+
+  # ---------------------------------------------------------------- pedals (LHD)
+  - id: pedal-box
+    kind: assembly
+    name: Pedal box (LHD)
+    location: { zone: cabin-driver-footwell, text: "Driver's footwell (left on LHD)" }
+    handed: true
+    explode: { dir: [-1, 0, 0], dist: 260 }
+    contacts: [dashboard]
+    verification: { sources: [{ ref: wsm, locator: "pp. 304, 1162, 1166 (LHD)" }] }
+  - id: clutch-pedal
+    parent: pedal-box
+    kind: part
+    name: Clutch pedal with position switches
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-610, 520, 790], rot: [0, 0, 180] }
+    ewd: [S471, S472]
+    specs: [{ label: Pedal box nuts, value: "24 Nm", source: { ref: wsm, locator: p. 1161 } }]
+    geometry: { gen: pedal, len: 270, pad: [70, 64] }
+  - id: brake-pedal
+    parent: pedal-box
+    kind: part
+    name: Brake pedal with stoplamp switch
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-610, 410, 790], rot: [0, 0, 180] }
+    ewd: [S215, S473]
+    verification: { sources: [{ ref: wsm, locator: "pp. 304–305", says: "The brake pedal is mounted in a bracket attached to the rear side of the engine bulkhead; the stoplamp switch is mounted on the brake pedal bracket" }] }
+    geometry: { gen: pedal, len: 270, pad: [80, 64] }
+  - id: accelerator-pedal
+    parent: pedal-box
+    kind: part
+    name: Accelerator pedal with position sensor (APP)
+    aliases: [throttle pedal, gas pedal]
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-600, 280, 760], rot: [0, 0, 180] }
+    ewd: [T113]
+    geometry: { gen: pedal, len: 230, pad: [54, 100] }
+
+  # ---------------------------------------------------------------- seats & console
+  - id: seat-driver
+    kind: part
+    name: Driver's seat
+    location: { zone: cabin-front, text: "Front left (LHD)" }
+    handed: true
+    explode: { dir: [0, 0.4, 1], dist: 300 }
+    placement: { pos: [-1560, 430, 316] }
+    contacts: [seat-crossmember-l]
+    summary: The front seat belt buckle is mounted on the seat; the side airbag sits under the backrest cover.
+    verification: { sources: [{ ref: wsm, locator: "pp. 1903–1917" }] }
+    geometry: { gen: seat, width: 500 }
+  - id: seat-passenger
+    kind: part
+    name: Front passenger seat
+    location: { zone: cabin-front, text: "Front right (LHD)" }
+    handed: true
+    explode: { dir: [0, -0.4, 1], dist: 300 }
+    placement: { pos: [-1560, -430, 316] }
+    contacts: [seat-crossmember-r]
+    geometry: { gen: seat, width: 500 }
+  - id: rear-seat
+    kind: part
+    name: Rear seat (split backrest, centre armrest)
+    location: { zone: cabin-rear, text: "Above the fuel tank" }
+    access: { from: [cabin-rear] }
+    explode: { dir: [-0.3, 0, 1], dist: 300 }
+    placement: { pos: [-2245, 0, 495] }
+    geometry: { gen: seat, width: 1100, bench: true, recline: 16, heights: [170, 130, 600] }
+
+  - id: centre-console
+    kind: part
+    name: Centre console
+    material: interior-dark
+    location: { zone: cabin-centre-console, text: "On the transmission tunnel between the front seats" }
+    explode: { dir: [0, 0, 1], dist: 380 }
+    contacts: [restraints-module, dashboard, sensor-cluster]
+    geometry: { gen: box, size: [760, 230, 250], r: 30, pos: [-1420, 0, 610] }
+
+  - id: gear-lever
+    kind: part
+    name: Gearshift lever assembly (6-speed manual)
+    aliases: [gear lever, gear stick, shifter, selector lever]
+    summary: Non-serviceable assembly on the tunnel between the front seats, 4 bolts; ball ends for the two shift cables; a speed-dependent solenoid prevents accidental selection of reverse.
+    location: { zone: cabin-centre-console, text: "Centre console, on the transmission tunnel" }
+    explode: { dir: [0, 0, 1], dist: 460 }
+    contacts: [centre-console, gearshift-cables]
+    ewd: [N182]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1207–1208", says: "The selector lever assembly is located in a central position on the transmission tunnel, between the front driver and passenger seats and is secured to the transmission tunnel with 4 bolts" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [160, 110, 60], r: 10, pos: [-1180, 0, 600], mat: steel-black }
+        - { gen: cyl, r: 9, h: 210, axis: z, pos: [-1180, 0, 720], mat: interior-trim }
+        - { gen: sphere, r: 28, scale: [1.1, 1, 1], pos: [-1180, 0, 835], mat: interior-dark }
+
+  - id: parking-brake-lever
+    kind: part
+    name: Parking brake lever
+    aliases: [handbrake]
+    summary: Toothed quadrant, pawl and press-button release in the floor console; a microswitch at its base lights the warning lamp.
+    location: { zone: cabin-centre-console, text: "Floor console between the front seats" }
+    explode: { dir: [0, 0, 1], dist: 460 }
+    contacts: [centre-console, parking-brake-cables]
+    ewd: [S289]
+    verification: { sources: [{ ref: wsm, locator: "pp. 286–287", says: "The parking brake lever is located in the floor console between the driver and passenger seats" }] }
+    geometry: { gen: link, round: true, w: 26, points: [[-1500, 0, 560], [-1340, 0, 640]], eyes: [{ at: [-1500, 0, 560], axis: [0, 1, 0], r: 24, len: 50 }] }
+
+  - id: terrain-response-switches
+    kind: part
+    name: Terrain Response rotary control with DSC and HDC switches
+    location: { zone: cabin-centre-console, text: "Centre console, forward of the gear lever" }
+    explode: { dir: [0, 0, 1], dist: 420 }
+    ewd: [S350, S380, S238, S371]
+    verification: { sources: [{ ref: wsm, locator: "pp. 144, 337–338" }] }
+    geometry: { gen: cyl, r: 40, h: 30, axis: z, chamfer: 4, pos: [-1110, 0, 742], mat: interior-trim }
+
+  - id: audio-head-unit
+    kind: part
+    name: Audio head unit / integrated control module
+    location: { zone: cabin-dashboard, text: "Centre of the instrument panel" }
+    explode: { dir: [-1, 0, 0.3], dist: 300 }
+    contacts: [dash-crossbeam, dashboard, climate-control-module]
+    ewd: [D282, D371]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 1594–1602, 1801" }] }
+    geometry: { gen: box, size: [160, 200, 100], r: 6, pos: [-930, 0, 950], rot: [0, -15, 0], mat: steel-black }
+
+  # ---------------------------------------------------------------- restraints
+  - id: passenger-airbag
+    kind: part
+    name: Passenger airbag (two-stage)
+    handed: true
+    location: { zone: cabin-dashboard, text: "Top of the instrument panel, passenger side" }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    contacts: [dashboard]
+    ewd: [U102]
+    partNumbers: [{ number: LR018439, note: "Passenger upper airbag module, from VIN AH000001", source: { ref: jlr-parts-airbag } }]
+    verification: { sources: [{ ref: wsm, locator: p. 2196, says: "The top of the passenger air bag is attached to a re-enforcement lid in the instrument panel" }] }
+    geometry: { gen: box, size: [180, 300, 120], r: 16, pos: [-760, -400, 1080], mat: interior-trim }
+  - id: knee-airbag
+    kind: part
+    name: Driver knee (lower) airbag
+    handed: true
+    location: { zone: cabin-driver-footwell, text: "Lower instrument panel, driver's side" }
+    explode: { dir: [-1, 0, 0], dist: 260 }
+    contacts: [dashboard]
+    ewd: [U129]
+    partNumbers: [{ number: LR012027, note: "Driver lower airbag, LHD, facia contrast Ebony Black / Reef (from VIN 9H000001)", source: { ref: jlr-parts-airbag } }, { number: LR010391, note: "Driver lower airbag, LHD, facia contrast Almond variants (from VIN 9H000001)", source: { ref: jlr-parts-airbag } }]
+    geometry: { gen: box, size: [70, 400, 110], r: 14, pos: [-880, 380, 740], mat: interior-trim }
+  - id: side-airbag
+    kind: part
+    sides: [left, right]
+    name: Front side airbag (in the seat backrest)
+    explode: { dir: [0, 1, 0.3], dist: 240 }
+    ewd: [U119:l, U118:r]
+    partNumbers: [{ number: LR009734, side: left, note: "Seat-mounted thorax airbag, rest of world, from VIN AH000001", source: { ref: jlr-parts-airbag } }, { number: LR010127, side: right, note: "Seat-mounted thorax airbag, rest of world, from VIN AH000001", source: { ref: jlr-parts-airbag } }]
+    verification: { sources: [{ ref: wsm, locator: p. 2196, says: "A side air bag is attached to the outside of each front seat backrest frame, under the backrest cover" }] }
+    geometry: { gen: box, size: [140, 50, 260], r: 12, pos: [-1780, 670, 760], mat: interior-trim }
+  - id: curtain-airbag
+    kind: part
+    sides: [left, right]
+    name: Side curtain airbag
+    explode: { dir: [0, 1, 0.5], dist: 260 }
+    ewd: [U125:l, U126:r]
+    partNumbers: [{ number: LR012491, side: left, note: "VIN 9H119277 to BH277426", source: { ref: jlr-parts-airbag } }, { number: LR012490, side: right, note: "VIN 9H119277 to BH277426", source: { ref: jlr-parts-airbag } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 2196–2207" }] }
+    contacts: [roof-side-rail, a-pillar, b-pillar, c-pillar, cantrail, roof-bows]
+    geometry: { gen: tube, r: 18, points: [[-1100, 690, 1600], [-1500, 700, 1640], [-2300, 702, 1645], [-3150, 705, 1625]], mat: interior-trim }
+  - id: belt-pretensioner
+    kind: part
+    sides: [left, right]
+    name: Front seat-belt buckle pretensioner
+    explode: { dir: [0, 0, 1], dist: 200 }
+    ewd: [U121:l, U122:r, S394:l, S395:r]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 2207, says: "The piston is attached to a steel cable, the opposite end of which is attached to the safety belt buckle" }] }
+    geometry: { gen: cyl, r: 16, h: 160, axis: x, pos: [-1560, 200, 420], mat: steel-black }
+
+  - id: front-seat-belts
+    kind: part
+    sides: [left, right]
+    name: Front seat belt and retractor
+    location: { zone: cabin-front, text: "Retractor at the B-pillar; buckle on the seat" }
+    explode: { dir: [0, 1, 0], dist: 200 }
+    ewd: [U127:l, U128:r]
+    contacts: [sill, b-pillar]
+    specs: [{ label: Anchorages, value: "Retractor fixing to anchorage fixing: 1673.3 mm", source: { ref: wsm, locator: p. 2253 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 2167–2169, 2253" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [70, 60, 120], r: 8, pos: [-1490, 790, 540], mat: steel-black }
+        - { gen: tube, r: 3, points: [[-1490, 790, 580], [-1495, 760, 1250], [-1490, 720, 1420]], mat: interior-fabric }

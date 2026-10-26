@@ -1,0 +1,229 @@
+# Body hardware: hinges, check straps, handles, seals, gas struts, wiper arms,
+# bonnet hinges and the engine undershield. Each has a removal procedure and a
+# torque in the workshop manual (cited by page).
+#
+# Where the body dimension chart (wsm pp. 2249–2257) fixes a spacing, the
+# position follows from it and is marked `placement: calculated`:
+#   front door top hinge → rear door top hinge     1034.9 mm (p. 2252)
+#   front door bottom hinge → rear door bottom hinge 1035.5 mm (p. 2252)
+#   liftgate LH inboard → RH outboard hinge hole     800 mm (p. 2255)
+#   gas strut spigot LH → RH                          1086.6 mm (pp. 2254–2255)
+#   gas strut spigot → rear lamp top fixing hole      475.9 mm (p. 2255)
+# The front door hinge line (on the A-pillar) is the reference; it is estimated.
+system: body
+defaults:
+  material: steel-black
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- doors
+  - id: front-door-hinges
+    parent: front-door
+    kind: part
+    name: Front door hinges (upper and lower)
+    aliases: [door hinge]
+    summary: Two bolt-on hinges between the A-pillar and the front edge of the door. The door is aligned on them, so mark their position before loosening.
+    location: { zone: exterior-side, text: "Front edge of the front door, on the A-pillar" }
+    access: { from: [exterior], notes: "Hinge bolts 30 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    explode: { dir: [1, 0.3, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1827, 2252" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [50, 60, 70], r: 6, pos: [-488, 845, 960] }
+        - { gen: box, size: [50, 60, 70], r: 6, pos: [-488, 840, 600] }
+  - id: front-door-check-strap
+    parent: front-door
+    kind: part
+    name: Front door check strap
+    aliases: [door check, door stay]
+    summary: Strap between the A-pillar and the door that holds the door open at its detent positions.
+    location: { zone: exterior-side, text: "Between the A-pillar and the front door, between the hinges" }
+    access: { from: [exterior], notes: "Check strap bolt 24 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    explode: { dir: [1, 0.3, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: p. 1827 }] }
+    geometry: { gen: box, size: [130, 20, 25], r: 4, pos: [-560, 835, 780] }
+  - id: front-door-handle
+    parent: front-door
+    kind: part
+    name: Front door exterior handle
+    location: { zone: exterior-side, text: "Outside of the front door, at the rear" }
+    access: { from: [exterior], removeFirst: [front-door-trim-panel], sources: [{ ref: wsm, locator: p. 2053 }] }
+    material: paint
+    explode: { dir: [0, 1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: p. 2053 }] }
+    geometry: { gen: box, size: [150, 28, 34], r: 10, pos: [-1330, 912, 1000] }
+  - id: rear-door-hinges
+    parent: rear-door
+    kind: part
+    name: Rear door hinges (upper and lower)
+    summary: Two bolt-on hinges between the B-pillar and the front edge of the rear door.
+    location: { zone: exterior-side, text: "Front edge of the rear door, on the B-pillar" }
+    access: { from: [exterior], notes: "Hinge bolts 30 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    explode: { dir: [1, 0.3, 0], dist: 160 }
+    verification:
+      placement: calculated
+      notes: "x = front door hinge line − 1034.9 mm (top) and − 1035.5 mm (bottom), from the side panel dimensions."
+      sources: [{ ref: wsm, locator: "pp. 1827, 2252", says: "Front door top hinge fixing hole to rear door top hinge fixing hole 1034.9; front door bottom hinge, top fixing hole to rear door bottom hinge, top fixing hole 1035.5" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [50, 60, 70], r: 6, pos: [-1523, 860, 960] }
+        - { gen: box, size: [50, 60, 70], r: 6, pos: [-1524, 855, 600] }
+  - id: rear-door-check-strap
+    parent: rear-door
+    kind: part
+    name: Rear door check strap
+    location: { zone: exterior-side, text: "Between the B-pillar and the rear door" }
+    access: { from: [exterior], notes: "Check strap bolt 24 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    explode: { dir: [1, 0.3, 0], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: p. 1827 }] }
+    geometry: { gen: box, size: [130, 20, 25], r: 4, pos: [-1590, 850, 780] }
+  - id: rear-door-handle
+    parent: rear-door
+    kind: part
+    name: Rear door exterior handle
+    location: { zone: exterior-side, text: "Outside of the rear door, at the rear" }
+    access: { from: [exterior], removeFirst: [rear-door-trim-panel], sources: [{ ref: wsm, locator: p. 2059 }] }
+    material: paint
+    explode: { dir: [0, 1, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: p. 2059 }] }
+    geometry: { gen: box, size: [150, 28, 34], r: 10, pos: [-2280, 915, 1000] }
+  - id: front-door-aperture-seal
+    kind: part
+    sides: [left, right]
+    name: Front door aperture seal
+    aliases: [door seal, weatherstrip, door rubber]
+    summary: Rubber weatherstrip clipped round the body opening; the closed door compresses it to keep water and wind noise out.
+    location: { zone: exterior-side, text: "Round the front door opening" }
+    access: { from: [exterior] }
+    material: rubber
+    contacts: [curtain-airbag, a-pillar-trim, b-pillar-trim-upper, b-pillar-trim-lower, front-scuff-plate, front-seat-belts]
+    explode: { dir: [0, 1, 0], dist: 80 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1966–1968" }] }
+    geometry: { gen: tube, r: 7, closed: true, points: [[-480, 850, 470], [-480, 850, 1040], [-800, 772, 1350], [-1100, 714, 1622], [-1470, 712, 1662], [-1480, 862, 1040], [-1480, 872, 480]] }
+  - id: rear-door-aperture-seal
+    kind: part
+    sides: [left, right]
+    name: Rear door aperture seal
+    location: { zone: exterior-side, text: "Round the rear door opening" }
+    access: { from: [exterior] }
+    material: rubber
+    contacts: [curtain-airbag, b-pillar-trim-upper, b-pillar-trim-lower, c-pillar-trim-inner, rear-seat-belts]
+    explode: { dir: [0, 1, 0], dist: 80 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1966–1968" }] }
+    geometry: { gen: tube, r: 7, closed: true, points: [[-1505, 874, 480], [-1508, 864, 1040], [-1508, 714, 1668], [-2395, 716, 1690], [-2405, 862, 1100], [-2398, 866, 840], [-2240, 872, 560]] }
+
+  # ---------------------------------------------------------------- bonnet
+  - id: bonnet-hinge
+    kind: part
+    sides: [left, right]
+    name: Bonnet hinge
+    aliases: [hood hinge]
+    summary: Hinge between the bonnet's rear corner and the apron. Mark its position before removing the bonnet.
+    location: { zone: engine-bay, text: "Rear corner of the bonnet, on the apron" }
+    access: { from: [bonnet], notes: "Hinge bolts 24 Nm (to bonnet and to body).", sources: [{ ref: wsm, locator: "pp. 1811, 1827" }] }
+    contacts: [upper-rail, bonnet]
+    explode: { dir: [0, 0.3, 1], dist: 160 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1811, 1827" }] }
+    geometry: { gen: box, size: [70, 22, 70], r: 6, pos: [-400, 640, 1050] }
+
+  # ---------------------------------------------------------------- tailgate
+  - id: tailgate-hinges
+    parent: tailgate
+    kind: part
+    name: Tailgate hinges
+    aliases: [liftgate hinges, boot hinges]
+    summary: Two hinges at the rear edge of the roof. Their spacing is fixed by the body (800 mm from the LH inboard to the RH outboard fixing hole).
+    location: { zone: exterior-rear, text: "Rear edge of the roof, under the headlining" }
+    access: { from: [luggage], notes: "Hinge bolts 24 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    contacts: [roof, roof-bows]
+    explode: { dir: [-0.3, 0, 1], dist: 140 }
+    verification:
+      placement: calculated
+      notes: "Lateral position from the rear end body dimensions; height and fore-aft position estimated at the roof edge."
+      sources: [{ ref: wsm, locator: "pp. 1827, 2255", says: "Liftgate LH inboard hinge fixing hole to liftgate RH outboard hinge fixing hole 800" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [50, 60, 40], r: 6, pos: [-3392, 400, 1672] }
+        - { gen: box, size: [50, 60, 40], r: 6, pos: [-3392, -400, 1672] }
+  - id: tailgate-gas-strut
+    parent: tailgate
+    kind: part
+    sides: [left, right]
+    name: Tailgate support strut
+    aliases: [gas strut, boot strut, liftgate strut]
+    summary: Gas spring that lifts and holds the tailgate open. The body spigots are 1086.6 mm apart.
+    location: { zone: exterior-rear, text: "Between the D-pillar and the tailgate, each side" }
+    access: { from: [luggage], notes: "Support the tailgate before releasing a strut. Spigot 24 Nm.", sources: [{ ref: wsm, locator: p. 1827 }] }
+    contacts: [d-pillar-inner, d-pillar]
+    explode: { dir: [-0.5, 0.5, 0.5], dist: 140 }
+    verification:
+      placement: calculated
+      notes: "Body spigot at ±543.3 mm (1086.6 apart) and 475.9 mm from the rear lamp top fixing hole."
+      sources: [{ ref: wsm, locator: "pp. 1827, 2254–2255", says: "LH gas strut spigot fixing hole to RH gas strut spigot fixing hole 1086.6; LH gas strut spigot fixing hole to LH rear lamp top fixing hole 475.9" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 11, points: [[-3345, 543, 1600], [-3410, 535, 1420]] }
+        - { gen: tube, r: 5, points: [[-3410, 535, 1420], [-3478, 525, 1240]], mat: chrome }
+  - id: tailgate-striker
+    kind: part
+    name: Tailgate striker
+    location: { zone: luggage, text: "Rear panel, at the bottom centre of the tailgate opening" }
+    access: { from: [luggage], notes: "Striker bolts 25 Nm.", sources: [{ ref: wsm, locator: p. 2038 }] }
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2038, 2064" }] }
+    geometry: { gen: box, size: [30, 60, 20], r: 4, pos: [-3575, 0, 852] }
+
+  # ---------------------------------------------------------------- wipers
+  - id: wiper-arms
+    parent: windscreen-wipers
+    kind: part
+    name: Windscreen wiper arms and blades
+    summary: Two arms on the linkage spindles, each with a blade. The arms are set to their park position on the spline before the nut is tightened.
+    location: { zone: exterior-front, text: "Base of the windscreen" }
+    access: { from: [exterior], notes: "Arm to linkage nut 45 Nm.", sources: [{ ref: wsm, locator: "pp. 2071, 2084" }] }
+    material: trim-black
+    explode: { dir: [0, 0, 1], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2071, 2084" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 6, points: [[-505, -480, 1010], [-540, -150, 1070], [-575, 180, 1112]] }
+        - { gen: box, size: [12, 560, 14], r: 4, pos: [-560, -150, 1100] }
+        - { gen: tube, r: 6, points: [[-505, 160, 1012], [-540, 470, 1070], [-575, 790, 1112]] }
+        - { gen: box, size: [12, 560, 14], r: 4, pos: [-560, 470, 1100] }
+  - id: rear-wiper-arm
+    parent: tailgate
+    kind: part
+    name: Rear wiper arm and blade
+    location: { zone: exterior-rear, text: "Rear screen" }
+    access: { from: [exterior], notes: "Arm to motor nut 7 Nm.", sources: [{ ref: wsm, locator: "pp. 2071, 2079" }] }
+    material: trim-black
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 2071, 2079" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 5, points: [[-3530, 0, 1530], [-3515, 200, 1550], [-3500, 380, 1565]] }
+        - { gen: box, size: [12, 360, 12], r: 4, pos: [-3522, 200, 1556] }
+
+  # ---------------------------------------------------------------- underbody
+  - id: engine-undershield
+    kind: part
+    name: Engine undershield
+    aliases: [sump guard, skid plate, undertray]
+    summary: Plastic shield under the engine bay that protects the sump and auxiliary drive and smooths the airflow. It must come off for oil changes and most work from below.
+    location: { zone: underbody-front, text: "Under the engine compartment" }
+    access: { from: [underside], notes: "Undershield bolts 60 Nm.", sources: [{ ref: wsm, locator: "pp. 1811, 1814" }] }
+    material: plastic-black
+    contacts: [front-subframe, front-bumper, radiator-support, front-crash-beam, engine-assembly, gearbox]
+    explode: { dir: [0, 0, -1], dist: 220 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 1811, 1814" }] }
+    geometry: { gen: box, size: [700, 900, 8], r: 4, pos: [420, 0, 215] }

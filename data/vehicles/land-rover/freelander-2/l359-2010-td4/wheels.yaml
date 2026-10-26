@@ -1,0 +1,125 @@
+# Road wheels. Wheel-centre frame: origin at the wheel centre, +Y outboard.
+system: wheels
+defaults:
+  verification:
+    geometry: representative
+    placement: referenced
+    facts: oem
+    notes: >-
+      Centres follow the published wheelbase (2660 mm) and tracks (1611/1624 mm),
+      checked automatically by the data build. Standard fitments: 6.5J×16 with 215/75 R16,
+      7.5J×17 with 235/65 R17 (modelled), 8.0J×18 with 235/60 R18; 8.0J×19 with 235/55 R19 accessory.
+    sources:
+      - { ref: brochure-my2011, locator: Dimensions, says: "Wheelbase 2660 mm; front track 1611 mm, rear track 1624 mm" }
+      - { ref: wsm, locator: p. 127 }
+
+nodes:
+  - id: wheel-front
+    kind: assembly
+    sides: [left, right]
+    name: Front road wheel
+    aliases: [front wheel, wheel and tyre]
+    location: { zone: wheel-arch-front-left, text: "Front axle" }
+    access: { from: [exterior], tools: [Wheel brace / torque wrench, Locking wheel nut key (if fitted)], notes: "Wheel nuts 133 Nm, tightened diagonally; pressure 2.2 bar (32 psi) front and rear.", sources: [{ ref: wsm, locator: p. 127 }] }
+    placement: { pos: [0, 805.5, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 780 }
+  - id: tyre-front
+    parent: wheel-front
+    kind: part
+    name: Front tyre 235/65 R17
+    aliases: [tire]
+    specs: [{ label: Size, value: "235/65 R17, load/speed 104V or 108V (on 7.5J × 17 alloy)", source: { ref: wsm, locator: p. 127 } }]
+    geometry: { gen: tyre, width: 235, aspect: 65, rim: 17 }
+  - id: rim-front
+    parent: wheel-front
+    kind: part
+    name: Front alloy wheel 17 × 7.5
+    aliases: [alloy, rim]
+    specs:
+      - { label: Size, value: "7.5J × 17 alloy", source: { ref: wsm, locator: p. 127 } }
+      - { label: Studs (modelled), value: "5; pitch-circle diameter is not given in the manual" }
+    verification: { geometry: schematic }
+    geometry: { gen: rim, diameter: 17, width: 7.5, offset: 45, spokes: 5, twin: true, studs: 5, pcd: 108 }
+
+  - id: wheel-rear
+    kind: assembly
+    sides: [left, right]
+    name: Rear road wheel
+    aliases: [rear wheel]
+    location: { zone: wheel-arch-rear-left, text: "Rear axle" }
+    access: { from: [exterior], tools: [Wheel brace / torque wrench], notes: "Wheel nuts 133 Nm, tightened diagonally.", sources: [{ ref: wsm, locator: p. 127 }] }
+    placement: { pos: [-2660, 812, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 780 }
+  - id: tyre-rear
+    parent: wheel-rear
+    kind: part
+    name: Rear tyre 235/65 R17
+    geometry: { gen: tyre, width: 235, aspect: 65, rim: 17 }
+  - id: rim-rear
+    parent: wheel-rear
+    kind: part
+    name: Rear alloy wheel 17 × 7.5
+    geometry: { gen: rim, diameter: 17, width: 7.5, offset: 45, spokes: 5, twin: true, studs: 5, pcd: 108 }
+
+  - id: spare-wheel
+    kind: assembly
+    name: Spare wheel
+    location: { zone: luggage, text: "Under the luggage-compartment floor (position estimated)" }
+    access: { from: [luggage], notes: "Lift the floor panel. Spare type (full size or space saver) varies by market." }
+    placement: { pos: [-3120, 0, 545], rot: [90, 0, 0] }
+    explode: { dir: [-1, 0, 0.4], dist: 600 }
+    verification: { placement: estimated, geometry: schematic, facts: oem, notes: "Space-saver (4.0J × 17, 135/90 R17, 2.2 bar) or full-size spare depending on market; stowage under the luggage floor estimated.", sources: [{ ref: wsm, locator: p. 127 }, { ref: handbook, locator: Wheel changing }] }
+  - id: tyre-spare
+    parent: spare-wheel
+    kind: part
+    name: Spare tyre
+    geometry: { gen: tyre, width: 235, aspect: 65, rim: 17, grooves: 3 }
+  - id: rim-spare
+    parent: spare-wheel
+    kind: part
+    name: Spare wheel rim
+    geometry: { gen: rim, diameter: 17, width: 7.5, offset: 45, spokes: 5, twin: false, studs: 5, pcd: 108 }
+
+  # ---------------------------------------------------------------- tyre pressure monitoring (option)
+  - id: tpms-sensor
+    parent: wheel-front
+    kind: part
+    name: Tyre pressure sensor (front)
+    fitment: Vehicles with TPMS
+    summary: Inside the tyre on the valve, held by a nut on the outside of the wheel (8 Nm).
+    explode: { dir: [0, 1, 0.5], dist: 140 }
+    ewd: [T291:l, T292:r]
+    verification: { geometry: schematic, placement: referenced, sources: [{ ref: wsm, locator: "pp. 127–132" }, { ref: ewd }] }
+    geometry: { gen: box, size: [40, 20, 24], r: 4, pos: [0, 30, 228], mat: plastic-black }
+  - id: tpms-sensor-rear
+    parent: wheel-rear
+    kind: part
+    name: Tyre pressure sensor (rear)
+    fitment: Vehicles with TPMS
+    explode: { dir: [0, 1, 0.5], dist: 140 }
+    ewd: [T293:l, T294:r]
+    verification: { geometry: schematic, placement: referenced, sources: [{ ref: wsm, locator: "pp. 127–132" }, { ref: ewd }] }
+    geometry: { gen: box, size: [40, 20, 24], r: 4, pos: [0, 30, 228], mat: plastic-black }
+  - id: tpms-initiator-front
+    kind: part
+    sides: [left, right]
+    name: TPMS initiator (front)
+    fitment: Vehicles with TPMS
+    location: { zone: wheel-arch-front-left, text: "Near the front of the front wheel arch, behind the splash shield" }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    contacts: [arch-liner-front]
+    ewd: [M282:l, M281:r]
+    verification: { geometry: schematic, placement: referenced, sources: [{ ref: wsm, locator: p. 132 }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 30, 40], r: 4, pos: [420, 770, 520], mat: plastic-black }
+  - id: tpms-initiator-rear
+    kind: part
+    sides: [left, right]
+    name: TPMS initiator (rear)
+    fitment: Vehicles with TPMS
+    location: { zone: wheel-arch-rear-left, text: "At the rear of the rear wheel arch, behind the splash shield" }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    contacts: [arch-liner-rear]
+    ewd: [M284:l, M283:r]
+    verification: { geometry: schematic, placement: referenced, sources: [{ ref: wsm, locator: p. 132 }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 30, 40], r: 4, pos: [-3150, 770, 520], mat: plastic-black }
+

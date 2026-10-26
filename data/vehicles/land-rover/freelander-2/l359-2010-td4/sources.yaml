@@ -1,0 +1,147 @@
+# Reference sources. Reliability: A = OEM document in hand, B = faithful copy
+# of OEM material or reputable specialist, C = aggregator / supplier listing,
+# D = owner forum or video. Facts only reach "oem" level with type oem-*.
+#
+# Locators for the workshop manual and wiring diagrams are PDF page numbers
+# of the files named in `notes`, so a reviewer can open the exact page.
+sources:
+  # ---------------------------------------------------------------- OEM
+  - id: wsm
+    title: Freelander 2 (L359) Workshop Manual 2007–2011 (JLR TOPIx procedures, published 11 May 2011)
+    publisher: Jaguar Land Rover
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: >-
+      Local copy "FREELANDER 2007 - 2011 WORKSHOP MANUAL.pdf" (2444 pages, TOPIx print dated 29-30/10/2011).
+      Locator "p. N" = PDF page N. Engine-relative directions use engine front = timing-belt end,
+      engine rear = transmission end, LH/RH as seen from the transmission end (LH = intake side).
+  - id: ewd
+    title: Electrical Wiring Diagrams, Freelander 2 – LR2, LHD, VIN 080379 to 113896
+    publisher: Land Rover Technical Communications
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: >-
+      Local copy "WIRING DIAGRAMS LHD 080379 to 113896.pdf" (99 pages, printed 08/2008). Newest service set in hand;
+      by the parts catalogue's VIN breaks it covers late 2008 and early 2009 model-year cars. Extracted with
+      tools/ewd/import.ts. Prints wire lengths for power and ground distribution only.
+  - id: ewd-lhd-000201
+    title: Electrical Wiring Diagrams, Freelander 2 – LR2, LHD, VIN 000201 to 057871
+    publisher: Land Rover Technical Communications
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: Local copy "WIRING DIAGRAMS LHD 000201 to 057871.pdf". Earliest issue; most wires are printed without an id. Its "Using this publication" pages (pp. 8–10) explain the notation, including what printed wire lengths mean.
+  - id: ewd-lhd-057872
+    title: Electrical Wiring Diagrams, Freelander 2 – LR2, LHD, VIN 057872 to 080378
+    publisher: Land Rover Technical Communications
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: Local copy "WIRING DIAGRAMS LHD 057872 to 080378.pdf".
+  - id: ewd-09my-engineering
+    title: JLR Engineering Electrical Circuit Diagrams, L359 09MY LHD, Job1 Issue 2 (9 July 2008)
+    publisher: Jaguar Land Rover Engineering
+    url: https://www.freel2.com/gallery/albums/userpics/10793/L359-09MY_JOB1_CIRCUITS_LHD.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: >-
+      Engineering issue of the 2009 model-year circuits (104 pages), publicly posted on the Freel2.com owners' gallery.
+      Prints the length in millimetres of almost every wire, which is what splice, ground and in-line connector
+      positions are calculated from. Same wire ids as the service sets.
+  - id: ewd-lhd-216517
+    title: Electrical Wiring Diagrams, Freelander 2 – LR2, LHD, VIN 216517 onwards (JLR 15 62 21_2E)
+    publisher: Jaguar Land Rover
+    url: https://en.landrover-club.net/manual_download.php?id=1249
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: Listed for later cars; the download needs an account, so it is not in hand and not imported.
+  - id: handbook
+    title: Freelander 2 Owner's Handbook (publication LRL 10 02 56 131)
+    publisher: Land Rover (TOPIx)
+    url: https://topix.landrover.jlrext.com/topix/service/document/217254
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: Later-model-year edition (describes the electric parking brake); used for capacities and fluids, which are unchanged.
+  - id: brochure-my2011
+    title: Freelander 2 brochure, 2011 model year (official Land Rover publication, August 2010)
+    publisher: Land Rover
+    url: https://www.landroverweb.com/landrover/pdf-land-rover-manuals-part-catalogue/
+    type: oem-spec
+    reliability: A
+    accessed: 2026-10-26
+    notes: Official, but for MY2011 (150/190 PS engines). Body dimensions, brakes and gear ratios carry over to MY2010.
+
+  - id: jlr-parts-airbag
+    title: Freelander 2 2006–2014 (L359) parts catalogue – Interior Trim / Occupancy Restraints / Airbag System
+    publisher: Jaguar Land Rover Classic Parts
+    url: https://parts.jaguarlandroverclassic.com/parts/index/part/id/5.51478.51549.35906/brand/land-rover/
+    type: oem-parts
+    reliability: A
+    accessed: 2026-10-26
+    notes: >-
+      Official JLR parts catalogue with VIN breaks (e.g. "FROM VIN AH000001" = model year 2010, plant H, serial 000001).
+      Its breaks also date the wiring diagrams: serial 119277 is still model year 2009 (9H119277), so the newest
+      diagram set in hand (to serial 113896) ends before 2010 model-year production.
+
+  # ---------------------------------------------------------------- secondary (only where OEM is silent)
+  - id: autodata-fl2-td4
+    title: Land Rover Freelander II 2.2 TD4 (160 Hp) technical specifications
+    publisher: auto-data.net
+    url: https://www.auto-data.net/en/land-rover-freelander-ii-2.2-td4-160hp-5177
+    type: press
+    reliability: C
+    accessed: 2026-10-26
+    notes: Used only for the 1910 mm body width excluding mirrors (the brochure gives widths with mirrors).
+  - id: carfolio-fl2-td4
+    title: 2006 Land Rover Freelander 2 TD4 specifications
+    publisher: Carfolio
+    url: https://www.carfolio.com/land-rover-freelander-2-td4-143154
+    type: press
+    reliability: C
+    accessed: 2026-10-26
+    notes: Pre-facelift output (160 PS / 400 Nm) and kerb weight.
+  - id: lrmonthly-haldex
+    title: Maintain a Freelander 2 Haldex coupling
+    publisher: Land Rover Monthly
+    url: https://www.landrovermonthly.co.uk/articles/freelander-2-haldex-coupling/
+    type: press
+    reliability: B
+    accessed: 2026-10-26
+    notes: Service experience (fault symptoms); construction facts are taken from the workshop manual.
+  - id: freel2-ptu-thread
+    title: Transfer box drain (PTU discussion)
+    publisher: Freel2.com owners forum
+    url: https://www.freel2.com/forum/topic14659-90.html
+    type: forum
+    reliability: D
+    accessed: 2026-10-26
+    notes: Owner-reported failure modes only.
+  - id: fixya-crash-sensor
+    title: "Where are the front airbag crash sensors located – 2007 Land Rover Freelander"
+    publisher: FixYa (owner Q&A)
+    url: https://www.fixya.com/cars/t25320381-front_airbag_crash_sensors_located
+    type: forum
+    reliability: D
+    accessed: 2026-10-26
+    notes: "Unverified answer: front sensor on the frame behind the front bumper. Used only to support an estimated position."
+  - id: landyzone-dab-aerial
+    title: "Which aerial has my 2010 Freelander 2 2.2 Td4 e S got?"
+    publisher: LandyZone owners forum
+    url: https://www.landyzone.co.uk/land-rover/which-aerial-has-my-2010-freelander-2-2-2-td4-e-s-got.313638/
+    type: forum
+    reliability: D
+    accessed: 2026-10-26
+    notes: Owners place the DAB element in the left rear quarter glass with an amplifier above it in the headlining; agrees with wsm p. 1639.
+  - id: freel2-sound-system
+    title: The Sound System (Harman Kardon amplifier location)
+    publisher: Freel2.com owners forum
+    url: https://www.freel2.com/forum/post74683.html
+    type: forum
+    reliability: D
+    accessed: 2026-10-26
+    notes: Owners confirm the amplifier in the right-hand rear corner of the luggage compartment, as wsm p. 1594 states.

@@ -1,0 +1,297 @@
+# Clutch, 6-speed manual transaxle and AWD driveline (workshop manual `wsm`).
+# Gearbox children use the engine-local frame (the gearbox shares the crank
+# axis: +X towards the timing end, +Y towards the radiator side, +Z up);
+# everything else is in the vehicle frame.
+system: driveline
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  - id: gearbox
+    kind: assembly
+    name: Manual transmission — Getrag-Ford M66 EH50, 6-speed
+    aliases: [gearbox, transmission, manual gearbox, transaxle, M66]
+    summary: Transverse 6-speed manual transaxle bolted to the gearbox end of the engine, with the power transfer unit on its right-hand side.
+    location: { zone: engine-bay-left, text: "Left of the engine, below the battery and air cleaner" }
+    placement: { pos: [180, 60, 450], rot: [0, -12, -90] }
+    explode: { dir: [0, 1, 0], dist: 260 }
+    specs:
+      - { label: Type, value: "Getrag-Ford M66 EH50, 6 forward gears + reverse, made in Cologne", source: { ref: wsm, locator: "pp. 1136–1137" } }
+      - { label: Torque capacity, value: "380 Nm (torque truncated in 1st and reverse)", source: { ref: wsm, locator: p. 1137 } }
+      - { label: Ratios, value: "3.750 / 1.905 / 1.182 / 0.838 / 0.652 / 0.540, R 3.436; final drive 4.533", source: { ref: wsm, locator: p. 1224 } }
+      - { label: Oil, value: "2.0 L; Castrol MTF97309 (built up to 2011), BOT 350 M3 from 2011", source: { ref: wsm, locator: p. 1136 } }
+    manufacturing:
+      - { label: Supplier, value: "Getrag-Ford, Cologne (Germany)", source: { ref: wsm, locator: p. 1137 } }
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 1137–1148", says: "The M66EH50 manual transmission is a 6 speed unit manufactured by Getrag-Ford in Cologne, Germany" }]
+  - id: gearbox-case
+    parent: gearbox
+    kind: part
+    name: Transmission casing and clutch housing
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    geometry: { gen: transaxle, len: 400, bellR: 205, diff: { y: -215, z: -110, r: 100 }, caseY: [-200, 150], caseZ: [-185, 175] }
+  - id: gearbox-mount
+    parent: gearbox
+    kind: part
+    name: Transmission mount, LH
+    aliases: [gearbox mount, LH engine mount]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    placement: { pos: [-390, -40, 190] }
+    specs: [{ label: Mount spacing, value: "922 mm to the engine RH mounting", source: { ref: wsm, locator: p. 2249 } }]
+    geometry: { gen: mount, size: [90, 110, 70] }
+  - id: shift-mechanism
+    parent: gearbox
+    kind: part
+    name: Gearshift control mechanism (longitudinal and lateral levers)
+    aliases: [shift tower, selector mechanism]
+    summary: Turns the two shift-cable movements into gear selections; at the front of the transmission.
+    explode: { dir: [0, 1, 1], dist: 200 }
+    verification: { sources: [{ ref: wsm, locator: p. 1140, says: "The shift control mechanism is located at the front of the transmission" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [110, 70, 90], r: 10, pos: [-200, 165, 60], mat: aluminium-cast }
+        - { gen: box, size: [70, 14, 18], r: 4, pos: [-200, 205, 110], mat: steel-black }
+        - { gen: box, size: [14, 70, 18], r: 4, pos: [-150, 185, 110], mat: steel-black }
+  - id: reverse-switch
+    parent: gearbox
+    kind: part
+    name: Reverse lamp switch
+    explode: { dir: [0, 1, 0], dist: 160 }
+    ewd: [S103]
+    verification: { sources: [{ ref: wsm, locator: p. 1137, says: "The reverse switch is located in the front of the transmission casing, above the 1st gear detection switch" }] }
+    geometry: { gen: cyl, r: 11, h: 34, axis: y, pos: [-270, 165, 10], mat: plastic-black }
+  - id: first-gear-switch
+    parent: gearbox
+    kind: part
+    name: 1st gear detection switch
+    explode: { dir: [0, 1, -0.4], dist: 160 }
+    ewd: [S386]
+    verification: { sources: [{ ref: wsm, locator: p. 1137, says: "The 1st gear switch is located on the front of the transmission casing, below the reverse switch" }] }
+    geometry: { gen: cyl, r: 11, h: 34, axis: y, pos: [-270, 165, -40], mat: plastic-black }
+  - id: gear-neutral-sensor
+    parent: gearbox
+    kind: part
+    name: Gear neutral sensor (PLCD)
+    fitment: Stop/Start vehicles (TD4_e, from 2010MY)
+    explode: { dir: [0, 1, 0.5], dist: 180 }
+    verification: { sources: [{ ref: wsm, locator: p. 879, says: "A PLCD sensor is located on the exterior of the transmission casing and hardwired to the ECM" }] }
+    geometry: { gen: box, size: [50, 22, 30], r: 4, pos: [-330, 162, 80], mat: plastic-black }
+  - id: clutch-bleed-adaptor
+    parent: gearbox
+    kind: part
+    name: Hydraulic clutch bleed adaptor and peak torque limiter
+    summary: Joins the pressure pipe from the master cylinder to the concentric slave cylinder; contains the bleed screw.
+    explode: { dir: [0, 1, 0.4], dist: 180 }
+    verification: { sources: [{ ref: wsm, locator: p. 1163, says: "A hydraulic clutch bleed adaptor is located on the front of the transmission" }] }
+    geometry: { gen: box, size: [40, 28, 34], r: 5, pos: [-60, 200, 40], mat: plastic-black }
+
+  - id: clutch
+    parent: gearbox
+    kind: assembly
+    detail: true
+    name: Clutch and dual-mass flywheel
+    aliases: [clutch kit, flywheel]
+    summary: Single dry driven plate with a self-adjusting diaphragm-spring cover on a dual-mass flywheel, released hydraulically by a concentric slave cylinder.
+    access: { from: [underside], notes: "The transmission must be removed to reach the clutch." }
+    explode: { dir: [1, 0, 0], dist: 0 }
+    contacts: [gearbox-case, engine-internals]
+    manufacturing:
+      - { label: Clutch, value: "LUK, self-adjusting", source: { ref: wsm, locator: p. 1156 } }
+      - { label: Friction material, value: "Valeo 810 DS", source: { ref: wsm, locator: p. 1156 } }
+      - { label: Hydraulics, value: "FTE master cylinder and FTE concentric slave cylinder", source: { ref: wsm, locator: p. 1156 } }
+  - id: dual-mass-flywheel
+    parent: clutch
+    kind: part
+    name: Dual-mass flywheel
+    aliases: [DMF, flywheel]
+    summary: Primary side bolted to the crankshaft (8 bolts), secondary side carries the clutch cover.
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    verification: { sources: [{ ref: wsm, locator: p. 1148, says: "The primary side is secured to the crankshaft with eight bolts" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 150, h: 22, axis: x, chamfer: 3, pos: [-14, 0, 0], mat: steel-black }
+        - { gen: cyl, r: 140, h: 18, axis: x, chamfer: 2, pos: [-36, 0, 0], mat: steel-zinc }
+  - id: clutch-cover-plate
+    parent: clutch
+    kind: part
+    name: Clutch cover and driven plate
+    aliases: [pressure plate, clutch plate, friction disc]
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 120, h: 9, axis: x, pos: [-50, 0, 0], mat: plastic-grey }
+        - { gen: lathe, axis: x, profile: [[40, -58], [128, -58], [130, -72], [100, -88], [40, -88]], mat: steel-zinc }
+  - id: concentric-slave-cylinder
+    parent: clutch
+    kind: part
+    name: Concentric slave cylinder and release bearing
+    aliases: [CSC, slave cylinder, release bearing]
+    explode: { dir: [-1, 0, 0], dist: 320 }
+    specs: [{ label: Slave cylinder bolts, value: "11 Nm", source: { ref: wsm, locator: p. 1161 } }]
+    geometry: { gen: lathe, axis: x, profile: [[24, -96], [60, -96], [60, -126], [42, -130], [24, -130]], mat: plastic-black }
+
+  - id: ptu
+    parent: gearbox
+    kind: part
+    name: Power transfer unit (PTU)
+    aliases: [transfer box, transfer case, bevel box, angle drive]
+    summary: Bevel-gear unit on the right-hand side of the transmission, also bracketed to the cylinder block, turning drive through 90° to the propshaft. The right-hand halfshaft passes through its hollow drive gear.
+    location: { zone: underbody-front, text: "Behind the engine on the right of the transmission, under a heat shield" }
+    access: { from: [underside], notes: "Drain and filler plugs 35 Nm." }
+    placement: { pos: [85, -215, -110] }
+    explode: { dir: [1, -1, -0.5], dist: 220 }
+    contacts: [oil-sump, cylinder-block]
+    specs:
+      - { label: Ratio, value: "2.583:1", source: { ref: wsm, locator: p. 1224 } }
+      - { label: Oil, value: "0.75 L BOT 118 PLUS 75W-90", source: { ref: wsm, locator: p. 1224 } }
+      - { label: Fixings, value: "To transmission and to engine-block bracket 65 Nm; pinion nut 48 Nm", source: { ref: wsm, locator: p. 1224 } }
+    faults:
+      - { symptom: Loss of four-wheel drive, cause: "Worn PTU input splines", source: { ref: freel2-ptu-thread } }
+      - { symptom: "Whirring or rumbling around 50 km/h", cause: "Worn PTU output pinion bearings", source: { ref: freel2-ptu-thread } }
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 1220–1223", says: "The power transfer unit is located at the rear of the engine and is attached directly to the transmission casing and to the engine cylinder block via a bracket" }]
+    geometry: { gen: bevel-housing, r: 80, len: 170, nose: 140, noseR: 50, ears: false }
+
+  # ---------------------------------------------------------------- shafts (vehicle frame)
+  - id: driveshaft-front-left
+    kind: part
+    name: Front halfshaft, LH
+    aliases: [half shaft, CV shaft, drive shaft]
+    summary: Solid, fully floating shaft with inner and outer constant-velocity joints.
+    location: { zone: wheel-arch-front-left, text: "Transmission differential to the left front hub" }
+    access: { from: [wheel-arch-front-left, underside], removeFirst: [wheel-front-l] }
+    contacts: [gearbox, front-hub-l, front-knuckle-l]
+    explode: { dir: [0, 1, -0.3], dist: 260 }
+    specs: [{ label: Halfshaft to hub bolt, value: "45 Nm + 80° (new bolt)", source: { ref: wsm, locator: p. 213 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 213, says: "Fully floating, solid shafts with inner and outer constant velocity joints" }] }
+    geometry: { gen: driveshaft, from: [-7, 440, 298], to: [0, 762, 368.65] }
+
+  - id: driveshaft-front-right
+    kind: part
+    name: Front halfshaft, RH (with extension shaft and bearing anchorage)
+    aliases: [half shaft, CV shaft, intermediate shaft]
+    summary: An extension shaft runs from the differential through the PTU to a bearing anchorage bolted to the block; the outer shaft carries the CV joints.
+    location: { zone: wheel-arch-front-right, text: "Through the PTU to the right front hub" }
+    access: { from: [wheel-arch-front-right, underside], removeFirst: [wheel-front-r] }
+    contacts: [gearbox, front-hub-r, front-knuckle-r, cylinder-block, oil-sump]
+    explode: { dir: [0, -1, -0.3], dist: 260 }
+    specs: [{ label: Bearing anchorage, value: "To block 65 Nm, to transmission 25 Nm (2.2 diesel)", source: { ref: wsm, locator: p. 213 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 213–217, 1222" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 16, h: 340, axis: y, pos: [-7, -90, 298], mat: steel-black }
+        - { gen: box, size: [70, 40, 90], r: 8, pos: [-7, -245, 298], mat: aluminium-cast }
+        - { gen: driveshaft, from: [-7, -268, 298], to: [0, -762, 368.65] }
+
+  - id: propshaft
+    kind: part
+    name: Propeller shaft (three-piece)
+    aliases: [propshaft, prop shaft, driveshaft]
+    summary: Swaged front section with a fixed CV joint at the PTU and a long-plunge double-offset joint at its rear; two centre bearings; plunging CV joint at the coupling.
+    location: { zone: underbody-centre, text: "Under the transmission tunnel, PTU to the rear drive unit" }
+    access: { from: [underside], notes: "Torx bolts to PTU and pinion flange 40 Nm (new bolts); support brackets 25 Nm." }
+    explode: { dir: [0, 0, -1], dist: 240 }
+    specs: [{ label: Type, value: "Three-piece, centre bearings, CV joints, swaged front section, long-plunge double-offset joint", source: { ref: wsm, locator: p. 150 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 150–154" }] }
+    geometry: { gen: propshaft, points: [[-200, -22, 262], [-1000, -12, 286], [-1700, -6, 318], [-2268, 0, 368]], r: 34 }
+
+  - id: haldex-coupling
+    kind: assembly
+    name: Active on-demand coupling (Gen 4) and control module
+    aliases: [haldex, AOC, AWD coupling, rear coupling, electronic differential module]
+    summary: Hydraulic multi-plate clutch between the propshaft and rear differential with its own electric axial pump, accumulator and control module mounted on the front of the differential.
+    function: Engages the rear drive on demand; a Generation 4 unit from 2009MY (no differential-speed pump).
+    location: { zone: underbody-rear, text: "On the nose of the rear drive unit, at the end of the propshaft" }
+    access: { from: [underside] }
+    placement: { pos: [-2340, 0, 370], rot: [0, 0, 90] }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [D417]
+    specs:
+      - { label: Generation, value: "Gen 4 from 2009MY: electric axial pump and high-pressure accumulator", source: { ref: wsm, locator: p. 166 } }
+      - { label: Oil, value: "0.65 L STAT OIL SL01-301", source: { ref: handbook, locator: Capacities } }
+    faults:
+      - { symptom: Rear driveline shudder or binding on tight turns, cause: "Degraded or overdue coupling oil", source: { ref: lrmonthly-haldex } }
+      - { symptom: Four-wheel-drive warning / front drive only, cause: "Coupling pump, control module or wiring faults", source: { ref: lrmonthly-haldex } }
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 166–171", says: "Located between the differential and driveshaft; generation 4 unit fitted from 2009MY" }]
+  - id: haldex-body
+    parent: haldex-coupling
+    kind: part
+    name: Coupling housing, clutch pack, pump and control module
+    explode: { dir: [0, 0, -1], dist: 80 }
+    geometry: { gen: coupling, r: 82, len: 150 }
+
+  - id: rear-drive-unit
+    kind: part
+    name: Rear drive unit (rear differential)
+    aliases: [RDU, rear diff, differential, rear axle]
+    location: { zone: underbody-rear, text: "Centre of the rear axle, on the rear subframe" }
+    access: { from: [underside] }
+    placement: { pos: [-2660, 0, 375], rot: [0, 0, 90] }
+    explode: { dir: [-1, 0, -0.4], dist: 260 }
+    contacts: [haldex-coupling]
+    specs: [{ label: Oil, value: "0.7 L Castrol EPX", source: { ref: handbook, locator: Capacities } }]
+    verification: { placement: estimated }
+    geometry: { gen: bevel-housing, r: 105, len: 230, nose: 150, noseR: 55 }
+
+  - id: driveshaft-rear
+    kind: part
+    sides: [left, right]
+    name: Rear halfshaft
+    aliases: [rear half shaft, rear CV shaft]
+    location: { zone: wheel-arch-rear-left, text: "Rear drive unit to the rear hub" }
+    access: { from: [underside, wheel-arch-rear-left], removeFirst: [wheel-rear] }
+    contacts: [rear-drive-unit, rear-hub, rear-knuckle]
+    explode: { dir: [0, 1, -0.3], dist: 260 }
+    specs: [{ label: Halfshaft nut, value: "395 Nm, new nut, staked", source: { ref: wsm, locator: p. 232 } }]
+    geometry: { gen: driveshaft, from: [-2660, 150, 375], to: [-2660, 770, 368.65] }
+
+  # ---------------------------------------------------------------- controls (vehicle frame, LHD)
+  - id: gearshift-cables
+    kind: assembly
+    name: Gearshift cables (longitudinal and lateral)
+    summary: Two cables from the gear lever on the tunnel to the shift mechanism on the transmission.
+    access: { from: [underside, bonnet] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1207, says: "Selections made using the selector lever are passed to the transmission lever arm by the shift cables" }] }
+  - { id: gearshift-cable-longitudinal, parent: gearshift-cables, kind: harness, name: Longitudinal shift cable, material: harness-black, geometry: { gen: tube, r: 5, points: [[-1180, 12, 600], [-900, 60, 560], [-560, 190, 600], [-320, 330, 730], [40, 330, 720], [250, 290, 640], [312, 270, 600]] } }
+  - { id: gearshift-cable-lateral, parent: gearshift-cables, kind: harness, name: Lateral shift cable, material: harness-black, geometry: { gen: tube, r: 5, points: [[-1180, -12, 600], [-900, 40, 560], [-560, 170, 600], [-320, 310, 730], [40, 310, 720], [250, 270, 640], [300, 252, 590]] } }
+
+  - id: clutch-hydraulics
+    kind: assembly
+    name: Clutch hydraulic system (LHD)
+    summary: Clutch master cylinder on the pedal bracket, fed from the shared brake/clutch reservoir; pressure pipe to the bleed adaptor on the transmission.
+    handed: true
+    explode: { dir: [0, 0.4, 1], dist: 220 }
+    contacts: [bulkhead, pedal-box]
+    verification: { sources: [{ ref: wsm, locator: "pp. 1162–1163" }] }
+  - id: clutch-master-cylinder
+    parent: clutch-hydraulics
+    kind: part
+    name: Clutch master cylinder
+    aliases: [clutch pump]
+    summary: Its piston carries the magnet for the linear clutch sensor on Stop/Start cars.
+    location: { zone: engine-bay-rear, text: "On the clutch pedal bracket at the bulkhead, driver's side" }
+    access: { from: [cabin-front, bonnet], sources: [{ ref: wsm, locator: "p. 1164 (LHD)" }] }
+    manufacturing: [{ label: Make, value: FTE, source: { ref: wsm, locator: p. 1156 } }]
+    geometry: { gen: cyl, r: 16, h: 120, axis: x, chamfer: 2, pos: [-440, 495, 660], mat: aluminium-cast }
+  - id: clutch-pipe
+    parent: clutch-hydraulics
+    kind: pipe
+    name: Clutch pressure pipe and hose
+    material: brake-line
+    geometry: { gen: tube, r: 3, points: [[-380, 495, 660], [-300, 470, 630], [-50, 400, 600], [200, 260, 580], [345, 128, 540]] }
+  - id: clutch-reservoir-hose
+    parent: clutch-hydraulics
+    kind: hose
+    name: Low-pressure hose from the shared brake/clutch reservoir
+    material: rubber
+    geometry: { gen: tube, r: 5, points: [[-230, 380, 900], [-330, 470, 820], [-420, 495, 680]] }

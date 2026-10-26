@@ -1,0 +1,14 @@
+# generated, rebuilt inside the image
+node_modules
+dist
+public/data
+test-results
+playwright-report
+*.log
+# not needed to build
+.git
+.vscode
+.idea
+.DS_Store
+Dockerfile
+compose.yaml

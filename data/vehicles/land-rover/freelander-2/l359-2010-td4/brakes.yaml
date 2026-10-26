@@ -1,0 +1,363 @@
+# Brakes (workshop manual `wsm`). Corner assemblies use the wheel-centre
+# frame (+Y outboard); pedal-box hydraulics are authored for left-hand drive.
+system: brakes
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- front corners
+  - id: front-brake
+    kind: assembly
+    sides: [left, right]
+    name: Front brake
+    location: { zone: wheel-arch-front-left, text: "Inside the front wheel" }
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front] }
+    placement: { pos: [0, 805.5, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 440 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 258–262" }] }
+
+  - id: front-brake-disc
+    parent: front-brake
+    kind: part
+    name: Front brake disc (ventilated)
+    aliases: [brake rotor, disc]
+    summary: Held to the hub by one Torx screw and the five wheel nuts.
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front, front-caliper] }
+    contacts: [wheel-front]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    specs:
+      - { label: Size, value: "300 mm × 28 mm ventilated; service limit 26 mm", source: { ref: wsm, locator: p. 258 } }
+      - { label: Run-out, value: "0.080 mm maximum, installed", source: { ref: wsm, locator: p. 258 } }
+      - { label: Disc Torx screw, value: "35 Nm", source: { ref: wsm, locator: p. 258 } }
+    verification:
+      geometry: representative
+      notes: "Diameter and thickness match the specification; vane pattern and hat height are approximations."
+      sources: [{ ref: wsm, locator: "pp. 258, 260", says: "Front disc ventilated, 300 mm (2.2 diesel), 28 mm new, 26 mm service limit; secured with a single screw and the 5 wheel nuts" }]
+    geometry: { gen: brake-disc, d: 300, t: 28, y: 7, vented: true, hatDepth: 24, hatR: 82, ring: 56 }
+
+  - id: front-dust-shield
+    parent: front-brake
+    kind: part
+    name: Front brake dust shield
+    explode: { dir: [0, -1, 0], dist: 90 }
+    contacts: [front-caliper, front-wheel-speed-sensor]
+    material: steel-zinc
+    specs: [{ label: Bolts, value: "3 screws, 10 Nm", source: { ref: wsm, locator: p. 258 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 259, says: "A formed brake dust shield is located between the wheel knuckle and brake disc, secured to the knuckle with 3 screws" }] }
+    geometry: { gen: lathe, axis: y, profile: [[60, -26], [158, -26], [162, -20], [158, -18], [60, -22]] }
+
+  - id: front-caliper
+    parent: front-brake
+    kind: assembly
+    detail: true
+    name: Front brake caliper (single piston, sliding)
+    aliases: [caliper, brake caliper]
+    summary: Fixed carrier straddling the disc (2 bolts to the knuckle) with a sliding caliper on 2 bushed guide bolts; one 60 mm piston.
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front], notes: "Pads are replaced by sliding the caliper off the fixed carrier." }
+    contacts: [front-brake-disc]
+    explode: { dir: [-1, 0.6, 0], dist: 160 }
+    specs:
+      - { label: Piston diameter, value: "60 mm", source: { ref: wsm, locator: p. 258 } }
+      - { label: Carrier to knuckle, value: "200 Nm (new bolts)", source: { ref: wsm, locator: p. 258 } }
+      - { label: Guide pin bolts, value: "28 Nm", source: { ref: wsm, locator: p. 258 } }
+      - { label: Bleed screw, value: "8 Nm", source: { ref: wsm, locator: p. 258 } }
+      - { label: Pad minimum thickness, value: "2 mm", source: { ref: wsm, locator: p. 258 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 259–262" }] }
+  - { id: front-caliper-housing, parent: front-caliper, kind: part, name: Sliding caliper housing, explode: { dir: [-1, -0.3, 0], dist: 90 }, geometry: { gen: caliper, part: housing, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-caliper-carrier, parent: front-caliper, kind: part, name: Fixed carrier, explode: { dir: [-1, -1, 0], dist: 60 }, geometry: { gen: caliper, part: carrier, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-pad-inner, parent: front-caliper, kind: part, name: Inner brake pad and anti-squeal shim, aliases: [brake pad], explode: { dir: [0, -1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-inner, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-pad-outer, parent: front-caliper, kind: part, name: Outer brake pad and anti-squeal shim, aliases: [brake pad], explode: { dir: [0, 1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-outer, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-caliper-piston, parent: front-caliper, kind: part, name: Caliper piston (60 mm) and seal, explode: { dir: [0, -1, 0], dist: 150 }, geometry: { gen: caliper, part: piston, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-bleed-nipple, parent: front-caliper, kind: part, name: Bleed screw, aliases: [bleed nipple, bleeder], explode: { dir: [-0.3, 0, 1], dist: 90 }, geometry: { gen: caliper, part: bleed-nipple, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+  - { id: front-slide-pins, parent: front-caliper, kind: part, name: Bushed guide bolts and boots, aliases: [slide pins, caliper pins, guide pins], explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: caliper, part: slide-pins, d: 300, t: 28, y: 7, at: 180, span: 62, piston: 60 } }
+
+  - id: front-brake-hose
+    parent: front-brake
+    kind: hose
+    name: Front flexible brake hose
+    material: rubber
+    explode: { dir: [-1, 0, 1], dist: 120 }
+    specs: [{ label: Hose union to caliper, value: "32 Nm; bracket to damper 22 Nm", source: { ref: wsm, locator: p. 258 } }]
+    geometry: { gen: tube, r: 5, points: [[-178, -70, 40], [-200, -120, 200], [-130, -200, 330]] }
+
+  - id: front-wheel-speed-sensor
+    parent: front-brake
+    kind: part
+    name: Front wheel speed sensor (active)
+    aliases: [ABS sensor, wheel speed sensor, WSS]
+    function: Reads the magnetic encoder built into the wheel-bearing seal so the ABS module knows the wheel's speed.
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front] }
+    placement: { pos: [-20, -78, 78], rot: [90, 0, 0] }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [T150:l, T149:r]
+    faults:
+      - { symptom: "ABS / stability warning lamps with a wheel-speed fault code", cause: "Damaged sensor, corroded connector or chafed cable — check the cable route in the arch first." }
+    verification: { sources: [{ ref: wsm, locator: "pp. 56, 336", says: "A hole in the top face of the wheel knuckle provides the location for the ABS wheel speed sensor, secured with a bolt; the head sits close to a magnetic encoder in the bearing seal" }] }
+    geometry: { gen: wheel-speed-sensor, len: 44 }
+  - id: front-wss-cable
+    parent: front-brake
+    kind: harness
+    name: Front wheel speed sensor cable
+    material: harness-black
+    harness: { connects: [front-wheel-speed-sensor, front-wss-connector] }
+    explode: { dir: [0.5, 0, 1], dist: 100 }
+    geometry: { gen: tube, r: 3, points: [[-20, -78, 104], [-30, -140, 220], [-40, -190, 330], [-60, -205, 385]] }
+  - id: front-wss-connector
+    parent: front-brake
+    kind: connector
+    name: Front wheel speed sensor connector
+    summary: Two-pin connector joining the sensor lead to the body harness in the wheel arch.
+    connector: { pins: 2 }
+    placement: { pos: [-70, -206, 392], rot: [0, 0, 90] }
+    explode: { dir: [0, 0, 1], dist: 120 }
+    verification: { facts: oem, sources: [{ ref: ewd, locator: "206-09 Anti-lock control", says: "Wheel speed sensor wired on pins 1 and 2" }] }
+    geometry: { gen: connector, size: [30, 22, 18], mat: connector-black, wireR: 3 }
+
+  # ---------------------------------------------------------------- rear corners
+  - id: rear-brake
+    kind: assembly
+    sides: [left, right]
+    name: Rear brake and parking brake
+    location: { zone: wheel-arch-rear-left, text: "Inside the rear wheel" }
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear] }
+    placement: { pos: [-2660, 812, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 440 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 270–288" }] }
+
+  - id: rear-brake-disc
+    parent: rear-brake
+    kind: part
+    name: Rear brake disc (solid) with parking-brake drum
+    aliases: [rear rotor, drum-in-hat]
+    summary: Solid disc; the parking-brake drum is machined inside its hat.
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear, rear-caliper] }
+    contacts: [wheel-rear]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    specs:
+      - { label: Size, value: "302 mm × 12 mm solid; service limit 10 mm", source: { ref: wsm, locator: p. 270 } }
+      - { label: Parking-brake drum, value: "185 mm internal diameter", source: { ref: wsm, locator: p. 285 } }
+      - { label: Disc Torx screw, value: "35 Nm", source: { ref: wsm, locator: p. 270 } }
+    verification:
+      geometry: representative
+      notes: "Diameter, thickness and drum diameter match the specification; hat height is approximate."
+      sources: [{ ref: wsm, locator: "pp. 270, 285", says: "Rear disc solid (2.2 diesel), 302 mm, 12 mm new, 10 mm service limit; parking brake drum machined in centre of the brake disc, 185 mm internal diameter" }]
+    geometry: { gen: brake-disc, d: 302, t: 12, y: -9.5, vented: false, hatDepth: 49, hatR: 95, ring: 50 }
+
+  - id: rear-parking-brake-shoes
+    parent: rear-brake
+    kind: part
+    name: Parking brake shoes, expander and adjuster (TRW duo-servo)
+    aliases: [handbrake shoes, parking brake]
+    summary: Upper trailing and lower leading shoes on the backplate; expander at the front, manual adjuster at the rear.
+    explode: { dir: [0, -1, 0.3], dist: 160 }
+    specs:
+      - { label: Make / type, value: "TRW, drum in the disc centre, cable operated", source: { ref: wsm, locator: p. 285 } }
+      - { label: Minimum lining, value: "1 mm", source: { ref: wsm, locator: p. 285 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 286–287", says: "Brake shoes mounted horizontally on an integral dust shield and backplate; expander unit at the front, manual adjuster at the rear" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: lathe, axis: y, profile: [[80, 2], [91, 2], [91, 30], [80, 30]], mat: plastic-grey }
+        - { gen: box, size: [30, 26, 22], r: 4, pos: [78, 16, 0], mat: steel-zinc }
+        - { gen: box, size: [26, 22, 18], r: 3, pos: [-80, 16, 0], mat: steel-zinc }
+
+  - id: rear-dust-shield
+    parent: rear-brake
+    kind: part
+    name: Rear backplate and dust shield
+    explode: { dir: [0, -1, 0], dist: 90 }
+    contacts: [rear-caliper, rear-parking-brake-shoes, rear-wheel-speed-sensor]
+    material: steel-zinc
+    specs: [{ label: Fixings, value: "4 screws, 13 Nm", source: { ref: wsm, locator: p. 270 } }]
+    geometry: { gen: lathe, axis: y, profile: [[56, -6], [156, -6], [160, 0], [156, 2], [56, -2]] }
+
+  - id: rear-caliper
+    parent: rear-brake
+    kind: assembly
+    detail: true
+    name: Rear brake caliper (single piston, sliding)
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear] }
+    contacts: [rear-brake-disc]
+    explode: { dir: [-1, 0.6, 0], dist: 160 }
+    specs:
+      - { label: Carrier to knuckle, value: "110 Nm (new bolts)", source: { ref: wsm, locator: p. 270 } }
+      - { label: Guide pin bolts, value: "30 Nm", source: { ref: wsm, locator: p. 270 } }
+      - { label: Bleed screw, value: "10 Nm", source: { ref: wsm, locator: p. 270 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 271–274" }] }
+  - { id: rear-caliper-housing, parent: rear-caliper, kind: part, name: Sliding caliper housing, explode: { dir: [-1, -0.3, 0], dist: 90 }, geometry: { gen: caliper, part: housing, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-caliper-carrier, parent: rear-caliper, kind: part, name: Fixed carrier, explode: { dir: [-1, -1, 0], dist: 60 }, geometry: { gen: caliper, part: carrier, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-pad-inner, parent: rear-caliper, kind: part, name: Inner brake pad, aliases: [brake pad], explode: { dir: [0, -1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-inner, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-pad-outer, parent: rear-caliper, kind: part, name: Outer brake pad, aliases: [brake pad], explode: { dir: [0, 1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-outer, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-caliper-piston, parent: rear-caliper, kind: part, name: Caliper piston and annular seal, explode: { dir: [0, -1, 0], dist: 140 }, geometry: { gen: caliper, part: piston, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-bleed-nipple, parent: rear-caliper, kind: part, name: Bleed screw, aliases: [bleed nipple], explode: { dir: [-0.3, 0, 1], dist: 90 }, geometry: { gen: caliper, part: bleed-nipple, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+  - { id: rear-slide-pins, parent: rear-caliper, kind: part, name: Bushed guide bolts and boots, explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: caliper, part: slide-pins, d: 302, t: 12, y: -9.5, at: 200, span: 54, piston: 40 } }
+
+  - id: rear-brake-hose
+    parent: rear-brake
+    kind: hose
+    name: Rear flexible brake hose
+    material: rubber
+    explode: { dir: [-1, 0, 1], dist: 120 }
+    specs: [{ label: Hose union to caliper, value: "15 Nm; bracket to knuckle 22 Nm", source: { ref: wsm, locator: p. 270 } }]
+    geometry: { gen: tube, r: 5, points: [[-150, -60, -60], [-170, -120, 40], [-120, -200, 120]] }
+
+  - id: rear-wheel-speed-sensor
+    parent: rear-brake
+    kind: part
+    name: Rear wheel speed sensor (active)
+    aliases: [ABS sensor, wheel speed sensor]
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear] }
+    placement: { pos: [-20, -78, 78], rot: [90, 0, 0] }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [T152:l, T151:r]
+    verification: { sources: [{ ref: wsm, locator: "pp. 88, 336" }] }
+    geometry: { gen: wheel-speed-sensor, len: 44 }
+  - id: rear-wss-cable
+    parent: rear-brake
+    kind: harness
+    name: Rear wheel speed sensor cable
+    material: harness-black
+    harness: { connects: [rear-wheel-speed-sensor, rear-wss-connector] }
+    explode: { dir: [0.5, 0, 1], dist: 100 }
+    geometry: { gen: tube, r: 3, points: [[-20, -78, 104], [0, -150, 200], [10, -220, 300], [0, -240, 380]] }
+  - id: rear-wss-connector
+    parent: rear-brake
+    kind: connector
+    name: Rear wheel speed sensor connector
+    connector: { pins: 2 }
+    placement: { pos: [-8, -242, 390], rot: [0, 0, 90] }
+    explode: { dir: [0, 0, 1], dist: 120 }
+    geometry: { gen: connector, size: [30, 22, 18], mat: connector-black, wireR: 3 }
+
+  # ---------------------------------------------------------------- parking brake actuation
+  - id: parking-brake-cables
+    kind: assembly
+    name: Parking brake cables and equaliser
+    summary: Single cable from the lever quadrant to the equaliser, then LH/RH cables to the expander units.
+    explode: { dir: [0, 0, -1], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 285–288", says: "A single cable with a formed threaded rod-end connects the quadrant to the equalizer unit" }] }
+  - { id: parking-brake-cable-front, parent: parking-brake-cables, kind: harness, name: Parking brake front cable (lever to equaliser), material: steel-zinc, geometry: { gen: tube, r: 3, points: [[-1600, 0, 520], [-1750, 0, 440], [-1950, 0, 300]] } }
+  - id: parking-brake-cable-rear
+    parent: parking-brake-cables
+    kind: harness
+    sides: [left, right]
+    name: Parking brake rear cable
+    material: harness-black
+    geometry: { gen: tube, r: 4, points: [[-1950, 20, 300], [-2200, 260, 300], [-2500, 600, 330], [-2610, 760, 360]] }
+
+  # ---------------------------------------------------------------- hydraulics (LHD)
+  - id: brake-booster
+    kind: part
+    name: Brake booster (twin chamber)
+    aliases: [brake servo, servo, vacuum booster]
+    location: { zone: engine-bay-rear, text: "On the bulkhead, driver's side (left on LHD)" }
+    access: { from: [bonnet] }
+    handed: true
+    explode: { dir: [0.4, 0, 1], dist: 220 }
+    material: steel-black
+    contacts: [bulkhead]
+    specs:
+      - { label: Type, value: "Twin chamber, 203.2 mm and 228.6 mm (8 + 9 in); boost ratio 8:1", source: { ref: wsm, locator: p. 318 } }
+      - { label: Fixing, value: "Sealed to the bulkhead with a gasket, 4 studs", source: { ref: wsm, locator: p. 320 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 318–320", says: "The unit is located on the driver's side of the engine compartment" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 114, h: 90, axis: x, chamfer: 18, pos: [-430, 360, 790] }
+        - { gen: cyl, r: 102, h: 70, axis: x, chamfer: 16, pos: [-350, 360, 790] }
+
+  - id: master-cylinder
+    kind: part
+    name: Brake master cylinder (tandem)
+    location: { zone: engine-bay-rear, text: "Bolted to the front of the brake booster" }
+    access: { from: [bonnet] }
+    handed: true
+    explode: { dir: [1, 0, 1], dist: 240 }
+    material: aluminium-cast
+    contacts: [brake-booster]
+    specs:
+      - { label: Bore / stroke, value: "27 mm primary and secondary, 36 mm stroke", source: { ref: wsm, locator: p. 303 } }
+      - { label: Fixing, value: "Nuts 26 Nm; reservoir 6 Nm", source: { ref: wsm, locator: p. 303 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 253, 303–306" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 26, h: 170, axis: x, chamfer: 3, pos: [-230, 360, 790] }
+        - { gen: box, size: [24, 110, 80], r: 6, pos: [-310, 360, 790] }
+
+  - id: brake-fluid-reservoir
+    kind: part
+    name: Brake and clutch fluid reservoir
+    location: { zone: engine-bay-rear, text: "On top of the master cylinder; also feeds the clutch master cylinder" }
+    access: { from: [bonnet], notes: "Check the level between MIN and MAX. Fluid: Shell DOT4 ESL (or ISO 4925 class 6 to LRES22BF03)." }
+    handed: true
+    explode: { dir: [0, 0, 1], dist: 300 }
+    contacts: [master-cylinder]
+    ewd: [S212]
+    verification: { sources: [{ ref: wsm, locator: "pp. 306, 1162" }, { ref: handbook, locator: Lubricants and fluids }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [130, 82, 72], r: 12, pos: [-230, 360, 862], mat: plastic-white }
+        - { gen: cyl, r: 24, h: 18, axis: z, chamfer: 3, pos: [-200, 360, 907], mat: plastic-black }
+
+  - id: brake-vacuum-pipe
+    kind: hose
+    name: Brake booster vacuum pipe and check valve
+    summary: From the camshaft-driven vacuum pump to the booster.
+    material: plastic-black
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 319 }] }
+    geometry: { gen: tube, r: 6, points: [[148, 120, 780], [60, 230, 840], [-180, 330, 880], [-330, 360, 860]] }
+
+  - id: abs-module
+    kind: assembly
+    name: ABS module and hydraulic control unit (HCU)
+    aliases: [ABS pump, HCU, ABS unit, DSC module, ABS modulator]
+    summary: Integrated electronic module and hydraulic unit between the master cylinder and the four calipers; also runs stability control, hill descent and roll stability control.
+    location: { zone: plenum, text: "Between the bulkheads, rear LH side of the engine compartment" }
+    access: { from: [bonnet] }
+    placement: { pos: [-582, 430, 925] }
+    explode: { dir: [0.4, 0.5, 1], dist: 300 }
+    ewd: [D423]
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 308, 337, 1800", says: "The integrated ABS module and HCU is located on the rear LH side of the engine compartment; mounted between the bulkheads on LH side" }]
+  - { id: abs-hcu, parent: abs-module, kind: part, name: Hydraulic control unit and pump motor, explode: { dir: [0, 0, -1], dist: 80 }, geometry: { gen: compound, parts: [{ gen: box, size: [110, 120, 100], r: 8, mat: aluminium-cast }, { gen: cyl, r: 36, h: 70, axis: y, pos: [0, -95, 0], mat: steel-black }] } }
+  - { id: abs-ecu, parent: abs-module, kind: part, name: ABS electronic control module, explode: { dir: [1, 0, 0], dist: 90 }, placement: { pos: [80, 0, 0] }, geometry: { gen: enclosure, size: [40, 120, 90], lid: false, sockets: 0 } }
+  - id: abs-connector
+    parent: abs-module
+    kind: connector
+    name: ABS module connector
+    connector: {}
+    explode: { dir: [1, 0, 0.5], dist: 140 }
+    placement: { pos: [118, 0, 10] }
+    geometry: { gen: connector, size: [34, 70, 40], mat: connector-black }
+
+  - id: sensor-cluster
+    kind: part
+    name: Stability sensor cluster (yaw rate and acceleration)
+    aliases: [yaw rate sensor, yaw sensor]
+    location: { zone: cabin-centre-console, text: "Beneath the centre console, on the transmission tunnel" }
+    access: { from: [cabin-front] }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    ewd: [T314]
+    verification: { sources: [{ ref: wsm, locator: p. 336, says: "The sensor cluster is installed beneath the center console and is secured to the transmission tunnel with 2 studs and nuts" }] }
+    geometry: { gen: box, size: [90, 70, 40], r: 6, pos: [-1250, 0, 505], mat: plastic-black }
+
+  - id: brake-pipes
+    kind: assembly
+    name: Brake pipes
+    aliases: [brake lines, hard lines]
+    summary: Rigid pipes from the master cylinder to the HCU and on to each wheel (routes are schematic).
+    explode: { dir: [0, 0, 1], dist: 60 }
+    specs: [{ label: Pipe unions, value: "15 Nm", source: { ref: wsm, locator: p. 303 } }]
+    verification: { placement: estimated }
+  - { id: brake-pipe-mc-hcu, parent: brake-pipes, kind: pipe, name: "Master cylinder → HCU pipes", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-150, 360, 810], [-300, 400, 880], [-500, 430, 900], [-540, 430, 905]] } }
+  - { id: brake-pipe-fl, parent: brake-pipes, kind: pipe, name: "HCU → front left pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-560, 470, 880], [-450, 600, 800], [-250, 620, 720], [-130, 605, 699]] } }
+  - { id: brake-pipe-fr, parent: brake-pipes, kind: pipe, name: "HCU → front right pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-560, 400, 880], [-520, 0, 820], [-480, -450, 760], [-300, -600, 720], [-130, -605, 699]] } }
+  - { id: brake-pipe-rl, parent: brake-pipes, kind: pipe, name: "HCU → rear left pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-570, 440, 870], [-600, 560, 600], [-620, 680, 420], [-1200, 690, 330], [-2200, 690, 330], [-2500, 640, 360], [-2780, 570, 488]] } }
+  - { id: brake-pipe-rr, parent: brake-pipes, kind: pipe, name: "HCU → rear right pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-570, 420, 870], [-600, 540, 600], [-620, 664, 420], [-1200, 674, 326], [-2200, 674, 326], [-2350, 300, 330], [-2500, -300, 340], [-2780, -570, 488]] } }

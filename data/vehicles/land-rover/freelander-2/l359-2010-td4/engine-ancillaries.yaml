@@ -1,0 +1,74 @@
+# Engine ancillaries with their own removal procedures in the workshop manual
+# (cited by page): oil cooler, crankcase and valve-cover vent oil separators,
+# turbocharger oil lines. Engine frame as in engine.yaml (X along the crank
+# towards the timing belt, Y towards the intake side, Z up the bores).
+system: engine
+defaults:
+  material: aluminium-cast
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  - id: oil-cooler
+    parent: engine-assembly
+    kind: part
+    name: Engine oil cooler
+    summary: Plate-type oil-to-coolant heat exchanger on the cylinder block beside the oil filter housing; engine coolant carries away oil heat.
+    location: { zone: engine-bay, text: "Intake side of the cylinder block, beside the oil filter housing" }
+    access: { from: [underside], removeFirst: [engine-undershield], notes: "Cooler to cylinder block bolts 20 Nm; brackets 10 Nm.", sources: [{ ref: wsm, locator: "pp. 575, 696" }] }
+    explode: { dir: [0, 0.6, -0.4], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 575, 696" }] }
+    geometry: { gen: box, size: [110, 40, 90], r: 8, pos: [170, 205, 60] }
+  - id: crankcase-vent-oil-separator
+    parent: engine-assembly
+    kind: part
+    name: Crankcase vent oil separator
+    aliases: [breather, PCV separator]
+    summary: Separates oil mist from the crankcase blow-by gas and drains it back to the sump before the gas is returned to the intake.
+    location: { zone: engine-bay, text: "On the cylinder block" }
+    access: { from: [bonnet], notes: "Separator 9 Nm; bracket to block M6 10 Nm, M8 25 Nm.", sources: [{ ref: wsm, locator: "pp. 918, 930" }] }
+    material: plastic-black
+    explode: { dir: [0, 0.5, 0.5], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 918, 930" }] }
+    geometry: { gen: box, size: [80, 50, 110], r: 10, pos: [400, 190, 210] }
+  - id: valve-cover-vent-oil-separator
+    parent: engine-assembly
+    kind: part
+    name: Valve cover vent oil separator
+    location: { zone: engine-bay, text: "On the camshaft cover, under the engine cover" }
+    access: { from: [bonnet], removeFirst: [engine-cover], sources: [{ ref: wsm, locator: "pp. 918, 926" }] }
+    material: plastic-black
+    explode: { dir: [0, 0, 1], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 918, 926" }] }
+    geometry: { gen: box, size: [80, 60, 28], r: 8, pos: [20, 40, 436] }
+  - id: turbo-oil-feed-line
+    parent: engine-assembly
+    kind: pipe
+    name: Turbocharger oil feed line
+    summary: Steel line carrying pressurised engine oil to the turbocharger bearings. The bolt torque depends on the engine number and on whether the line and bolt are new.
+    location: { zone: engine-bay, text: "Exhaust side of the engine, from the block to the turbocharger" }
+    access: { from: [bonnet], sources: [{ ref: wsm, locator: p. 824 }] }
+    material: steel-zinc
+    specs:
+      - { label: "Feed bolt, new line kit LR019465", value: "17 Nm", source: { ref: wsm, locator: p. 824 } }
+      - { label: "Feed bolt, new line kit LR006648", value: "24 Nm", source: { ref: wsm, locator: p. 824 } }
+      - { label: "Feed bolt, re-used line", value: "17 Nm from engine 10DZ584056159 (manual gearbox); 24 Nm up to 10DZ584056158", source: { ref: wsm, locator: p. 824 } }
+    partNumbers:
+      - { number: LR019465, note: "Oil feed line kit (bolt 17 Nm)", source: { ref: wsm, locator: p. 824 } }
+      - { number: LR006648, note: "Oil feed line kit (bolt 24 Nm)", source: { ref: wsm, locator: p. 824 } }
+    explode: { dir: [0, -0.6, 0.5], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: p. 824, says: "Turbocharger oil feed line kit part number LR019465 17 Nm; LR006648 24 Nm" }] }
+    geometry: { gen: tube, r: 4, points: [[330, -170, 150], [310, -235, 190], [262, -282, 230]] }
+  - id: turbo-oil-return-line
+    parent: engine-assembly
+    kind: pipe
+    name: Turbocharger oil return line
+    location: { zone: engine-bay, text: "Below the turbocharger, back to the cylinder block" }
+    access: { from: [underside], removeFirst: [engine-undershield], notes: "Return line 10 Nm.", sources: [{ ref: wsm, locator: p. 824 }] }
+    material: steel-zinc
+    explode: { dir: [0, -0.6, -0.5], dist: 140 }
+    verification: { sources: [{ ref: wsm, locator: p. 824 }] }
+    geometry: { gen: tube, r: 7, points: [[235, -300, 130], [248, -240, 40], [258, -175, -40]] }

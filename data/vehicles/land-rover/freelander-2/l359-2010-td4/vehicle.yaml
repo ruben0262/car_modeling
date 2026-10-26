@@ -1,0 +1,227 @@
+# Land Rover Freelander 2 (L359), model year 2010, 2.2 TD4 diesel, 6-speed manual,
+# left-hand drive (EU).
+#
+# Coordinates everywhere in this folder: ISO 8855 vehicle frame, millimetres.
+#   +X forward, +Y left, +Z up; origin on the ground, on the centreline,
+#   directly under the front axle. Rotations: degrees, XYZ order.
+# Mirrored pairs (`sides: [left, right]`) are authored for the LEFT (+Y)
+# side; the build reflects the right-hand copy.
+# Handed parts (`handed: true`: pedals, steering, glovebox…) are authored for
+# LEFT-hand drive; a right-hand-drive variant reflects them.
+#
+# Variant assumptions still to confirm (no VIN yet) are listed in
+# docs/verification.md ("Open questions").
+
+id: land-rover-freelander-2-l359-2010-td4
+make: Land Rover
+model: Freelander 2
+generation: { code: L359, years: [2006, 2014] }
+modelYear: 2010
+variant:
+  name: 2.2 TD4
+  engine: 2.2 Duratorq TD4 (DW12 family) I4 common-rail turbodiesel
+  transmission: 6-speed manual (Getrag-Ford M66)
+  drive: AWD (active on-demand coupling, Gen 4)
+  body: 5-door SUV
+  market: EU (left-hand drive)
+  steering: left
+aliases: [LR2, Freelander II, FL2, Freelander TD4, TD4_e]
+bodyColor: '#a3a9b0'
+disclaimer: >-
+  Educational model built from the official Land Rover workshop manual and wiring
+  diagrams. Shapes are simplified unless a component's verification panel says
+  otherwise. Always confirm against the workshop manual before working on a vehicle.
+
+envelope:
+  length: 4500
+  width: 1910
+  height: 1740
+  wheelbase: 2660
+  trackFront: 1611
+  trackRear: 1624
+  xFront: 880
+  xRear: -3620
+
+specs:
+  - { label: Length, value: "4500 mm", source: { ref: brochure-my2011, locator: Dimensions } }
+  - { label: Width, value: "2005 mm mirrors folded, 2195 mm mirrors out (1910 mm body)", source: { ref: brochure-my2011, locator: Weights } }
+  - { label: Height, value: "1740 mm", source: { ref: brochure-my2011, locator: Dimensions } }
+  - { label: Wheelbase, value: "2660 mm", source: { ref: brochure-my2011, locator: Dimensions } }
+  - { label: Track front / rear, value: "1611 / 1624 mm", source: { ref: brochure-my2011, locator: Dimensions } }
+  - { label: Ride height (wheel centre to arch), value: "Front 491 ± 12 mm, rear 505 ± 12 mm", source: { ref: wsm, locator: p. 48 } }
+  - { label: Ground clearance, value: "Up to 210 mm (front axle), 265 mm (rear axle)", source: { ref: brochure-my2011, locator: Dimensions & capability } }
+  - { label: Approach / ramp / departure, value: "31° / 23° / 34°", source: { ref: brochure-my2011, locator: Vehicle geometry } }
+  - { label: Wading depth, value: "500 mm", source: { ref: brochure-my2011, locator: Dimensions & capability } }
+  - { label: Fuel tank, value: "68 L (diesel)", source: { ref: handbook, locator: Capacities } }
+  - { label: Gear ratios (manual), value: "3.750 / 1.905 / 1.182 / 0.838 / 0.652 / 0.540, R 3.436, final drive 4.53", source: { ref: brochure-my2011, locator: Transmission } }
+  - { label: Kerb weight, value: "1770 kg (pre-facelift)", source: { ref: carfolio-fl2-td4 } }
+specSources: [{ ref: brochure-my2011 }, { ref: wsm }]
+
+systems:
+  - { id: body, name: Body exterior, short: Body, color: '#a9b7c6', icon: car, layer: 10,
+      summary: "Panels, glass, lamps and trim — the vehicle's skin.",
+      explode: { dir: [0, 0, 1], dist: 1450 } }
+  - { id: structure, name: Body structure, short: Structure, color: '#e9e2d0', icon: frame, layer: 9,
+      summary: "Body-in-white — rails, pillars, floor and bulkhead that carry the loads.",
+      explode: { dir: [0, 0, 1], dist: 900 } }
+  - { id: interior, name: Interior, short: Interior, color: '#a18cff', icon: armchair, layer: 8,
+      summary: "Seats, dashboard, steering wheel and controls.",
+      explode: { dir: [-0.25, 0, 1], dist: 520 } }
+  - { id: engine, name: Engine, short: Engine, color: '#ff7b54', icon: engine, layer: 6,
+      summary: "2.2 TD4 diesel engine with turbocharger, injection, EGR and ancillaries.",
+      explode: { dir: [0.55, 0, 1], dist: 420 } }
+  - { id: driveline, name: Transmission & driveline, short: Driveline, color: '#f6b93b', icon: cog, layer: 5,
+      summary: "Gearbox, power transfer unit, shafts, on-demand coupling and rear drive unit.",
+      explode: { dir: [0, 0, -1], dist: 90 } }
+  - { id: suspension, name: Suspension & steering, short: Suspension, color: '#3cc6b4', icon: spring, layer: 4,
+      summary: "Subframes, struts, arms, knuckles, anti-roll bars and steering gear.",
+      explode: { dir: [0, 0, -1], dist: 200 } }
+  - { id: brakes, name: Brakes, short: Brakes, color: '#ff4f6d', icon: disc, layer: 3,
+      summary: "Discs, calipers, servo, master cylinder, ABS and brake lines.",
+      explode: { dir: [0, 0, 0], dist: 0 } }
+  - { id: wheels, name: Wheels & tyres, short: Wheels, color: '#93a0b4', icon: circle, layer: 2,
+      summary: "Road wheels and tyres.",
+      explode: { dir: [0, 0, 0], dist: 0 } }
+  - { id: cooling, name: "Cooling, climate & air intake", short: Cooling, color: '#4da6ff', icon: wind, layer: 7,
+      summary: "Radiator, charge-air cooler, condenser, fan, air cleaner and ducting.",
+      explode: { dir: [1, 0, 0.15], dist: 620 } }
+  - { id: fuel-exhaust, name: Fuel & exhaust, short: Fuel/Exhaust, color: '#b8e05a', icon: fuel, layer: 1,
+      summary: "Fuel tank and lines, particulate filter, pipes and silencers.",
+      explode: { dir: [0, 0, -1], dist: 380 } }
+  - { id: electrical, name: Electrical, short: Electrical, color: '#ffd84a', icon: zap, layer: 6,
+      summary: "Battery, junction boxes, control modules, harnesses and connectors.",
+      explode: { dir: [0, 0, 1], dist: 260 } }
+
+zones:
+  engine-bay: Engine compartment
+  engine-bay-front: Engine compartment, front (radiator side)
+  engine-bay-left: Engine compartment, left side
+  engine-bay-right: Engine compartment, right side
+  engine-bay-rear: Engine compartment, rear (bulkhead side)
+  front-end: Front end, behind the bumper
+  underbody-front: Underbody, front
+  underbody-centre: Underbody, centre (tunnel)
+  underbody-rear: Underbody, rear
+  wheel-arch-front-left: Front left wheel arch
+  wheel-arch-front-right: Front right wheel arch
+  wheel-arch-rear-left: Rear left wheel arch
+  wheel-arch-rear-right: Rear right wheel arch
+  cabin-dashboard: Cabin, instrument panel
+  cabin-driver-footwell: Cabin, driver footwell (left on LHD)
+  cabin-passenger-footwell: Cabin, passenger footwell (right on LHD)
+  plenum: Between the bulkheads, under the plenum (scuttle) panel
+  cabin-front: Cabin, front seats
+  cabin-centre-console: Cabin, centre console
+  cabin-rear: Cabin, rear seats
+  luggage: Luggage compartment
+  roof: Roof
+  exterior-front: Exterior, front
+  exterior-rear: Exterior, rear
+  exterior-side: Exterior, side
+
+# Directions are from the part towards the viewer (ISO frame).
+approaches:
+  - { id: overview, label: Overview, dir: [1, 1.1, 0.65] }
+  - { id: bonnet, label: From above (bonnet open), dir: [0.45, 0.15, 1] }
+  - { id: underside, label: From below (vehicle on a lift), dir: [0.25, 0.35, -1] }
+  - { id: front-end, label: From the front (bumper off), dir: [1, 0.15, 0.3] }
+  - { id: wheel-arch-front-left, label: Front left wheel arch (wheel off), dir: [0.25, 1, 0.2] }
+  - { id: wheel-arch-front-right, label: Front right wheel arch (wheel off), dir: [0.25, -1, 0.2] }
+  - { id: wheel-arch-rear-left, label: Rear left wheel arch (wheel off), dir: [-0.25, 1, 0.2] }
+  - { id: wheel-arch-rear-right, label: Rear right wheel arch (wheel off), dir: [-0.25, -1, 0.2] }
+  - { id: cabin-front, label: 'Cabin, front', dir: [-0.35, 0.8, 0.75] }
+  - { id: cabin-rear, label: 'Cabin, rear', dir: [-0.6, 0.8, 0.8] }
+  - { id: luggage, label: Luggage compartment (tailgate open), dir: [-1, 0.2, 0.55] }
+  - { id: exterior, label: Exterior, dir: [0.9, 1, 0.35] }
+
+wiring:
+  id: lhd-080379
+  file: wiring/ewd-lhd-080379.json
+  source: ewd
+  label: VIN 080379–113896
+  years: 2008–2009
+  # The engineering issue prints almost every wire's length; positions are calculated from it.
+  lengths: { file: wiring/ewd-lhd-09my-engineering.json, source: ewd-09my-engineering }
+  # Other model years and issues, selectable in the viewer's Wiring tab. Model years come from the parts
+  # catalogue's VIN breaks (7H051089 is 2007, 8H103563 is 2008, 9H114084 is 2009).
+  publications:
+    - { id: lhd-000201, file: wiring/ewd-lhd-000201.json, source: ewd-lhd-000201, label: VIN 000201–057871, years: 2007–2008 }
+    - { id: lhd-057872, file: wiring/ewd-lhd-057872.json, source: ewd-lhd-057872, label: VIN 057872–080378, years: "2008" }
+    - { id: lhd-09my-engineering, file: wiring/ewd-lhd-09my-engineering.json, source: ewd-09my-engineering, label: "2009 model year, engineering issue (July 2008)", years: "2009" }
+  note: >-
+    Netlist extracted from the LHD wiring diagrams for VIN serials 080379–113896, the newest set in hand. Parts-catalogue
+    VIN breaks show 2010 model-year production starts after serial 119277, so a 2010 car is newer than these diagrams;
+    later additions (Stop/Start) are not in them. Wires without a printed far end continue on another sheet.
+  # Components the diagrams print that this car cannot have. They are excluded from the coverage count.
+  notApplicable:
+    - codes: [D233, D234, D235, D236, D237, D238, M343, M344, G158, D361]
+      reason: >-
+        Petrol (i6 3.2) engine only: ignition coils, intake manifold actuators, ignition capacitor and the fuel pump
+        driver module are drawn only on the petrol engine-management and P6 junction-box sheets. The TD4 runs its fuel
+        pump through relay R103 in the CJB.
+      source: { ref: ewd, locator: "303-14 Petrol 02/05–03/05; 414-01 Battery junction box - P6" }
+    - codes: [D294, D307, D308, Y262, T128]
+      reason: Automatic transmission only (control module, selector, mechatronics, fluid temperature sensor); this car has the 6-speed manual.
+      source: { ref: ewd, locator: "307-01 AUTOMATIC TRANSMISSION 01/01" }
+    - codes: [A134, A135]
+      reason: Rear side marker lamps are fitted to North American (NAS) vehicles only.
+      source: { ref: wsm, locator: "pp. 1642, 1644" }
+    - codes: [F210]
+      reason: SDARS satellite radio antenna, North America only.
+      source: { ref: wsm, locator: "pp. 1594, 1599, 1638" }
+    - codes: [T221, T354, T355]
+      reason: >-
+        Occupant classification system (occupancy module, belt tension sensor, pressure mat) is NAS only; other markets
+        use the belt-minder mat (D358).
+      source: { ref: wsm, locator: "pp. 2200–2202" }
+    - codes: [M345]
+      reason: Pyrotechnic steering column collapse actuator, NAS vehicles only.
+      source: { ref: wsm, locator: "pp. 2198, 2207" }
+    - codes: [D356]
+      reason: VICS beacon antenna, Japan only.
+      source: { ref: wsm, locator: "pp. 1608, 1610" }
+    - codes: [V101, Y371]
+      reason: Printed on the sheets as "NOT USED" / "Not installed".
+      source: { ref: ewd }
+    - codes: [E110]
+      reason: Diagram notation ("earth via fixings") for parts grounded through their mounting, not a separate component.
+      source: { ref: ewd }
+
+files:
+  - body.yaml
+  - structure.yaml
+  - wheels.yaml
+  - brakes.yaml
+  - suspension.yaml
+  - engine.yaml
+  - driveline.yaml
+  - cooling.yaml
+  - fuel-exhaust.yaml
+  - electrical.yaml
+  - electrical-body.yaml
+  - interior.yaml
+  - body-hardware.yaml
+  - interior-trim.yaml
+  - engine-ancillaries.yaml
+
+# Documented joins between parts (type, torque, manual page)
+joints: joints.yaml
+
+shapes:
+  # Exterior surface stations (see tools/geometry/body.ts). Derived from the
+  # published length/width/height/wheelbase and side-view proportions — NOT
+  # measured. Verification target: profile photos + tape measurements.
+  body:
+    x:     [ 880,  860,  820,  780,  650,  400,  100, -200, -430, -700, -1000, -1120, -1300, -1500, -2000, -2500, -2900, -3200, -3300, -3400, -3440, -3480, -3520, -3550, -3575, -3600, -3620]
+    zSill: [ 470,  430,  390,  365,  345,  350,  360,  370,  372,  370,   365,   365,   362,   360,   360,   368,   380,   400,   412,   428,   435,   445,   455,   465,   478,   495,   520]
+    zBelt: [ 700,  760,  830,  872,  900,  922,  950,  985, 1040, 1075,  1088,  1092,  1098,  1105,  1122,  1140,  1155,  1165,  1165,  1160,  1150,  1130,  1080,   990,   900,   830,   800]
+    zTop:  [ 780,  860,  940,  968,  990, 1012, 1038, 1068, 1105, 1330,  1560,  1655,  1680,  1695,  1705,  1712,  1712,  1705,  1695,  1665,  1625,  1500,  1260,  1060,   940,   870,   840]
+    wLow:  [ 750,  820,  868,  888,  900,  906,  908,  906,  902,  898,   897,   897,   897,   897,   898,   904,   906,   902,   898,   892,   888,   882,   870,   856,   840,   815,   780]
+    wMax:  [ 770,  845,  895,  915,  928,  934,  936,  934,  930,  926,   925,   925,   925,   925,   926,   932,   935,   930,   926,   920,   916,   910,   898,   884,   868,   840,   800]
+    wBelt: [ 720,  790,  845,  865,  878,  884,  888,  890,  892,  900,   902,   902,   902,   902,   903,   908,   910,   905,   900,   892,   886,   878,   862,   845,   825,   795,   755]
+    wTop:  [ 640,  700,  760,  785,  800,  808,  812,  815,  812,  780,   735,   718,   708,   705,   705,   706,   708,   708,   710,   712,   718,   735,   760,   770,   760,   730,   690]
+    crown: [   8,   12,   18,   22,   26,   28,   28,   26,   20,   24,    26,    28,    30,    32,    32,    32,    32,    30,    28,    24,    20,    14,    10,     8,     6,     5,     5]
+    # Arch radius = OEM ride height (wheel centre to arch edge): 491 front, 505 rear (wsm p. 48)
+    arches:
+      - { x: 0, z: 368.65, r: 491 }
+      - { x: -2660, z: 368.65, r: 505 }

@@ -1,0 +1,595 @@
+# Exterior body: panels are cut from the parametric body surface
+# (vehicle.yaml shapes.body). t: 0 sill · 1 beltline · 2 roof edge · 3 centre
+# (mirrored 3…6 on the right). "z:600" = where the side reaches 600 mm.
+system: body
+defaults:
+  material: paint
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: unsourced
+    notes: The body surface is fitted to the published length, width, height and wheelbase; panel split lines are estimated. Gaps follow the manual's gap-and-profile chart (wsm pp. 2257–2261).
+
+nodes:
+  # ---------------------------------------------------------------- front end
+  - id: front-bumper
+    kind: part
+    name: Front bumper cover
+    aliases: [front bumper, bumper cover]
+    summary: Painted upper cover with black textured lower valance; carries the grille surround mounts.
+    location: { zone: exterior-front, text: "Front of vehicle, below the headlamps" }
+    access: { from: [front-end, underside], notes: "Fixings at the wheel-arch liners, undertray and upper bracket (sequence to be confirmed against the workshop manual)." }
+    explode: { dir: [1, 0, -0.1], dist: 480 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [440, 880], t: [0, 'z:600'], mat: trim-black }
+        - { gen: body-panel, x: [440, 880], t: ['zr:600', 6], mat: trim-black }
+        - { gen: body-panel, x: [440, 880], t: ['z:600', 'z:720'], mat: paint }
+        - { gen: body-panel, x: [440, 880], t: ['zr:720', 'zr:600'], mat: paint }
+        - { gen: body-cap, end: front, z: [470, 600], mat: trim-black }
+        - { gen: body-cap, end: front, z: [600, 720], mat: paint }
+
+  - id: front-end-panel
+    kind: part
+    name: Grille surround (upper front panel)
+    location: { zone: exterior-front, text: "Between the bumper and the bonnet leading edge" }
+    explode: { dir: [1, 0, 0.35], dist: 380 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [790, 880], t: ['z:720', 'zr:720'], mat: paint }
+        - { gen: body-cap, end: front, z: [720, 790], mat: paint }
+
+  - id: grille
+    kind: part
+    name: Radiator grille
+    location: { zone: exterior-front, text: "Centre of the front end, between the headlamps" }
+    explode: { dir: [1, 0, 0], dist: 620 }
+    placement: { pos: [848, 0, 838], rot: [0, -26, 0] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [24, 600, 150], r: 10, mat: trim-satin }
+        - { gen: box, size: [16, 560, 118], r: 6, pos: [6, 0, 0], mat: trim-black }
+
+  - id: headlamp
+    kind: part
+    sides: [left, right]
+    name: Headlamp unit
+    aliases: [headlight, front lamp]
+    location: { zone: exterior-front, text: "Front corners, wrapping onto the wings" }
+    explode: { dir: [1, 0.5, 0.1], dist: 420 }
+    placement: { pos: [780, 672, 880], rot: [0, -22, 8] }
+    ewd: [A101:l, A100:r, Y136:l, Y133:r, Y135:l, Y132:r, Y137:l, Y134:r, A117:l, A116:r, M130:l, M129:r, M317:l, M318:r, M319:l, M320:r]
+    specs: [{ label: Fixings, value: "RH to LH headlamp top inboard fixing hole: 1061.5 mm", source: { ref: wsm, locator: p. 2250 } }]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: wsm, locator: "pp. 1643–1652, 2250" }, { ref: ewd }] }
+    geometry: { gen: lamp, size: [92, 330, 130], lens: lens-clear, reflectors: 2 }
+
+  - id: bonnet
+    kind: part
+    name: Bonnet
+    aliases: [hood, engine cover panel]
+    summary: Clamshell bonnet — its shut line runs along the top of the wings rather than on the flat top.
+    location: { zone: exterior-front, text: "Over the engine compartment" }
+    explode: { dir: [0.25, 0, 1], dist: 480 }
+    geometry: { gen: body-panel, x: [-430, 790], t: [1, 5], gap: 5 }
+
+  - id: front-wing
+    kind: part
+    sides: [left, right]
+    name: Front wing
+    aliases: [front fender, wing]
+    location: { zone: exterior-side, text: "Around the front wheel arch, below the bonnet shut line" }
+    explode: { dir: [0.15, 1, 0], dist: 320 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-470, 440], t: [0, 1] }
+        - { gen: body-panel, x: [440, 790], t: ['z:720', 1] }
+
+  - id: arch-flare-front
+    kind: part
+    sides: [left, right]
+    name: Front wheel-arch extension
+    aliases: [arch moulding, wheel arch trim]
+    location: { zone: exterior-side, text: "Around the front wheel-arch opening" }
+    explode: { dir: [0, 1, 0], dist: 220 }
+    geometry: { gen: arch-flare, arch: 0, proud: 20 }
+
+  # ---------------------------------------------------------------- sides
+  - id: front-door
+    kind: assembly
+    sides: [left, right]
+    name: Front door
+    location: { zone: exterior-side, text: "Between the A- and B-pillars" }
+    explode: { dir: [0, 1, 0], dist: 620 }
+  - id: front-door-skin
+    parent: front-door
+    kind: part
+    name: Front door outer skin
+    geometry: { gen: body-panel, x: [-470, -1480], t: ['z:440', 1], gap: 5 }
+  - id: front-door-glass
+    parent: front-door
+    kind: part
+    name: Front door glass
+    material: glass
+    geometry: { gen: body-panel, x: [-545, -1440], t: [1.07, 1.86], inset: 5 }
+  - id: front-door-belt-moulding
+    parent: front-door
+    kind: part
+    name: Front door belt moulding
+    material: trim-black
+    geometry: { gen: body-panel, x: [-470, -1480], t: [1.0, 1.07], inset: -1 }
+  - id: door-mirror
+    parent: front-door
+    kind: part
+    name: Door mirror
+    aliases: [wing mirror, side mirror]
+    placement: { pos: [-585, 845, 1086], rot: [0, 0, 6] }
+    summary: Electrically adjusted and heated; the LH mirror houses the ambient air temperature sensor.
+    ewd: [M168:l, M169:r, T119:l, A162:l, A163:r]
+    verification: { facts: oem, sources: [{ ref: wsm, locator: "pp. 1362, 1889" }, { ref: ewd }] }
+    geometry: { gen: mirror }
+
+  - id: rear-door
+    kind: assembly
+    sides: [left, right]
+    name: Rear door
+    location: { zone: exterior-side, text: "Between the B- and C-pillars, cut around the rear wheel arch" }
+    explode: { dir: [0, 1, 0], dist: 620 }
+  - id: rear-door-skin
+    parent: rear-door
+    kind: part
+    name: Rear door outer skin
+    geometry: { gen: body-panel, x: [-1480, -2420], t: ['z:440', 1], gap: 5 }
+  - id: rear-door-glass
+    parent: rear-door
+    kind: part
+    name: Rear door glass
+    material: glass
+    geometry: { gen: body-panel, x: [-1530, -2330], t: [1.07, 1.86], inset: 5 }
+  - id: rear-door-belt-moulding
+    parent: rear-door
+    kind: part
+    name: Rear door belt moulding
+    material: trim-black
+    geometry: { gen: body-panel, x: [-1480, -2420], t: [1.0, 1.07], inset: -1 }
+
+  - id: b-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: B-pillar finisher
+    material: trim-black
+    explode: { dir: [0, 1, 0], dist: 240 }
+    geometry: { gen: body-panel, x: [-1440, -1530], t: [1.0, 1.86], inset: -2, gap: 0 }
+
+  - id: c-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: C-pillar finisher
+    material: trim-black
+    explode: { dir: [0, 1, 0], dist: 240 }
+    geometry: { gen: body-panel, x: [-2330, -2430], t: [1.0, 1.86], inset: -2, gap: 0 }
+
+  - id: sill-cover
+    kind: part
+    sides: [left, right]
+    name: Sill finisher
+    aliases: [side skirt, rocker cover]
+    material: trim-black
+    location: { zone: exterior-side, text: "Below the doors, between the wheel arches" }
+    explode: { dir: [0, 1, -0.25], dist: 300 }
+    geometry: { gen: body-panel, x: [-440, -2220], t: [0, 'z:440'] }
+
+  - id: rear-quarter
+    kind: part
+    sides: [left, right]
+    name: Rear quarter panel
+    aliases: [rear wing, quarter panel]
+    location: { zone: exterior-side, text: "Around the rear wheel arch, behind the rear door" }
+    explode: { dir: [-0.1, 1, 0], dist: 300 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-2420, -3100], t: [0, 1] }
+        - { gen: body-panel, x: [-3100, -3440], t: ['z:800', 1] }
+
+  - id: arch-flare-rear
+    kind: part
+    sides: [left, right]
+    name: Rear wheel-arch extension
+    location: { zone: exterior-side, text: "Around the rear wheel-arch opening" }
+    explode: { dir: [0, 1, 0], dist: 220 }
+    geometry: { gen: arch-flare, arch: 1, proud: 20 }
+
+  - id: rear-quarter-glass
+    kind: part
+    sides: [left, right]
+    name: Rear quarter glass (fixed)
+    material: glass
+    explode: { dir: [0, 1, 0.2], dist: 360 }
+    ewd: [F220:l, F206:r]
+    geometry: { gen: body-panel, x: [-2430, -3150], t: [1.07, 1.86], inset: 5 }
+
+  - id: d-pillar
+    kind: part
+    sides: [left, right]
+    name: D-pillar outer panel
+    explode: { dir: [-0.2, 1, 0.1], dist: 260 }
+    geometry: { gen: body-panel, x: [-3150, -3440], t: [1.0, 1.86] }
+
+  - id: rear-corner
+    kind: part
+    sides: [left, right]
+    name: Rear corner panel (lamp surround)
+    explode: { dir: [-1, 0.6, 0], dist: 300 }
+    geometry: { gen: body-panel, x: [-3440, -3605], t: ['z:800', 1.55] }
+
+  - id: tail-lamp
+    kind: part
+    sides: [left, right]
+    name: Rear lamp cluster
+    aliases: [tail light, rear light]
+    location: { zone: exterior-rear, text: "Rear corners, beside the tailgate" }
+    explode: { dir: [-1, 0.5, 0], dist: 420 }
+    placement: { pos: [-3500, 760, 1075], rot: [0, 0, 158] }
+    summary: "In a recess in the body, 2 screws on its inner edge near the tailgate aperture; turn signal below the stop/tail lamp, reversing lamp beside it, rear fog lamp at the bottom."
+    ewd: [A139:l, A140:r, A125:l, A124:r, A115:l, A114:r, A130:l, A129:r, A111:l, A110:r, A119:l, A118:r]
+    specs: [{ label: Fixings, value: "Rear lamp location holes 1615.2 mm apart; top fixing holes 1241.8 mm apart", source: { ref: wsm, locator: p. 2254 } }]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: wsm, locator: "pp. 1655, 2254" }, { ref: ewd }] }
+    geometry: { gen: lamp, size: [80, 250, 300], lens: lens-red, reflectors: 3 }
+
+  # ---------------------------------------------------------------- top
+  - id: roof-side-rail
+    kind: part
+    sides: [left, right]
+    name: A-pillar and roof side rail (outer)
+    explode: { dir: [0, 1, 0.6], dist: 260 }
+    geometry: { gen: body-panel, x: [-430, -3440], t: [1.86, 2.0], gap: 0 }
+
+  - id: windscreen
+    kind: part
+    name: Windscreen (heated option)
+    aliases: [windshield, front screen]
+    material: glass
+    location: { zone: exterior-front, text: "Between the A-pillars" }
+    ewd: [H113, H114]
+    explode: { dir: [0.6, 0, 1], dist: 320 }
+    geometry: { gen: body-panel, x: [-440, -1120], t: [2, 4], inset: 4 }
+
+  - id: roof
+    kind: part
+    name: Roof panel
+    location: { zone: roof, text: "Roof" }
+    explode: { dir: [0, 0, 1], dist: 420 }
+    geometry: { gen: body-panel, x: [-1120, -3440], t: [2, 4] }
+
+  - id: roof-rail
+    kind: part
+    sides: [left, right]
+    name: Roof rail
+    material: trim-satin
+    explode: { dir: [0, 0.3, 1], dist: 520 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 14, points: [[-1380, 612, 1694], [-1450, 612, 1722], [-2300, 612, 1726], [-3150, 612, 1722], [-3230, 612, 1694]] }
+
+  - id: tailgate
+    kind: assembly
+    name: Tailgate
+    aliases: [boot lid, liftgate, trunk lid]
+    location: { zone: exterior-rear, text: "Rear of the vehicle, top-hinged" }
+    explode: { dir: [-1, 0, 0.25], dist: 520 }
+  - id: tailgate-skin
+    parent: tailgate
+    kind: part
+    name: Tailgate outer panel
+    geometry: { gen: body-panel, x: [-3440, -3605], t: [1.55, 4.45], gap: 5 }
+  - id: rear-screen
+    parent: tailgate
+    kind: part
+    name: Tailgate glass
+    aliases: [rear window, back glass]
+    material: glass
+    ewd: [H100]
+    geometry: { gen: body-panel, x: [-3452, -3515], t: [2.12, 3.88], inset: -3, gap: 0 }
+
+  - id: rear-bumper
+    kind: part
+    name: Rear bumper cover
+    location: { zone: exterior-rear, text: "Rear of vehicle, below the tailgate" }
+    explode: { dir: [-1, 0, -0.1], dist: 480 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-3100, -3620], t: [0, 'z:560'], mat: trim-black }
+        - { gen: body-panel, x: [-3100, -3620], t: ['zr:560', 6], mat: trim-black }
+        - { gen: body-panel, x: [-3100, -3620], t: ['z:560', 'z:800'], mat: paint }
+        - { gen: body-panel, x: [-3100, -3620], t: ['zr:800', 'zr:560'], mat: paint }
+        - { gen: body-cap, end: rear, z: [520, 560], mat: trim-black }
+        - { gen: body-cap, end: rear, z: [560, 840], mat: paint }
+
+  # ---------------------------------------------------------------- arches
+  - id: arch-liner-front
+    kind: part
+    sides: [left, right]
+    name: Front wheel-arch liner
+    aliases: [splash shield, inner wing liner]
+    material: trim-black
+    location: { zone: wheel-arch-front-left, text: "Inside the front wheel arch" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    geometry: { gen: arch-liner, arch: 0, y: [732, 925] }
+
+  - id: arch-liner-rear
+    kind: part
+    sides: [left, right]
+    name: Rear wheel-arch liner
+    material: trim-black
+    location: { zone: wheel-arch-rear-left, text: "Inside the rear wheel arch" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    geometry: { gen: arch-liner, arch: 1, y: [748, 925] }
+
+  # ---------------------------------------------------------------- body electrics and fittings (wsm + ewd)
+  - id: front-door-electrics
+    parent: front-door
+    kind: part
+    name: Front door module
+    aliases: [door control module, FDM, DDM]
+    summary: Control module on the door inner panel. It drives the window and lock motors and the door mirror, reads the latch ajar switch and the window switches, and talks to the CJB on the medium-speed CAN bus. Driver's door on the left (LHD).
+    location: { zone: exterior-side, text: "Inside the front door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [front-door-trim-panel], sources: [{ ref: wsm, locator: p. 1810 }] }
+    material: plastic-black
+    ewd: [D253:l, D254:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1810, 1966, 2039" }, { ref: ewd }] }
+    geometry: { gen: box, size: [160, 30, 110], r: 8, pos: [-900, 800, 820] }
+  - id: front-door-latch
+    parent: front-door
+    kind: part
+    name: Front door latch with lock motor and ajar switch
+    aliases: [door lock, door catch, central locking motor]
+    summary: Latch at the rear edge of the door that engages the striker on the B-pillar, with its central-locking motor and the ajar switch the door module reads.
+    location: { zone: exterior-side, text: "Rear edge of the front door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [front-door-trim-panel], tools: [Torx socket], notes: "Latch Torx screws 10 Nm.", sources: [{ ref: wsm, locator: "pp. 2038, 2061" }] }
+    material: steel-black
+    ewd: [M236:l, M237:r, S409:l, S410:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 2038, 2061" }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 40, 80], r: 6, pos: [-1420, 790, 860] }
+  - id: front-door-window-regulator
+    parent: front-door
+    kind: part
+    name: Front door window regulator and motor
+    aliases: [window motor, window lifter]
+    summary: Rail regulator that raises and lowers the door glass, driven by the window motor; motor and regulator come out together.
+    location: { zone: exterior-side, text: "Inside the front door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [front-door-trim-panel], notes: "Motor and regulator to door nuts and bolts 10 Nm.", sources: [{ ref: wsm, locator: "pp. 1964, 1972" }] }
+    material: steel-zinc
+    ewd: [M242:l, M243:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1964, 1972" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 6, points: [[-820, 815, 560], [-820, 815, 1010]] }
+        - { gen: tube, r: 6, points: [[-1180, 815, 560], [-1180, 815, 1010]] }
+        - { gen: cyl, r: 36, h: 45, axis: y, pos: [-1000, 818, 640], mat: steel-black }
+  - id: front-door-speakers
+    parent: front-door
+    kind: part
+    name: Front door speakers (mid/low and tweeter)
+    location: { zone: exterior-side, text: "Lower front of the door trim; tweeter at the mirror sail" }
+    access: { from: [exterior], removeFirst: [front-door-trim-panel], sources: [{ ref: wsm, locator: p. 1628 }] }
+    material: trim-satin
+    ewd: [F108:l, F107:r, F110:l, F109:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1616, 1628" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 80, h: 40, axis: y, pos: [-660, 800, 580] }
+        - { gen: cyl, r: 22, h: 18, axis: y, pos: [-560, 815, 1030] }
+  - id: front-door-switch-pack
+    parent: front-door
+    kind: part
+    name: Door switch pack (window and mirror switches)
+    summary: On the driver's door it carries all four window switches and the mirror switch; the passenger door has its own window switch with illumination.
+    location: { zone: exterior-side, text: "Front door armrest" }
+    access: { from: [exterior], sources: [{ ref: wsm, locator: "pp. 1969, 1979" }] }
+    material: interior-trim
+    ewd: [S400:l, S344:l, S156:l, S343:r, B125:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1969, 1979" }, { ref: ewd }] }
+    geometry: { gen: box, size: [150, 55, 28], r: 6, pos: [-1150, 765, 905] }
+  - id: front-door-puddle-lamp
+    parent: front-door
+    kind: part
+    name: Front door puddle lamp
+    location: { zone: exterior-side, text: "Bottom edge of the front door trim" }
+    material: lens-clear
+    ewd: [B131:l, B130:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: p. 1680 }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 14, 25], r: 4, pos: [-1000, 790, 440] }
+
+  - id: rear-door-electrics
+    parent: rear-door
+    kind: part
+    name: Rear door module
+    aliases: [rear door control module, RDM]
+    summary: Drives the rear window and lock motors and reads the latch ajar switch and the rear window switch; on the medium-speed CAN bus.
+    location: { zone: exterior-side, text: "Inside the rear door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [rear-door-trim-panel], sources: [{ ref: wsm, locator: p. 1808 }] }
+    material: plastic-black
+    ewd: [D405:l, D406:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1808, 1966, 2039" }, { ref: ewd }] }
+    geometry: { gen: box, size: [140, 30, 100], r: 8, pos: [-1850, 810, 820] }
+  - id: rear-door-latch
+    parent: rear-door
+    kind: part
+    name: Rear door latch with lock motor and ajar switch
+    aliases: [rear door lock, child lock]
+    location: { zone: exterior-side, text: "Rear edge of the rear door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [rear-door-trim-panel], tools: [Torx socket], notes: "Latch Torx screws 10 Nm.", sources: [{ ref: wsm, locator: "pp. 2038, 2055" }] }
+    material: steel-black
+    ewd: [M167:l, M166:r, S130:l, S129:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 2038, 2055" }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 40, 80], r: 6, pos: [-2330, 800, 860] }
+  - id: rear-door-window-regulator
+    parent: rear-door
+    kind: part
+    name: Rear door window regulator and motor
+    location: { zone: exterior-side, text: "Inside the rear door, behind the trim panel" }
+    access: { from: [exterior], removeFirst: [rear-door-trim-panel], notes: "Motor and regulator to door nuts and bolts 10 Nm.", sources: [{ ref: wsm, locator: "pp. 1964, 1984" }] }
+    material: steel-zinc
+    ewd: [M112:l, M111:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1964, 1984" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 6, points: [[-1760, 818, 560], [-1760, 818, 1000]] }
+        - { gen: tube, r: 6, points: [[-2080, 818, 560], [-2080, 818, 980]] }
+        - { gen: cyl, r: 34, h: 45, axis: y, pos: [-1930, 820, 640], mat: steel-black }
+  - id: rear-door-speakers
+    parent: rear-door
+    kind: part
+    name: Rear door speakers (mid/low and tweeter)
+    location: { zone: exterior-side, text: "Lower front of the rear door trim; tweeter high at the rear of the trim" }
+    access: { from: [exterior], removeFirst: [rear-door-trim-panel], sources: [{ ref: wsm, locator: p. 1631 }] }
+    material: trim-satin
+    ewd: [F119:l, F118:r, F218:l, F219:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1616, 1631" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 70, h: 40, axis: y, pos: [-1650, 805, 560] }
+        - { gen: cyl, r: 20, h: 18, axis: y, pos: [-2230, 815, 1020] }
+  - id: rear-door-window-switch
+    parent: rear-door
+    kind: part
+    name: Rear door window switch
+    location: { zone: exterior-side, text: "Rear door armrest" }
+    material: interior-trim
+    ewd: [S141:l, S140:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: p. 1966 }, { ref: ewd }] }
+    geometry: { gen: box, size: [80, 50, 25], r: 6, pos: [-1950, 770, 900] }
+
+  - id: front-fender-vent
+    kind: part
+    sides: [left, right]
+    name: Front wing air vent with side turn signal lamp
+    aliases: [side repeater, power vent, fender vent]
+    summary: The side turn signal lamps (5 W capless) sit in the front wing air vents; they are not monitored by the CJB.
+    material: trim-satin
+    location: { zone: exterior-side, text: "Front wing, behind the wheel arch" }
+    explode: { dir: [0, 1, 0], dist: 240 }
+    ewd: [A121:l, A120:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1643, 1656" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [220, 14, 70], r: 10, pos: [-330, 922, 720], rot: [0, -8, 0] }
+        - { gen: box, size: [60, 10, 18], r: 4, pos: [-300, 928, 740], mat: lens-amber }
+
+  - id: front-fog-lamp
+    kind: part
+    sides: [left, right]
+    name: Front fog lamp (H11 55 W)
+    location: { zone: exterior-front, text: "In apertures in the front bumper" }
+    access: { from: [front-end], notes: "3 Torx screws under a removable finisher; bulb holder turns to unlock." }
+    explode: { dir: [1, 0.3, 0], dist: 300 }
+    ewd: [A109:l, A108:r]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: p. 1654 }, { ref: ewd }] }
+    placement: { pos: [838, 640, 460], rot: [0, 0, 18] }
+    geometry: { gen: lamp, size: [60, 120, 70], lens: lens-clear, reflectors: 1 }
+
+  - id: hood-latches
+    kind: part
+    name: Bonnet latches, safety hook and ajar switch
+    summary: Two latches either side of the bonnet latch panel with a cable from the release lever under the LH end of the instrument panel; a safety hook at the front centre; the bonnet ajar switch is in the RH latch.
+    location: { zone: front-end, text: "Bonnet latch panel, above the cooling pack" }
+    explode: { dir: [1, 0, 1], dist: 260 }
+    material: steel-black
+    ewd: [S224]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1781, 2039, 2043" }, { ref: ewd }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [60, 60, 50], r: 6, pos: [760, 330, 800] }
+        - { gen: box, size: [60, 60, 50], r: 6, pos: [760, -330, 800] }
+        - { gen: box, size: [40, 30, 50], r: 6, pos: [770, 0, 810], mat: steel-zinc }
+
+  - id: fuel-flap-actuator
+    kind: part
+    name: Fuel filler flap release actuator
+    location: { zone: exterior-side, text: "Behind the fuel filler door housing" }
+    explode: { dir: [0, -1, 0], dist: 200 }
+    material: plastic-black
+    ewd: [M116]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: p. 2045 }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 40, 40], r: 6, pos: [-2960, -840, 990] }
+
+  - id: windscreen-wipers
+    kind: assembly
+    name: Windscreen wiper motor and linkage
+    location: { zone: plenum, text: "Under the plenum chamber panel" }
+    access: { from: [bonnet], notes: "Remove the plenum chamber panel; motor fixings 10 Nm.", sources: [{ ref: wsm, locator: p. 2074 }] }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    ewd: [M105, S293]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 2071–2084" }, { ref: ewd }] }
+  - { id: wiper-motor, parent: windscreen-wipers, kind: part, name: Windscreen wiper motor, material: steel-black, geometry: { gen: machine, kind: vacuum-pump, r: 45, len: 80 }, placement: { pos: [-560, -260, 940], rot: [0, 0, 90] } }
+  - { id: wiper-linkage, parent: windscreen-wipers, kind: part, name: Wiper linkage and pivots, material: steel-zinc, geometry: { gen: tube, r: 6, points: [[-505, -480, 1005], [-505, -260, 1000], [-505, 0, 1005], [-505, 160, 1010]] } }
+
+  - id: washer-system
+    kind: assembly
+    name: Washer reservoir and pumps
+    summary: Behind the RH front wing splash shield; windscreen/rear screen washer pump, headlamp power-wash pump (option) and low-fluid sensor. 3.1 L (5.8 L with headlamp wash).
+    location: { zone: wheel-arch-front-right, text: "Behind the RH front fender splash shield, ahead of the wheel" }
+    access: { from: [wheel-arch-front-right], removeFirst: [arch-liner-front-r], sources: [{ ref: wsm, locator: pp. 2082–2083 }] }
+    explode: { dir: [1, -1, 0], dist: 260 }
+    ewd: [M278, M156, T168]
+    specs: [{ label: Capacity, value: "3.1 L, or 5.8 L with headlamp wash", source: { ref: handbook, locator: Capacities } }]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: pp. 2082–2083 }, { ref: ewd }] }
+  - { id: washer-reservoir, parent: washer-system, kind: part, name: Washer reservoir, material: plastic-white, geometry: { gen: box, size: [220, 140, 260], r: 20, pos: [600, -690, 520] } }
+
+  - id: tailgate-handle
+    parent: tailgate
+    kind: part
+    name: Tailgate handle with release switch and number-plate lamps
+    summary: The release switch is a touch-pad under the exterior handle; two number-plate lamps sit in the handle above the plate.
+    location: { zone: exterior-rear, text: "Tailgate, above the number plate" }
+    access: { from: [luggage], removeFirst: [liftgate-trim-panel], notes: "Handle bolts 4 Nm.", sources: [{ ref: wsm, locator: "pp. 1656, 2038" }] }
+    material: trim-satin
+    ewd: [S372, A128, A127, A155]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1656, 2038" }, { ref: ewd }] }
+    geometry: { gen: box, size: [30, 260, 40], r: 8, pos: [-3585, 0, 1010] }
+  - id: tailgate-latch
+    parent: tailgate
+    kind: part
+    name: Tailgate latch
+    aliases: [liftgate latch, boot lock]
+    summary: Fully electric latch at the bottom centre of the tailgate, with its release motor and the open switch.
+    location: { zone: exterior-rear, text: "Bottom centre of the tailgate" }
+    access: { from: [luggage], removeFirst: [liftgate-trim-panel], tools: [Torx socket], notes: "Latch Torx screws 20 Nm; striker bolts 25 Nm.", sources: [{ ref: wsm, locator: "pp. 2038, 2064" }] }
+    material: steel-black
+    ewd: [M255, S250]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 2038, 2064" }, { ref: ewd }] }
+    geometry: { gen: box, size: [50, 140, 60], r: 8, pos: [-3560, 0, 900] }
+  - id: rear-wiper-motor
+    parent: tailgate
+    kind: part
+    name: Rear wiper motor
+    summary: Motor with an internal park switch that drives the rear wiper arm through the glass.
+    location: { zone: exterior-rear, text: "Inside the tailgate, behind the trim" }
+    access: { from: [luggage], removeFirst: [liftgate-trim-panel], notes: "Motor nuts 10 Nm; arm to motor nut 7 Nm.", sources: [{ ref: wsm, locator: "pp. 2071, 2078" }] }
+    material: plastic-black
+    ewd: [M106, S231]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 2071, 2078" }, { ref: ewd }] }
+    geometry: { gen: box, size: [60, 120, 80], r: 8, pos: [-3500, 0, 1500] }
+  - id: high-mounted-stop-lamp
+    parent: tailgate
+    kind: part
+    name: High-mounted stop lamp
+    location: { zone: exterior-rear, text: "Top of the tailgate" }
+    access: { from: [luggage], sources: [{ ref: wsm, locator: p. 1673 }] }
+    material: lens-red
+    ewd: [A126]
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: p. 1673 }, { ref: ewd }] }
+    geometry: { gen: box, size: [30, 240, 24], r: 6, pos: [-3470, 0, 1640] }
+

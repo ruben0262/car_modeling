@@ -1,0 +1,433 @@
+# Suspension and steering (workshop manual `wsm`), vehicle frame unless a
+# node has its own placement. Subframe mounting points use the OEM body
+# dimension chart (p. 2256) anchored with the front subframe front holes at
+# x = +380 mm (anchor estimated; spacings are OEM).
+# Front: MacPherson strut, lower control arm, stabilizer bar on a subframe.
+# Rear: strut (coil spring + twin-tube damper), front and rear transverse
+# links, longitudinal link, stabilizer bar on a subframe.
+system: suspension
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: wsm }]
+
+nodes:
+  # ---------------------------------------------------------------- front
+  - id: front-subframe
+    kind: part
+    name: Front subframe
+    aliases: [front crossmember, engine cradle, K-frame]
+    summary: Carries the lower control arms, stabilizer bar and steering gear; mounted to the body on 4 bushes of different rates.
+    location: { zone: underbody-front, text: "Under the engine" }
+    access: { from: [underside], notes: "Subframe to body bolts 140 Nm + 240° (new bolts)." }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    material: steel-black
+    specs:
+      - { label: Mounting holes, value: "Front pair 1096 mm apart, rear pair 722 mm apart, 880 mm front to rear", source: { ref: wsm, locator: p. 2256 } }
+      - { label: Crossbrace, value: "M10 45 Nm, M16 140 Nm + 240° (new bolts)", source: { ref: wsm, locator: p. 52 } }
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 53, 2256", says: "The suspension components are mounted on a subframe ... mounted on 4 bushes which have differing compression rates" }]
+    geometry:
+      gen: frame
+      r: 6
+      beams:
+        - { a: [380, 548, 210], b: [-200, 535, 200], w: 80, h: 60 }
+        - { a: [-200, 535, 200], b: [-500, 361, 195], w: 80, h: 60 }
+        - { a: [380, -548, 210], b: [-200, -535, 200], w: 80, h: 60 }
+        - { a: [-200, -535, 200], b: [-500, -361, 195], w: 80, h: 60 }
+        - { a: [380, 548, 210], b: [380, -548, 210], w: 60, h: 56 }
+        - { a: [-470, 380, 192], b: [-470, -380, 192], w: 90, h: 56 }
+      nodes:
+        - { at: [380, 548, 240], size: 60 }
+        - { at: [380, -548, 240], size: 60 }
+        - { at: [-500, 361, 225], size: 60 }
+        - { at: [-500, -361, 225], size: 60 }
+
+  - id: front-lower-arm
+    kind: part
+    sides: [left, right]
+    name: Front lower control arm
+    aliases: [wishbone, track control arm, lower arm]
+    summary: Front bush locates in a slot in the subframe; rear attachment is a hydrabush on a spigot; non-serviceable taper ball joint at the knuckle.
+    location: { zone: wheel-arch-front-left, text: "Between the subframe and the bottom of the knuckle" }
+    access: { from: [underside, wheel-arch-front-left], removeFirst: [wheel-front] }
+    explode: { dir: [0, 1, -1], dist: 220 }
+    contacts: [front-subframe, front-knuckle]
+    specs:
+      - { label: Front bolt, value: "140 Nm + 45°", source: { ref: wsm, locator: p. 52 } }
+      - { label: Rear nut and bolt, value: "175 Nm", source: { ref: wsm, locator: p. 52 } }
+      - { label: Ball-joint locknut, value: "100 Nm (new)", source: { ref: wsm, locator: p. 52 } }
+    verification: { sources: [{ ref: wsm, locator: p. 55 }] }
+    geometry:
+      gen: link
+      w: 44
+      h: 24
+      points: [[70, 505, 232], [0, 690, 226], [-300, 470, 232]]
+      eyes:
+        - { at: [70, 505, 232], axis: [1, 0, 0], r: 26, len: 60 }
+        - { at: [-300, 470, 232], axis: [0, 0, 1], r: 40, len: 46 }
+        - { at: [0, 690, 226], type: ball, axis: [0, 0, 1], r: 30, len: 46 }
+
+  - id: front-knuckle
+    kind: part
+    sides: [left, right]
+    name: Front wheel knuckle
+    aliases: [hub carrier, steering knuckle, upright]
+    summary: Clamped to the damper (110 Nm), taper ball joint to the lower arm; the wheel speed sensor sits in a hole in its top face.
+    placement: { pos: [0, 805.5, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 260 }
+    contacts: [front-strut, front-hub, front-brake]
+    specs: [{ label: Knuckle to damper clamp bolt, value: "110 Nm", source: { ref: wsm, locator: p. 52 } }]
+    geometry:
+      gen: knuckle
+      boss: { y: -42, r: 50, len: 56 }
+      arms:
+        - { to: [-20, -150, 95], w: 40, h: 34 }
+        - { to: [0, -115, -143], w: 36, h: 28 }
+        - { to: [-150, -125, -15], w: 30, h: 24, eye: 16 }
+
+  - id: front-hub
+    kind: part
+    sides: [left, right]
+    name: Front hub and bearing assembly
+    aliases: [hub bearing, wheel bearing]
+    summary: The bearing seal carries the magnetic encoder ring read by the wheel speed sensor.
+    location: { zone: wheel-arch-front-left, text: "Centre of the front wheel, in the knuckle" }
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front, front-caliper, front-brake-disc] }
+    placement: { pos: [0, 805.5, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 320 }
+    contacts: [front-brake, wheel-front]
+    verification: { sources: [{ ref: wsm, locator: p. 336 }] }
+    geometry: { gen: hub, face: 45 }
+
+  - id: front-strut
+    kind: assembly
+    sides: [left, right]
+    name: Front spring and damper assembly
+    aliases: [shock absorber, damper, macpherson strut, coilover, strut]
+    summary: Twin-tube damper with the coil spring on an integral seat, spring aid and boot, and a top mount with bearing; the stabilizer link fixes to a bracket on the damper body.
+    location: { zone: wheel-arch-front-left, text: "Knuckle up to the suspension turret under the bonnet" }
+    access: { from: [wheel-arch-front-left, bonnet], removeFirst: [wheel-front], notes: "Top mount nuts 30 Nm from under the bonnet; damper locknut 80 Nm.", sources: [{ ref: wsm, locator: p. 52 }] }
+    placement: { pos: [-20, 670, 428.65], rot: [12, -4, 0] }
+    explode: { dir: [0, 0.5, 1], dist: 320 }
+    specs: [{ label: Top mounting holes, value: "LH to RH damper mounting rear hole 1136 mm", source: { ref: wsm, locator: p. 2250 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 53–57, 2250" }] }
+  - id: front-damper
+    parent: front-strut
+    kind: part
+    name: Front damper (twin tube) with spring seat and boot
+    explode: { dir: [0, 0, -1], dist: 160 }
+    geometry: { gen: strut, part: damper, bodyLen: 300, seatZ: 290, topZ: 520, bracket: true }
+  - id: front-spring
+    parent: front-strut
+    kind: part
+    name: Front coil spring
+    explode: { dir: [0, 1, 0], dist: 200 }
+    partNumbers:
+      - { number: LR001131, note: "Paint code green/yellow/orange; isolator LR001145", source: { ref: wsm, locator: p. 52 } }
+    geometry: { gen: strut, part: spring, bodyLen: 300, seatZ: 290, topZ: 520 }
+  - id: front-top-mount
+    parent: front-strut
+    kind: part
+    name: Front top mount and bearing
+    explode: { dir: [0, 0, 1], dist: 200 }
+    contacts: [strut-tower]
+    geometry: { gen: strut, part: top-mount, bodyLen: 300, seatZ: 290, topZ: 520 }
+
+  - id: front-anti-roll-bar
+    kind: part
+    name: Front stabilizer bar
+    aliases: [anti-roll bar, sway bar, stabiliser bar]
+    summary: High-stress bar attached to the rear of the subframe with bushes and pressed-steel brackets.
+    location: { zone: underbody-front, text: "Across the rear of the front subframe" }
+    access: { from: [underside], notes: "Clamp bolts 175 Nm." }
+    explode: { dir: [0, 0, -1], dist: 180 }
+    material: steel-black
+    contacts: [front-subframe]
+    verification: { sources: [{ ref: wsm, locator: "pp. 52, 57" }] }
+    geometry: { gen: tube, r: 11, points: [[-200, 600, 300], [-300, 520, 320], [-360, 300, 336], [-360, -300, 336], [-300, -520, 320], [-200, -600, 300]] }
+
+  - id: front-drop-link
+    kind: part
+    sides: [left, right]
+    name: Front stabilizer bar link
+    aliases: [drop link, stabiliser link]
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front], notes: "Link nuts 60 Nm (new)." }
+    explode: { dir: [0, 1, 0], dist: 180 }
+    contacts: [front-anti-roll-bar, front-strut]
+    verification: { sources: [{ ref: wsm, locator: "pp. 52, 57", says: "Each stabilizer link is secured to a bracket on the damper body with a locknut" }] }
+    geometry:
+      gen: link
+      round: true
+      w: 18
+      points: [[-200, 600, 300], [-46, 626, 600]]
+      eyes:
+        - { at: [-200, 600, 300], type: ball, axis: [0, -1, 0], r: 22, len: 26 }
+        - { at: [-46, 626, 600], type: ball, axis: [0, -1, 0], r: 22, len: 26 }
+
+  - id: front-height-sensor
+    kind: part
+    name: Front height sensor (headlamp levelling)
+    fitment: Xenon headlamps only
+    location: { zone: underbody-front, text: "LH side of the front axle" }
+    explode: { dir: [0, 1, -1], dist: 200 }
+    ewd: [T269]
+    specs: [{ label: Fixing, value: "10 Nm", source: { ref: wsm, locator: p. 52 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 1644, says: "Front and rear height sensors are located on the Left Hand (LH) side of the front and rear axles" }] }
+    geometry: { gen: box, size: [50, 30, 40], r: 4, pos: [-180, 470, 245], mat: plastic-black }
+
+  # ---------------------------------------------------------------- steering (rack authored for LHD)
+  - id: steering-rack
+    kind: part
+    name: Steering gear (hydraulic rack and pinion)
+    aliases: [steering rack, rack and pinion, power steering rack]
+    summary: Hydraulic rack with the valve unit in the pinion housing; the pinion sits on the driver's side.
+    location: { zone: underbody-front, text: "On the front subframe behind the engine" }
+    access: { from: [underside], sources: [{ ref: wsm, locator: p. 388 }] }
+    handed: true
+    placement: { pos: [-280, 0, 345] }
+    explode: { dir: [-1, 0, -0.4], dist: 220 }
+    contacts: [front-subframe]
+    verification: { sources: [{ ref: wsm, locator: "pp. 361–364" }] }
+    geometry: { gen: steering-rack, halfLen: 330, pinionAt: 180 }
+
+  - id: tie-rod
+    kind: part
+    sides: [left, right]
+    name: Tie rod and tie-rod end
+    aliases: [track rod, track rod end, steering arm link]
+    access: { from: [wheel-arch-front-left, underside], removeFirst: [wheel-front] }
+    explode: { dir: [0, 1, 0], dist: 200 }
+    contacts: [steering-rack, front-knuckle]
+    verification: { sources: [{ ref: wsm, locator: p. 390, says: "The tie rod end incorporates a non-serviceable tapered ball joint which locates in a tapered hole in the front wheel knuckle" }] }
+    geometry:
+      gen: link
+      round: true
+      w: 22
+      points: [[-280, 465, 345], [-150, 680, 353]]
+      eyes: [{ at: [-150, 680, 353], type: ball, axis: [0, 0, 1], r: 24, len: 34 }]
+
+  - id: steering-intermediate-shaft
+    kind: part
+    name: Steering intermediate shaft
+    aliases: [steering column lower shaft, UJ shaft]
+    handed: true
+    explode: { dir: [-1, 0, 0.5], dist: 200 }
+    material: steel-zinc
+    contacts: [steering-rack, bulkhead]
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 11, points: [[-300, 180, 420], [-420, 260, 560], [-600, 330, 700]] }
+
+  - id: power-steering-reservoir
+    kind: part
+    name: Power steering fluid reservoir
+    summary: On a bracket on the right of the engine bay, with a 100-micron nylon mesh filter; Pentosin CHF202 fluid.
+    location: { zone: engine-bay-right, text: "RH side of the engine compartment" }
+    access: { from: [bonnet] }
+    explode: { dir: [0, -0.5, 1], dist: 280 }
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: p. 361, says: "The fluid reservoir is located on a bracket in the RH side of the engine compartment" }, { ref: handbook, locator: Lubricants and fluids }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 50, h: 110, axis: z, chamfer: 8, pos: [380, -620, 860], mat: plastic-white }
+        - { gen: cyl, r: 28, h: 18, axis: z, chamfer: 3, pos: [380, -620, 922], mat: plastic-black }
+  - id: power-steering-hoses
+    kind: hose
+    name: Power steering hoses (suction, high-pressure feed, return)
+    material: coolant-hose
+    explode: { dir: [0, 0, -1], dist: 160 }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 361 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 9, points: [[380, -620, 805], [430, -560, 760], [480, -470, 740], [500, -330, 720]] }
+        - { gen: tube, r: 6, points: [[440, -300, 660], [300, -320, 420], [0, -300, 300], [-250, -200, 290], [-290, -170, 300]] }
+        - { gen: tube, r: 6, points: [[-270, -200, 285], [0, -400, 330], [250, -560, 600], [370, -615, 805]] }
+
+  # ---------------------------------------------------------------- rear
+  - id: rear-subframe
+    kind: part
+    name: Rear subframe
+    aliases: [rear crossmember]
+    summary: Rigid platform for the transverse links and rear drive unit, mounted to the body on 4 bushes.
+    location: { zone: underbody-rear, text: "Under the rear floor" }
+    access: { from: [underside] }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    material: steel-black
+    contacts: [rear-drive-unit]
+    specs:
+      - { label: Mounting holes, value: "Front pair 1000 mm apart, rear pair 959.4 mm apart; 2862 / 3288.7 mm behind the front subframe front holes", source: { ref: wsm, locator: p. 2256 } }
+    verification: { sources: [{ ref: wsm, locator: "pp. 84, 2256" }] }
+    geometry:
+      gen: frame
+      r: 6
+      beams:
+        - { a: [-2482, 500, 300], b: [-2909, 480, 300], w: 70, h: 60 }
+        - { a: [-2482, -500, 300], b: [-2909, -480, 300], w: 70, h: 60 }
+        - { a: [-2540, 470, 250], b: [-2540, -470, 250], w: 70, h: 56 }
+        - { a: [-2860, 470, 300], b: [-2860, -470, 300], w: 70, h: 60 }
+      nodes:
+        - { at: [-2482, 500, 330], size: 56 }
+        - { at: [-2482, -500, 330], size: 56 }
+        - { at: [-2909, 480, 330], size: 56 }
+        - { at: [-2909, -480, 330], size: 56 }
+
+  - id: rear-strut
+    kind: assembly
+    sides: [left, right]
+    name: Rear spring and damper assembly
+    aliases: [rear shock, rear damper, rear strut]
+    summary: Coil spring over a twin-tube damper with a mass damper on the spring seat; top mount sealed to the turret with a gasket.
+    location: { zone: wheel-arch-rear-left, text: "Rear knuckle up to the body turret behind the rear wheel arch" }
+    access: { from: [wheel-arch-rear-left, luggage], removeFirst: [wheel-rear], notes: "Top mounting nuts 32 Nm; damper locknut 80 Nm.", sources: [{ ref: wsm, locator: p. 83 }] }
+    placement: { pos: [-2640, 620, 428.65], rot: [8, 3, 0] }
+    explode: { dir: [0, 0.4, 1], dist: 320 }
+    verification: { sources: [{ ref: wsm, locator: "pp. 83–85" }] }
+  - id: rear-damper
+    parent: rear-strut
+    kind: part
+    name: Rear damper (twin tube) with mass damper
+    explode: { dir: [0, 0, -1], dist: 150 }
+    geometry: { gen: strut, part: damper, bodyLen: 280, seatZ: 250, topZ: 460, seatR: 76, coilR: 62, bracket: true }
+  - id: rear-spring
+    parent: rear-strut
+    kind: part
+    name: Rear coil spring
+    explode: { dir: [0, 1, 0], dist: 180 }
+    partNumbers:
+      - { number: RKB500210, note: "Grey (isolator LR003092, 9 mm) or grey/white (isolator LR005304, 15 mm)", source: { ref: wsm, locator: p. 83 } }
+      - { number: RKB500220, note: "Brown (9 mm isolator) or brown/white (15 mm isolator) — spring colour and isolator must match to keep trim height", source: { ref: wsm, locator: p. 83 } }
+    geometry: { gen: strut, part: spring, bodyLen: 280, seatZ: 250, topZ: 460, seatR: 76, coilR: 62, wire: 6.2 }
+  - id: rear-top-mount
+    parent: rear-strut
+    kind: part
+    name: Rear damper top mount and gasket
+    explode: { dir: [0, 0, 1], dist: 180 }
+    geometry: { gen: strut, part: top-mount, bodyLen: 280, seatZ: 250, topZ: 460, seatR: 76, coilR: 62 }
+
+  - id: rear-knuckle
+    kind: part
+    sides: [left, right]
+    name: Rear wheel knuckle
+    aliases: [rear hub carrier, rear upright]
+    summary: Carries the hub, the transverse links, the longitudinal link (pressed bush in an extended lower boss) and the wheel speed sensor in its top face.
+    placement: { pos: [-2660, 812, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 260 }
+    contacts: [rear-strut, rear-hub, rear-brake, front-transverse-link, rear-transverse-link, longitudinal-link]
+    verification: { sources: [{ ref: wsm, locator: p. 88 }] }
+    geometry:
+      gen: knuckle
+      boss: { y: -42, r: 48, len: 52 }
+      arms:
+        - { to: [20, -192, 60], w: 38, h: 30 }
+        - { to: [60, -110, -140], w: 32, h: 26 }
+        - { to: [-80, -110, -140], w: 32, h: 26 }
+        - { to: [100, -132, -50], w: 34, h: 28 }
+
+  - id: rear-hub
+    kind: part
+    sides: [left, right]
+    name: Rear hub and bearing
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear, rear-caliper, rear-brake-disc] }
+    placement: { pos: [-2660, 812, 368.65] }
+    explode: { dir: [0, 1, 0], dist: 320 }
+    contacts: [rear-brake, wheel-rear]
+    geometry: { gen: hub, face: 45 }
+
+  - id: front-transverse-link
+    kind: part
+    sides: [left, right]
+    name: Rear suspension front transverse link
+    aliases: [rear lateral link, rear control arm]
+    summary: Bushes compress under cornering to give a controlled amount of toe-in (passive rear steer).
+    access: { from: [underside], notes: "Nuts and bolts 175 Nm." }
+    explode: { dir: [0.3, 1, -0.6], dist: 200 }
+    contacts: [rear-subframe]
+    verification: { sources: [{ ref: wsm, locator: "pp. 83, 86" }] }
+    geometry:
+      gen: link
+      w: 36
+      h: 22
+      points: [[-2600, 430, 255], [-2600, 702, 228]]
+      eyes:
+        - { at: [-2600, 430, 255], axis: [1, 0, 0], r: 24, len: 50 }
+        - { at: [-2600, 702, 228], axis: [1, 0, 0], r: 22, len: 44 }
+
+  - id: rear-transverse-link
+    kind: part
+    sides: [left, right]
+    name: Rear suspension rear transverse link
+    aliases: [rear lateral link, toe link]
+    summary: Mounted to the subframe with an eccentric bolt and washer — this is the rear toe adjustment.
+    access: { from: [underside], notes: "Nuts and bolts 175 Nm." }
+    explode: { dir: [-0.3, 1, -0.6], dist: 200 }
+    contacts: [rear-subframe, rear-drop-link]
+    verification: { sources: [{ ref: wsm, locator: "pp. 83, 86", says: "The rear transverse link is mounted to the subframe using an eccentric bolt and washer which allows for adjustment of the wheel toe angle" }] }
+    geometry:
+      gen: link
+      w: 40
+      h: 24
+      points: [[-2740, 430, 262], [-2740, 702, 228]]
+      eyes:
+        - { at: [-2740, 430, 262], axis: [1, 0, 0], r: 26, len: 50 }
+        - { at: [-2740, 702, 228], axis: [1, 0, 0], r: 22, len: 44 }
+
+  - id: longitudinal-link
+    kind: part
+    sides: [left, right]
+    name: Rear suspension longitudinal link
+    aliases: [trailing arm, trailing link, radius arm]
+    summary: Squeezed and cropped tube between the knuckle's lower boss and a bracket on the body.
+    access: { from: [underside], notes: "Link nuts and bolts 270 Nm; bracket to body 110 Nm (new bolts)." }
+    explode: { dir: [1, 0.6, -0.3], dist: 220 }
+    contacts: [sill]
+    specs: [{ label: Body bracket, value: "2517.6 mm behind the front subframe front holes", source: { ref: wsm, locator: p. 2256 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 83–88", says: "The longitudinal links are fabricated from squeezed and cropped tube and are located between the wheel knuckle and the vehicle body" }] }
+    geometry:
+      gen: link
+      w: 40
+      h: 30
+      points: [[-2138, 640, 380], [-2560, 680, 318]]
+      eyes:
+        - { at: [-2138, 640, 380], axis: [0, 1, 0], r: 32, len: 50 }
+        - { at: [-2560, 680, 318], axis: [0, 1, 0], r: 24, len: 40 }
+
+  - id: rear-anti-roll-bar
+    kind: part
+    name: Rear stabilizer bar
+    aliases: [rear anti-roll bar, rear sway bar]
+    access: { from: [underside], notes: "Bushing clamp bolts 60 Nm (new)." }
+    explode: { dir: [-1, 0, -0.5], dist: 160 }
+    material: steel-black
+    contacts: [rear-subframe]
+    verification: { sources: [{ ref: wsm, locator: "pp. 83, 89" }] }
+    geometry: { gen: tube, r: 10, points: [[-2780, 600, 320], [-2795, 450, 330], [-2795, -450, 330], [-2780, -600, 320]] }
+
+  - id: rear-drop-link
+    kind: part
+    sides: [left, right]
+    name: Rear stabilizer bar link
+    aliases: [rear drop link, stabilizer link]
+    explode: { dir: [-0.4, 1, 0], dist: 160 }
+    contacts: [rear-anti-roll-bar, rear-transverse-link]
+    geometry:
+      gen: link
+      round: true
+      w: 16
+      points: [[-2780, 600, 320], [-2742, 640, 262]]
+      eyes: [{ at: [-2780, 600, 320], type: ball, axis: [0, 1, 0], r: 18, len: 22 }]
+
+  - id: rear-height-sensor
+    kind: part
+    name: Rear height sensor (headlamp levelling)
+    fitment: Xenon headlamps only
+    location: { zone: underbody-rear, text: "LH side of the rear axle" }
+    explode: { dir: [0, 1, -1], dist: 200 }
+    ewd: [T270]
+    specs: [{ label: Fixing, value: "10 Nm", source: { ref: wsm, locator: p. 83 } }]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "pp. 85, 1644" }] }
+    geometry: { gen: box, size: [50, 30, 40], r: 4, pos: [-2700, 520, 330], mat: plastic-black }

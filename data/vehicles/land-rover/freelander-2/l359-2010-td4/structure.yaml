@@ -1,0 +1,183 @@
+# Body-in-white, simplified to its main load paths (the "skeleton").
+system: structure
+defaults:
+  material: steel-structure
+  verification:
+    geometry: placeholder
+    placement: estimated
+    facts: unsourced
+    notes: Simplified load-path members; section sizes and positions are estimates for orientation only.
+
+nodes:
+  - id: front-longitudinal
+    kind: part
+    sides: [left, right]
+    name: Front longitudinal (chassis rail)
+    aliases: [front rail, chassis leg]
+    location: { zone: engine-bay-left, text: "Runs fore–aft below the engine-bay side, from the bulkhead to the bumper beam" }
+    geometry: { gen: frame, beams: [{ a: [-470, 545, 430], b: [760, 545, 465], w: 70, h: 110 }] }
+
+  - id: upper-rail
+    kind: part
+    sides: [left, right]
+    name: Upper rail (apron)
+    geometry: { gen: frame, beams: [{ a: [-470, 760, 985], b: [700, 720, 805], w: 60, h: 70 }] }
+
+  - id: strut-tower
+    kind: part
+    sides: [left, right]
+    name: Front suspension turret
+    aliases: [strut tower, suspension tower, strut top]
+    location: { zone: engine-bay-left, text: "Top of the front wheel arch, each side of the engine bay" }
+    contacts: [front-strut]
+    specs: [{ label: Damper mounting holes, value: "RH to LH rear hole 1136 mm; to the roof corner point 1597.25 mm", source: { ref: wsm, locator: p. 2250 } }]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: wsm, locator: p. 2250 }] }
+    geometry: { gen: cyl, r: 108, r2: 90, h: 160, axis: z, pos: [-56, 575, 868] }
+
+  - id: front-crash-beam
+    kind: part
+    name: Front bumper beam
+    aliases: [crash bar, bumper reinforcement]
+    geometry: { gen: frame, beams: [{ a: [800, 610, 470], b: [800, -610, 470], w: 60, h: 100 }] }
+
+  - id: radiator-support
+    kind: part
+    name: Front-end carrier (radiator support)
+    location: { zone: front-end, text: "Frame around the cooling pack, behind the bumper" }
+    geometry:
+      gen: frame
+      beams:
+        - { a: [742, 470, 805], b: [742, -470, 805], w: 40, h: 60 }
+        - { a: [742, 470, 270], b: [742, -470, 270], w: 40, h: 50 }
+        - { a: [742, 470, 270], b: [742, 470, 805], w: 40, h: 40 }
+        - { a: [742, -470, 270], b: [742, -470, 805], w: 40, h: 40 }
+
+  - id: bulkhead
+    kind: part
+    name: Bulkheads and plenum (dash panel, plenum floor, main bulkhead)
+    aliases: [firewall, dash panel, scuttle, plenum]
+    summary: The lower dash panel separates engine bay and footwells; above it the plenum between the secondary and main bulkheads houses the ECM, ABS module, alarm sounder and wiper motor.
+    location: { zone: engine-bay-rear, text: "Between the engine compartment and the cabin" }
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: "pp. 1002, 1800, 2074" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [8, 1400, 380], pos: [-484, 0, 630] }
+        - { gen: box, size: [170, 1400, 8], pos: [-560, 0, 820] }
+        - { gen: box, size: [8, 1400, 200], pos: [-649, 0, 920] }
+  - id: secondary-bulkhead
+    kind: part
+    name: Secondary bulkhead centre panel (fire shield)
+    summary: Removable panel between the engine bay and the plenum; the BJB harness and ECM are reached by removing it and the plenum chamber panel.
+    location: { zone: engine-bay-rear, text: "Top rear of the engine compartment" }
+    access: { from: [bonnet], removeFirst: [engine-cover], sources: [{ ref: wsm, locator: pp. 1824–1826 }] }
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: pp. 1824–1826 }] }
+    geometry: { gen: box, size: [8, 1300, 95], pos: [-478, 0, 965] }
+  - id: plenum-panel
+    kind: part
+    name: Plenum chamber panel (scuttle cover)
+    aliases: [cowl panel, scuttle panel]
+    material: trim-black
+    location: { zone: plenum, text: "Under the windscreen base, below the wiper arms" }
+    access: { from: [bonnet], removeFirst: [windscreen-wipers], notes: "The RH wiper arm comes off first.", sources: [{ ref: wsm, locator: pp. 1455–1456 }] }
+    verification: { placement: estimated, facts: oem, sources: [{ ref: wsm, locator: pp. 1455–1456 }] }
+    geometry: { gen: box, size: [180, 1420, 10], r: 4, pos: [-560, 0, 1031] }
+
+  - id: floor-front
+    kind: part
+    sides: [left, right]
+    name: Front floor panel
+    geometry: { gen: box, size: [1290, 545, 6], pos: [-1165, 445, 310] }
+
+  - id: tunnel
+    kind: part
+    name: Transmission tunnel
+    location: { zone: underbody-centre, text: "Centre of the floor; propshaft and exhaust run beneath it" }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [1290, 346, 6], pos: [-1165, 0, 480] }
+        - { gen: box, size: [1290, 6, 170], pos: [-1165, 170, 395] }
+        - { gen: box, size: [1290, 6, 170], pos: [-1165, -170, 395] }
+
+  - id: floor-rear-seat
+    kind: part
+    name: Rear-seat floor (over the fuel tank)
+    geometry: { gen: box, size: [600, 1300, 6], pos: [-2110, 0, 492] }
+
+  - id: boot-floor
+    kind: part
+    name: Luggage-compartment floor
+    location: { zone: luggage, text: "Above the spare wheel and rear silencer" }
+    geometry: { gen: box, size: [860, 1120, 6], pos: [-3130, 0, 690] }
+
+  - id: sill
+    kind: part
+    sides: [left, right]
+    name: Sill (rocker)
+    geometry: { gen: frame, beams: [{ a: [-470, 770, 400], b: [-2250, 775, 400], w: 110, h: 130 }] }
+
+  - id: a-pillar
+    kind: part
+    sides: [left, right]
+    name: A-pillar
+    geometry: { gen: frame, beams: [{ a: [-470, 835, 1040], b: [-1110, 705, 1640], w: 80, h: 70 }] }
+
+  - id: b-pillar
+    kind: part
+    sides: [left, right]
+    name: B-pillar
+    geometry: { gen: frame, beams: [{ a: [-1485, 870, 460], b: [-1495, 700, 1680], w: 90, h: 80 }] }
+
+  - id: c-pillar
+    kind: part
+    sides: [left, right]
+    name: C-pillar
+    geometry: { gen: frame, beams: [{ a: [-2400, 865, 830], b: [-2410, 705, 1695], w: 80, h: 70 }] }
+
+  - id: d-pillar-inner
+    kind: part
+    sides: [left, right]
+    name: D-pillar (inner)
+    geometry: { gen: frame, beams: [{ a: [-3400, 860, 900], b: [-3380, 712, 1660], w: 90, h: 80 }] }
+
+  - id: cantrail
+    kind: part
+    sides: [left, right]
+    name: Cantrail (roof side rail, inner)
+    geometry: { gen: frame, beams: [{ a: [-1110, 705, 1655], b: [-3390, 712, 1682], w: 60, h: 60 }] }
+
+  - id: roof-bows
+    kind: part
+    name: Roof bows (cross members)
+    geometry:
+      gen: frame
+      beams:
+        - { a: [-1130, 700, 1650], b: [-1130, -700, 1650], w: 50, h: 40 }
+        - { a: [-1850, 700, 1665], b: [-1850, -700, 1665], w: 50, h: 40 }
+        - { a: [-2620, 700, 1672], b: [-2620, -700, 1672], w: 50, h: 40 }
+        - { a: [-3390, 700, 1640], b: [-3390, -700, 1640], w: 60, h: 50 }
+
+  - id: rear-longitudinal
+    kind: part
+    sides: [left, right]
+    name: Rear longitudinal
+    geometry: { gen: frame, beams: [{ a: [-2365, 480, 470], b: [-3560, 480, 540], w: 70, h: 100 }] }
+
+  - id: rear-crash-beam
+    kind: part
+    name: Rear bumper beam
+    geometry: { gen: frame, beams: [{ a: [-3590, 620, 560], b: [-3590, -620, 560], w: 50, h: 90 }] }
+
+  - id: seat-crossmember
+    kind: part
+    sides: [left, right]
+    name: Front seat cross-member
+    geometry: { gen: frame, beams: [{ a: [-1500, 180, 325], b: [-1500, 720, 325], w: 70, h: 24 }] }
+
+  - id: dash-crossbeam
+    kind: part
+    name: Cross-car beam (instrument-panel support)
+    material: steel-black
+    location: { zone: cabin-dashboard, text: "Behind the instrument panel, pillar to pillar" }
+    geometry: { gen: cyl, r: 30, h: 1420, axis: y, pos: [-850, 0, 905] }

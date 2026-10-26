@@ -1,0 +1,720 @@
+# 2.2L Duratorq TD4 (DW12 family) — sourced from the JLR workshop manual
+# (source `wsm`, PDF page numbers) and the LHD wiring diagrams (`ewd`).
+#
+# Engine-local frame (used by every node under engine-assembly):
+#   origin on the crankshaft axis at the flywheel face,
+#   +X along the crank towards the timing-belt end ("front of engine" in the manual),
+#   +Y towards the intake side (the manual's engine LH side), +Z along the cylinders.
+# Installed transverse, timing end on the vehicle's right, intake facing the radiator,
+# "tilted 12 degrees toward rear" (wsm p.579) → rot [0, -12, -90].
+#   Generator "at the front of the engine on the LH side of the cylinder block" (p.1569)
+#   appears at the radiator side in the vehicle location figure (p.1555) → engine LH = vehicle front.
+# Cylinders are numbered from the transmission end: No.1 at x≈96, No.4 at x≈375 (p.579).
+system: engine
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources:
+      - { ref: wsm, locator: "pp. 576–623, Engine – TD4 2.2L Diesel, Description and Operation" }
+
+nodes:
+  - id: engine-assembly
+    kind: assembly
+    name: Engine — 2.2L Duratorq TD4 diesel
+    aliases: [engine, motor, DW12, Duratorq, TD4 engine, 224DT, 2.2L Duratorq-TDCi]
+    summary: Transverse 2.2-litre four-cylinder common-rail turbodiesel, twin overhead cams, 16 valves, two balance shafts.
+    function: Converts diesel fuel into torque at the crankshaft, delivered through the clutch, gearbox and power transfer unit to all four wheels.
+    location: { zone: engine-bay, text: "Transverse; timing belt at the right, gearbox at the left, intake side towards the radiator, leaning 12° rearwards" }
+    placement: { pos: [180, 60, 450], rot: [0, -12, -90] }
+    explode: { dir: [0, 0, 1], dist: 0 }
+    specs:
+      - { label: Type, value: "2.2 litre inline 4, turbocharged and intercooled diesel, DOHC, 4 valves per cylinder", source: { ref: wsm, locator: p. 575 } }
+      - { label: Bore × stroke, value: "85.0 × 96.0 mm, 2179 cm³", source: { ref: wsm, locator: p. 575 } }
+      - { label: Firing order, value: "1-3-4-2 (No.1 at the gearbox end)", source: { ref: wsm, locator: p. 575 } }
+      - { label: Compression ratio, value: "15.8:1", source: { ref: handbook, locator: Technical specifications } }
+      - { label: Installation, value: "Transverse, tilted 12° toward the rear", source: { ref: wsm, locator: p. 579 } }
+      - { label: Output (pre-2011 TD4), value: "160 PS, 400 Nm", source: { ref: carfolio-fl2-td4 } }
+      - { label: Oil capacity, value: "5.9 L service fill, 6.5 L dry; 1.5 L between dipstick marks", source: { ref: wsm, locator: p. 574 } }
+      - { label: Oil specification, value: "SAE 5W-30 to Ford WSS-M2C13B, or ACEA A1/B1", source: { ref: wsm, locator: p. 574 } }
+    manufacturing:
+      - { label: Fuel system, value: "Bosch Generation 3 common rail, 1600 bar", source: { ref: wsm, locator: "pp. 576, 801" } }
+      - { label: Engine management, value: "Bosch EDC16 (p. 579) — the specification page lists EDC 15 C2 (p. 987); conflict open", source: { ref: wsm, locator: "pp. 579, 987" } }
+      - { label: Turbocharger, value: "Garrett, Rotary Electronic Actuated (REA) variable geometry", source: { ref: wsm, locator: p. 579 } }
+      - { label: Flywheel, value: "Dual-mass (manual transmission)", source: { ref: wsm, locator: "pp. 579, 1148" } }
+    verification:
+      notes: "Orientation and cylinder numbering are taken from the manual. The crank position (x 180 mm ahead of the front axle, 450 mm high) is still estimated."
+
+  # ---------------------------------------------------------------- castings
+  - id: cylinder-block
+    parent: engine-assembly
+    kind: part
+    name: Cylinder block
+    aliases: [block, crankcase]
+    explode: { dir: [0, 0, -1], dist: 40 }
+    manufacturing:
+      - { label: Material, value: "Cast iron, double-layer walls for rigidity", source: { ref: wsm, locator: p. 584 } }
+      - { label: Bores, value: "Machined directly into the block — no liners", source: { ref: wsm, locator: p. 584 } }
+    specs:
+      - { label: Identification, value: "Engine number on the lower LH (oil filter) side of the block", source: { ref: wsm, locator: p. 580 } }
+    geometry: { gen: engine-block, len: 470, y: [-150, 165], z: [-90, 250], bores: [96, 189, 282, 375], boreR: 46 }
+
+  - id: oil-sump
+    parent: engine-assembly
+    kind: part
+    name: Oil pan and oil pan housing
+    aliases: [sump, oil pan, ladder frame]
+    summary: Aluminium oil pan housing bolted to the block (20 bolts) with a pressed-steel oil pan below it (21 captive bolts).
+    access: { from: [underside], tools: [Drain-plug socket, Oil drain tray], notes: "Drain plug at the rear RH (gearbox end, bulkhead side) of the pan.", sources: [{ ref: wsm, locator: p. 598 }] }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    manufacturing:
+      - { label: Housing, value: "Aluminium, 20 bolts to the block; also carries the lower transmission mountings", source: { ref: wsm, locator: p. 597 } }
+      - { label: Pan, value: "Pressed steel, liquid sealant, 21 captive bolts", source: { ref: wsm, locator: p. 598 } }
+    geometry: { gen: oil-sump, x: [20, 450], y: [-140, 150], z: [-250, -90], ladder: 55, plug: [60, -90] }
+
+  - id: cylinder-head
+    parent: engine-assembly
+    kind: part
+    name: Cylinder head
+    aliases: [head]
+    explode: { dir: [0, 0, 1], dist: 140 }
+    manufacturing:
+      - { label: Material, value: "Aluminium alloy; sintered-steel valve seats and guides", source: { ref: wsm, locator: p. 606 } }
+      - { label: Head gasket, value: "Laminated metal, 4 thicknesses selected by piston protrusion", source: { ref: wsm, locator: "pp. 574, 606" } }
+    geometry: { gen: cylinder-head, len: 470, y: [-140, 150], z: [250, 365], ports: [96, 189, 282, 375] }
+
+  - id: cam-cover
+    parent: engine-assembly
+    kind: part
+    name: Structural camshaft cover and cylinder head cover
+    aliases: [rocker cover, valve cover, cam carrier, camshaft cover]
+    summary: Aluminium structural cover carrying the upper camshaft bearings, with the L-shaped head cover (PCV valve) on top; the oil filler is at its rear LH corner.
+    explode: { dir: [0, 0, 1], dist: 250 }
+    manufacturing:
+      - { label: Material, value: "Aluminium alloy, machined upper surface", source: { ref: wsm, locator: p. 606 } }
+    geometry: { gen: cam-cover, len: 460, y: [-120, 130], z: [365, 425], injectors: [96, 189, 282, 375], injectorY: 5, filler: 40 }
+
+  - id: engine-cover
+    parent: engine-assembly
+    kind: part
+    name: Engine acoustic cover
+    aliases: [engine cover, top cover, beauty cover]
+    summary: Clip-on thermoplastic cover over the engine; a hole at its rear LH corner gives access to the oil filler cap.
+    access: { from: [bonnet], notes: "Lifts off its mountings; removed first for the fuel filter, injectors, starter and power steering pump.", sources: [{ ref: wsm, locator: "pp. 898, 1329, 385" }] }
+    explode: { dir: [0, 0, 1], dist: 420 }
+    manufacturing:
+      - { label: Material, value: "Thermoplastic cover with polypropylene foam bonded underneath", source: { ref: wsm, locator: p. 577 } }
+    geometry: { gen: engine-cover, x: [-20, 480], y: [-110, 255], z: [440, 488] }
+
+  # ---------------------------------------------------------------- timing drive (belt + chain)
+  - id: timing-belt-cover
+    parent: engine-assembly
+    kind: part
+    name: Timing belt covers (rear, upper and lower)
+    summary: One-piece rear and two-piece front plastic covers enclosing the camshaft drive, 9 screws.
+    explode: { dir: [1, 0, 0], dist: 260 }
+    material: plastic-black
+    manufacturing: [{ label: Material, value: "Plastic, 1-piece rear + 2-piece front, 9 screws", source: { ref: wsm, locator: p. 603 } }]
+    geometry:
+      gen: prism
+      plane: yz
+      thickness: 36
+      bevel: 4
+      pos: [489, 0, 0]
+      outline: [[-110, -60], [-120, 200], [-110, 390], [-60, 420], [70, 420], [120, 390], [125, 200], [110, 60], [90, -80], [0, -110], [-80, -100]]
+
+  - id: timing-drive
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Camshaft drive (timing belt and chain)
+    summary: The crankshaft drives the exhaust camshaft and coolant pump by a toothed belt; a short 40-link chain drives the intake camshaft from the exhaust camshaft.
+    explode: { dir: [1, 0, 0], dist: 140 }
+    contacts: [timing-belt-cover, crank-pulley, engine-mount-rh, cylinder-block, cylinder-head]
+    verification:
+      sources: [{ ref: wsm, locator: "pp. 599–602", says: "Crankshaft gear drives the exhaust camshaft via a toothed timing belt routed around the coolant pump, automatic tensioner and idler pulleys; intake camshaft driven by a 40-link chain" }]
+  - id: timing-belt
+    parent: timing-drive
+    kind: part
+    name: Timing belt
+    aliases: [cam belt, cambelt]
+    explode: { dir: [1, 0, 0], dist: 80 }
+    verification: { notes: "Routing follows the description; pulley centres are estimated." }
+    geometry:
+      gen: serpentine
+      x: 497
+      width: 25
+      thickness: 4
+      pulleys:
+        - { y: 0, z: 0, r: 30 }
+        - { y: -96, z: 150, r: 32 }
+        - { y: -58, z: 360, r: 64 }
+        - { y: 62, z: 268, r: 26, side: -1 }
+        - { y: 58, z: 135, r: 30, side: -1 }
+  - id: exhaust-cam-pulley
+    parent: timing-drive
+    kind: part
+    name: Exhaust camshaft pulley (42 teeth)
+    explode: { dir: [1, 0, 0.3], dist: 120 }
+    specs: [{ label: Teeth, value: "42, keyed and bolted to the exhaust camshaft", source: { ref: wsm, locator: p. 607 } }]
+    geometry: { gen: pulley, r: 62, w: 26, ribs: 0, mat: steel-zinc, pos: [497, -58, 360] }
+  - id: timing-belt-tensioner
+    parent: timing-drive
+    kind: part
+    name: Timing belt automatic tensioner
+    explode: { dir: [1, 0.5, 0], dist: 120 }
+    geometry: { gen: pulley, r: 28, w: 26, ribs: 0, mat: steel-zinc, pos: [497, 88, 135] }
+  - id: coolant-pump
+    parent: timing-drive
+    kind: part
+    name: Coolant pump
+    aliases: [water pump]
+    summary: Centrifugal pump driven by the timing belt, bolted to the front RH side of the block.
+    explode: { dir: [1, -0.6, 0], dist: 160 }
+    specs: [{ label: Delivery, value: "21.5 L/min at 2.8 bar", source: { ref: wsm, locator: p. 755 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 588, says: "Bolts secure the pump to the front RH side of the cylinder block" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: pulley, r: 30, w: 26, ribs: 0, mat: steel-zinc, pos: [497, -96, 150] }
+        - { gen: cyl, r: 44, h: 26, axis: x, chamfer: 3, pos: [476, -96, 150], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- front-end accessory drive
+  - id: crank-pulley
+    parent: engine-assembly
+    kind: part
+    name: Crankshaft pulley and torsional vibration damper
+    aliases: [harmonic balancer, damper pulley]
+    explode: { dir: [1, 0, 0], dist: 300 }
+    verification: { sources: [{ ref: wsm, locator: p. 598, says: "Mounted to the front of the crankshaft in front of the CKP sensor ring; steel outer casing with drive-belt grooves" }] }
+    geometry: { gen: pulley, r: 82, w: 34, ribs: 6, pos: [532, 0, 0] }
+
+  - id: accessory-belt
+    parent: engine-assembly
+    kind: part
+    name: Accessory drive belt (6-rib poly-V)
+    aliases: [auxiliary belt, serpentine belt, fan belt, FEAD belt]
+    summary: Drives the power steering pump, generator and A/C compressor from the crankshaft damper.
+    access: { from: [wheel-arch-front-right, bonnet], notes: "The automatic tensioner is used to remove and install the belt.", sources: [{ ref: wsm, locator: p. 860 }] }
+    explode: { dir: [1, 0, 0], dist: 360 }
+    verification:
+      notes: "Pulley arrangement follows the component location figure (p. 860); pulley centres are estimated."
+      sources: [{ ref: wsm, locator: p. 860, says: "Crankshaft damper drives the accessories via a 6-ribbed poly-V belt, kept in contact by an automatic tensioner and idler" }]
+    geometry:
+      gen: serpentine
+      x: 532
+      pulleys:
+        - { y: 0, z: 0, r: 82 }
+        - { y: 175, z: -95, r: 55 }
+        - { y: 232, z: 48, r: 34 }
+        - { y: 190, z: 175, r: 30 }
+        - { y: -205, z: 250, r: 62 }
+        - { y: -150, z: 100, r: 34, side: -1 }
+  - id: belt-tensioner
+    parent: engine-assembly
+    kind: part
+    name: Accessory drive belt automatic tensioner
+    explode: { dir: [1, -0.4, 0.2], dist: 320 }
+    verification: { sources: [{ ref: wsm, locator: p. 860, says: "Located on the longest side of the belt between the crankshaft and power steering pump pulleys" }] }
+    geometry: { gen: pulley, r: 34, w: 26, ribs: 0, mat: steel-zinc, pos: [532, -184, 100] }
+  - id: belt-idler
+    parent: engine-assembly
+    kind: part
+    name: Accessory drive belt idler pulley
+    explode: { dir: [1, 0.5, 0], dist: 320 }
+    verification: { sources: [{ ref: wsm, locator: p. 860, says: "Located below the generator pulley; increases belt wrap on the generator and power steering pump" }] }
+    geometry: { gen: pulley, r: 34, w: 26, ribs: 0, mat: steel-zinc, pos: [532, 232, 48] }
+
+  - id: power-steering-pump
+    parent: engine-assembly
+    kind: part
+    name: Power steering pump
+    aliases: [PAS pump, steering pump]
+    summary: Variable-displacement vane pump at the front of the engine, driven by the accessory belt.
+    access: { from: [bonnet, wheel-arch-front-right], removeFirst: [engine-cover, accessory-belt], sources: [{ ref: wsm, locator: p. 385 }] }
+    explode: { dir: [0.4, -1, 0.5], dist: 280 }
+    placement: { pos: [455, -205, 250] }
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: p. 365, says: "Pump located at the front of the engine, driven by the FEAD poly-vee belt" }] }
+    geometry: { gen: machine, kind: pump, r: 45, len: 110, pulleyR: 62 }
+
+  # ---------------------------------------------------------------- air and exhaust side
+  - id: intake-manifold
+    parent: engine-assembly
+    kind: part
+    name: Intake manifold with swirl control
+    aliases: [inlet manifold, IMRC, swirl flaps]
+    summary: On the intake (radiator) side of the head, 7 bolts; port for the EGR transfer tube; swirl flaps worked by an electric actuator.
+    explode: { dir: [0, 1, 0.2], dist: 260 }
+    material: aluminium-cast
+    ewd: [M348]
+    specs: [{ label: IMRC actuator, value: "10 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 619, says: "Intake manifold located on the LH side of the engine, attached with 7 bolts; port on its RH side for the EGR transfer tube" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [390, 70, 92], r: 16, pos: [235, 222, 300] }
+        - { gen: box, size: [64, 52, 52], r: 10, pos: [96, 178, 300] }
+        - { gen: box, size: [64, 52, 52], r: 10, pos: [189, 178, 300] }
+        - { gen: box, size: [64, 52, 52], r: 10, pos: [282, 178, 300] }
+        - { gen: box, size: [64, 52, 52], r: 10, pos: [375, 178, 300] }
+        - { gen: box, size: [48, 34, 40], r: 6, pos: [420, 262, 300], mat: plastic-black }
+
+  - id: throttle-body
+    parent: engine-assembly
+    kind: part
+    name: Electronic throttle body
+    ewd: [D249]
+    explode: { dir: [-1, 0.6, 0.3], dist: 260 }
+    specs: [{ label: Screws, value: "9 Nm", source: { ref: wsm, locator: p. 801 } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 36, h: 70, axis: x, chamfer: 3, pos: [5, 222, 300], mat: aluminium-cast }
+        - { gen: box, size: [50, 40, 60], r: 6, pos: [5, 268, 300], mat: plastic-black }
+
+  - id: exhaust-manifold
+    parent: engine-assembly
+    kind: part
+    name: Exhaust manifold
+    summary: Fabricated manifold on the exhaust (bulkhead) side of the head, gasket and 9 fixings; carries the turbocharger.
+    explode: { dir: [0, -1, 0.1], dist: 200 }
+    material: iron-cast
+    manufacturing: [{ label: Construction, value: "Fabricated exhaust manifold", source: { ref: brochure-my2011, locator: Engine data } }]
+    verification: { sources: [{ ref: wsm, locator: p. 620, says: "Exhaust manifold attached to the RH side of the cylinder head with a gasket and 9 fixings" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 17, points: [[96, -158, 310], [100, -195, 295], [165, -228, 265], [232, -238, 237]] }
+        - { gen: tube, r: 17, points: [[189, -158, 310], [192, -200, 290], [220, -230, 260], [235, -238, 237]] }
+        - { gen: tube, r: 17, points: [[282, -158, 310], [278, -200, 290], [250, -230, 260], [238, -238, 237]] }
+        - { gen: tube, r: 17, points: [[375, -158, 310], [370, -195, 295], [305, -228, 265], [240, -238, 237]] }
+        - { gen: box, size: [90, 30, 70], r: 6, pos: [236, -244, 227] }
+
+  - id: turbocharger
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Turbocharger — Garrett variable geometry (REA)
+    aliases: [turbo, VGT, VNT]
+    summary: Exhaust-driven compressor on the exhaust-manifold outlet flange (3 bolts), behind the engine towards the bulkhead. Vane position is set by a rotary electronic actuator.
+    location: { zone: engine-bay-rear, text: "Bulkhead side of the engine, on the exhaust manifold" }
+    access: { from: [underside, bonnet], removeFirst: [egr-cooler, catalytic-converter], notes: "Manual order: raise the vehicle, remove the EGR cooler, then the catalytic converter.", sources: [{ ref: wsm, locator: p. 825 }] }
+    placement: { pos: [235, -300, 180] }
+    explode: { dir: [0, -1, 0.15], dist: 300 }
+    contacts: [exhaust-manifold]
+    ewd: [D363]
+    specs:
+      - { label: Boost, value: "1.1 bar at 2000 rpm, 1.2 bar at 3000 rpm", source: { ref: wsm, locator: p. 824 } }
+      - { label: Turbocharger bolts, value: "24 Nm (new bolts)", source: { ref: wsm, locator: p. 824 } }
+    manufacturing: [{ label: Supplier, value: "Garrett — Rotary Electronic Actuated (REA) variable geometry", source: { ref: wsm, locator: p. 579 } }]
+    faults:
+      - { symptom: "Underboost / limp mode", cause: "Sticking variable vanes, split boost hoses or actuator faults — diagnose before replacing the turbocharger." }
+    verification: { sources: [{ ref: wsm, locator: p. 620, says: "The electronically controlled VGT is attached to the exhaust manifold outlet flange with 3 bolts" }] }
+  - id: compressor-housing
+    parent: turbocharger
+    kind: part
+    name: Compressor housing
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    geometry: { gen: turbo, part: compressor-housing, outletAt: 0 }
+  - id: turbine-housing
+    parent: turbocharger
+    kind: part
+    name: Turbine housing
+    explode: { dir: [1, 0, 0], dist: 120 }
+    geometry: { gen: turbo, part: turbine-housing, inletAt: 180 }
+  - id: turbo-chra
+    parent: turbocharger
+    kind: part
+    name: Centre housing rotating assembly (CHRA)
+    aliases: [cartridge, core]
+    summary: Shaft, bearings and oil feed/return between the two wheels.
+    explode: { dir: [0, 0, -1], dist: 110 }
+    specs: [{ label: Oil return line, value: "10 Nm", source: { ref: wsm, locator: p. 824 } }]
+    geometry: { gen: turbo, part: chra }
+  - id: turbo-actuator
+    parent: turbocharger
+    kind: part
+    name: Rotary electronic vane actuator (REA)
+    explode: { dir: [0, 0.4, 1], dist: 140 }
+    geometry: { gen: turbo, part: actuator }
+
+  - id: catalytic-converter
+    parent: engine-assembly
+    kind: part
+    name: Catalytic converter (close-coupled oxidation catalyst)
+    aliases: [cat, catalyst, oxidation catalyst]
+    summary: Fitted to the turbocharger outlet behind the engine; on DPF vehicles the particulate filter follows directly below it.
+    location: { zone: engine-bay-rear, text: "Behind the engine, below the turbocharger" }
+    access: { from: [underside, bonnet], removeFirst: [engine-cover, diesel-particulate-filter], notes: "DPF vehicles: engine cover, undershield and DPF come off first.", sources: [{ ref: wsm, locator: pp. 1265–1268 }] }
+    placement: { pos: [300, -335, 40], rot: [0, 90, 0] }
+    explode: { dir: [0, -1, -0.4], dist: 300 }
+    contacts: [turbocharger]
+    ewd: [T403]
+    specs: [{ label: Catalytic converter to turbo, value: "25 Nm", source: { ref: wsm, locator: p. 824 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 1258, says: "An oxidizing catalytic converter is fitted in the front section of the exhaust system" }] }
+    geometry: { gen: canister, len: 210, r: 62, cones: 35, stubR: 30, stubLen: 30, shield: true }
+
+  - id: egr-cooler
+    parent: engine-assembly
+    kind: part
+    name: EGR cooler (heat exchanger)
+    aliases: [EGR heat exchanger]
+    explode: { dir: [0, -0.6, 1], dist: 260 }
+    verification: { sources: [{ ref: wsm, locator: p. 618, says: "EGR valve and cooler assembly located on the RH side of the cylinder head above the exhaust manifold; cooler outlet connects to the coolant rail on the RH side" }] }
+    geometry: { gen: box, size: [300, 56, 56], r: 12, pos: [230, -190, 410], mat: steel-zinc }
+
+  - id: egr-valve
+    parent: engine-assembly
+    kind: part
+    name: EGR valve (electric)
+    aliases: [exhaust gas recirculation valve]
+    explode: { dir: [-1, -0.5, 0.8], dist: 260 }
+    ewd: [D362]
+    verification: { sources: [{ ref: wsm, locator: p. 618 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [74, 64, 64], r: 8, pos: [45, -185, 410], mat: aluminium-cast }
+        - { gen: box, size: [40, 50, 50], r: 6, pos: [45, -185, 467], mat: plastic-black }
+        - { gen: tube, r: 18, points: [[10, -185, 410], [-35, -120, 432], [-40, 100, 432], [-10, 210, 345]], mat: steel-zinc }
+
+  # ---------------------------------------------------------------- fuel injection
+  - id: fuel-rail
+    parent: engine-assembly
+    kind: part
+    name: Common rail (fuel rail) with pressure control valve
+    aliases: [rail, high pressure rail, PCV]
+    summary: Forged-steel rail, 2 bolts to the head; the pressure control valve sits at the pump (transmission) end.
+    explode: { dir: [0, 1, 1], dist: 230 }
+    ewd: [T264, N167]
+    specs: [{ label: Rail retaining bolts, value: "18 Nm", source: { ref: wsm, locator: p. 801 } }]
+    manufacturing: [{ label: Material, value: "Forged steel", source: { ref: wsm, locator: p. 615 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 615, says: "Common fuel rail manufactured from forged steel, secured with 2 bolts; rail pressure regulated by a PCV located at the fuel pump end of the rail" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 13, h: 360, axis: x, chamfer: 2, pos: [240, 120, 405], mat: steel-zinc }
+        - { gen: cyl, r: 11, h: 44, axis: x, pos: [38, 120, 405], mat: plastic-black }
+        - { gen: cyl, r: 8, h: 30, axis: x, pos: [436, 120, 405], mat: plastic-black }
+
+  - id: hp-fuel-pipes
+    parent: engine-assembly
+    kind: pipe
+    name: High-pressure fuel pipes (pump to rail, rail to injectors)
+    material: steel-zinc
+    explode: { dir: [0, 1, 1], dist: 200 }
+    specs: [{ label: Union torque, value: "Stage 1: 22 Nm, stage 2: 25 Nm", source: { ref: wsm, locator: p. 801 } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 3.5, points: [[96, 120, 405], [96, 70, 438], [96, 18, 425]] }
+        - { gen: tube, r: 3.5, points: [[189, 120, 405], [189, 70, 438], [189, 18, 425]] }
+        - { gen: tube, r: 3.5, points: [[282, 120, 405], [282, 70, 438], [282, 18, 425]] }
+        - { gen: tube, r: 3.5, points: [[375, 120, 405], [375, 70, 438], [375, 18, 425]] }
+        - { gen: tube, r: 3.5, points: [[-70, -60, 325], [-60, 40, 432], [20, 120, 432], [40, 120, 405]] }
+
+  - id: injector-1
+    parent: engine-assembly
+    kind: part
+    name: Fuel injector, cylinder 1 (gearbox end)
+    aliases: [injector, piezo injector]
+    explode: { dir: [0, 0, 1], dist: 320 }
+    placement: { pos: [96, 5, 295] }
+    ewd: [T172]
+    specs: [{ label: Clamp bolts, value: "5 Nm + 110°", source: { ref: wsm, locator: p. 801 } }]
+    verification: { sources: [{ ref: wsm, locator: "pp. 579, 616", says: "Four piezo-electric injectors centrally mounted above each combustion chamber; No.1 cylinder at the transmission end" }] }
+    geometry: { gen: injector, len: 150 }
+  - id: injector-2
+    parent: engine-assembly
+    kind: part
+    name: Fuel injector, cylinder 2
+    aliases: [injector, piezo injector]
+    explode: { dir: [0, 0, 1], dist: 320 }
+    placement: { pos: [189, 5, 295] }
+    ewd: [T173]
+    verification: { sources: [{ ref: wsm, locator: "pp. 579, 616" }] }
+    geometry: { gen: injector, len: 150 }
+  - id: injector-3
+    parent: engine-assembly
+    kind: part
+    name: Fuel injector, cylinder 3
+    aliases: [injector, piezo injector]
+    explode: { dir: [0, 0, 1], dist: 320 }
+    placement: { pos: [282, 5, 295] }
+    ewd: [T174]
+    verification: { sources: [{ ref: wsm, locator: "pp. 579, 616" }] }
+    geometry: { gen: injector, len: 150 }
+  - id: injector-4
+    parent: engine-assembly
+    kind: part
+    name: Fuel injector, cylinder 4 (timing end)
+    aliases: [injector, piezo injector]
+    explode: { dir: [0, 0, 1], dist: 320 }
+    placement: { pos: [375, 5, 295] }
+    ewd: [T175]
+    verification: { sources: [{ ref: wsm, locator: "pp. 579, 616" }] }
+    geometry: { gen: injector, len: 150 }
+
+  - id: glow-plugs
+    parent: engine-assembly
+    kind: assembly
+    name: Glow plugs (×4)
+    aliases: [heater plugs, glowplugs]
+    summary: At the lower exhaust-side face of the head, next to each intake helical port; switched by the glow-plug relay in the battery junction box.
+    explode: { dir: [0, -1, 0], dist: 160 }
+    contacts: [cylinder-head, exhaust-manifold]
+    ewd: [T171]
+    verification: { sources: [{ ref: wsm, locator: p. 617, says: "The 4 glow plugs are installed at the lower RH side of the cylinder head, adjacent to each intake helical port" }] }
+  - { id: glow-plug-1, parent: glow-plugs, kind: part, name: Glow plug 1, placement: { pos: [96, -95, 270], rot: [50, 0, 0] }, geometry: { gen: glow-plug, len: 100 } }
+  - { id: glow-plug-2, parent: glow-plugs, kind: part, name: Glow plug 2, placement: { pos: [189, -95, 270], rot: [50, 0, 0] }, geometry: { gen: glow-plug, len: 100 } }
+  - { id: glow-plug-3, parent: glow-plugs, kind: part, name: Glow plug 3, placement: { pos: [282, -95, 270], rot: [50, 0, 0] }, geometry: { gen: glow-plug, len: 100 } }
+  - { id: glow-plug-4, parent: glow-plugs, kind: part, name: Glow plug 4, placement: { pos: [375, -95, 270], rot: [50, 0, 0] }, geometry: { gen: glow-plug, len: 100 } }
+
+  - id: hp-fuel-pump
+    parent: engine-assembly
+    kind: part
+    name: High-pressure fuel pump with volume control valve
+    aliases: [injection pump, HP pump, common rail pump]
+    summary: Mounted with 3 bolts at the rear (transmission end) exhaust side of the head, driven by the exhaust camshaft; a crash shield protects its front.
+    explode: { dir: [-1, -0.3, 0.5], dist: 260 }
+    placement: { pos: [-70, -110, 295] }
+    ewd: [N168]
+    specs:
+      - { label: Delivery pressure, value: "1600 bar", source: { ref: wsm, locator: p. 801 } }
+      - { label: Securing bolts, value: "22 Nm", source: { ref: wsm, locator: p. 801 } }
+    verification: { sources: [{ ref: wsm, locator: p. 614, says: "High-pressure fuel pump mounted with 3 bolts to the rear RH side of the cylinder head, driven by the exhaust camshaft; crash shield installed to the front of the pump" }] }
+    geometry: { gen: machine, kind: pump, r: 44, len: 100 }
+
+  - id: vacuum-pump
+    parent: engine-assembly
+    kind: part
+    name: Vacuum pump (brake booster)
+    explode: { dir: [-1, 0.3, 0.4], dist: 240 }
+    placement: { pos: [-38, 60, 330] }
+    manufacturing: [{ label: Make, value: Bosch, source: { ref: wsm, locator: p. 318 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 613, says: "Vacuum pump mounted with 3 bolts to the rear LH side of the cylinder head, driven by the intake camshaft" }] }
+    geometry: { gen: machine, kind: vacuum-pump, r: 44, len: 60 }
+
+  # ---------------------------------------------------------------- lubrication & cooling
+  - id: oil-filter-housing
+    parent: engine-assembly
+    kind: part
+    name: Oil filter and oil cooler assembly
+    aliases: [oil filter, oil cooler]
+    summary: Combined oil filter and coolant-heated oil cooler on the intake side of the block, in line with cylinder 3.
+    access: { from: [bonnet, front-end], removeFirst: [engine-cover] }
+    explode: { dir: [0, 1, -0.2], dist: 240 }
+    verification: { sources: [{ ref: wsm, locator: p. 588, says: "A combined engine oil cooler and filter assembly is mounted on the LH side of the engine block, in-line with No. 3 cylinder" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 40, h: 120, axis: z, chamfer: 4, pos: [282, 212, 70], mat: plastic-black }
+        - { gen: box, size: [130, 30, 150], r: 8, pos: [282, 182, 50], mat: aluminium-cast }
+
+  - id: thermostat-housing
+    parent: engine-assembly
+    kind: part
+    name: Cooling system thermal control module (thermostat housing)
+    aliases: [thermostat housing, thermostat]
+    explode: { dir: [-1, 0.5, 0], dist: 200 }
+    ewd: [T121]
+    specs:
+      - { label: Thermostat, value: "Wax element: opens 83 °C, fully open 91 °C", source: { ref: wsm, locator: p. 755 } }
+    verification: { sources: [{ ref: wsm, locator: p. 612, says: "The cooling system thermal control module is secured to the rear of the cylinder head by 2 studs with nuts and 2 bolts" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [56, 70, 60], r: 8, pos: [-26, 60, 246], mat: plastic-black }
+        - { gen: cyl, r: 19, h: 40, axis: y, pos: [-26, 105, 246], mat: plastic-black }
+
+  - id: dipstick
+    parent: engine-assembly
+    kind: part
+    name: Oil level gauge (dipstick) and tube
+    explode: { dir: [0, 1, 0.6], dist: 200 }
+    verification: { sources: [{ ref: wsm, locator: p. 598, says: "The oil level gage is located on the LH side of the engine; two notches indicate minimum and maximum" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 5, points: [[150, 172, -40], [150, 228, 200], [160, 262, 420], [165, 262, 470]], mat: steel-black }
+        - { gen: box, size: [16, 36, 22], r: 5, pos: [165, 262, 484], mat: label-yellow }
+
+  - id: oil-level-sensor
+    parent: engine-assembly
+    kind: part
+    name: Oil temperature and level sensor
+    explode: { dir: [-0.5, 0.5, -1], dist: 180 }
+    ewd: [T335]
+    specs: [{ label: Torque, value: "27 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification:
+      placement: estimated
+      sources: [{ ref: wsm, locator: p. 597, says: "The oil temperature sensor is located at the rear LH side of the oil pan housing" }]
+    geometry: { gen: cyl, r: 14, h: 40, axis: y, pos: [40, 160, -118], mat: plastic-black }
+
+  - id: oil-pressure-switch
+    parent: engine-assembly
+    kind: part
+    name: Engine oil pressure switch
+    explode: { dir: [0, 1, 0], dist: 160 }
+    ewd: [S216]
+    specs: [{ label: Torque, value: "35 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { placement: estimated, notes: "Exact position not described; shown on the oil filter housing." }
+    geometry: { gen: cyl, r: 12, h: 34, axis: y, pos: [330, 205, 0], mat: steel-zinc }
+
+  # ---------------------------------------------------------------- sensors
+  - id: crank-sensor
+    parent: engine-assembly
+    kind: part
+    name: Crankshaft position sensor (CKP)
+    aliases: [crank sensor, CKP]
+    summary: Hall-effect sensor at the front (timing end) of the block, reading the target ring behind the damper; not adjustable.
+    explode: { dir: [1, 1, -0.4], dist: 220 }
+    ewd: [T102]
+    manufacturing: [{ label: Make / type, value: "Electrifil, Hall effect", source: { ref: wsm, locator: p. 987 } }]
+    specs: [{ label: Retaining bolt, value: "10 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 586, says: "A CKP sensor is installed at the front of the engine, secured to the cylinder block with a locating dowel and screw" }] }
+    geometry: { gen: cyl, r: 11, h: 50, axis: y, pos: [470, 105, -40], mat: plastic-black }
+  - id: cam-sensor
+    parent: engine-assembly
+    kind: part
+    name: Camshaft position sensor (CMP)
+    aliases: [cam sensor, CMP]
+    summary: Hall-effect sensor at the front of the engine behind the exhaust camshaft pulley; its tip passes through the head cover.
+    explode: { dir: [1, -0.3, 1], dist: 220 }
+    ewd: [T107]
+    manufacturing: [{ label: Make / type, value: "Electrifil, Hall effect", source: { ref: wsm, locator: p. 987 } }]
+    specs: [{ label: Retaining bolt, value: "6 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 608, says: "The CMP sensor is mounted at the front of the engine behind the exhaust camshaft drive pulley" }] }
+    geometry: { gen: cyl, r: 11, h: 45, axis: z, pos: [458, -55, 430], mat: plastic-black }
+  - id: boost-sensor
+    parent: engine-assembly
+    kind: part
+    name: Boost pressure sensor
+    aliases: [MAP sensor, boost sensor]
+    explode: { dir: [0, 1, 1], dist: 220 }
+    ewd: [T141]
+    specs: [{ label: Torque, value: "8 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { placement: estimated }
+    geometry: { gen: box, size: [34, 26, 30], r: 4, pos: [200, 262, 350], mat: plastic-black }
+  - id: iat-sensor
+    parent: engine-assembly
+    kind: part
+    name: Intake air temperature sensor (IAT, charge air)
+    explode: { dir: [0, 1, 1], dist: 220 }
+    ewd: [T116]
+    specs: [{ label: Torque, value: "10 Nm", source: { ref: wsm, locator: p. 987 } }]
+    verification: { placement: estimated }
+    geometry: { gen: cyl, r: 9, h: 30, axis: z, pos: [120, 250, 350], mat: plastic-black }
+
+  # ---------------------------------------------------------------- mounts
+  - id: engine-mount-rh
+    parent: engine-assembly
+    kind: part
+    name: Engine mount, RH (upper engine mount)
+    aliases: [engine mount, RH mount, upper engine mount insulator]
+    explode: { dir: [1, 0, 0.4], dist: 260 }
+    placement: { pos: [530, -10, 220] }
+    specs: [{ label: Mount spacing, value: "Transmission LH mounting forward stud → engine RH mounting forward hole: 922 mm", source: { ref: wsm, locator: p. 2249 } }]
+    verification: { sources: [{ ref: wsm, locator: p. 2249 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: mount, size: [100, 90, 80] }
+        - { gen: box, size: [120, 50, 40], r: 6, pos: [-60, 0, 20], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- internals (on-demand breakdown)
+  - id: engine-internals
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Engine internals (rotating and valve-train parts)
+    summary: Crankshaft, pistons and connecting rods, camshafts, balance shafts and oil pump — normally hidden inside the block and head.
+    explode: { dir: [0, 0, 1], dist: 0 }
+    contacts: [cylinder-block, cylinder-head, oil-sump, cam-cover, crank-pulley, timing-drive, timing-belt-cover, dual-mass-flywheel, gearbox, cam-sensor]
+    verification: { notes: "Internal positions follow the bore spacing and descriptions; shapes are simplified." }
+  - id: crankshaft
+    parent: engine-internals
+    kind: part
+    name: Crankshaft
+    explode: { dir: [0, 0, -1], dist: 360 }
+    manufacturing:
+      - { label: Material, value: "Steel; 5 main bearings, 4 big-end journals", source: { ref: wsm, locator: p. 592 } }
+      - { label: Main bearings, value: "Aluminium/tin shells; thrust washers either side of No.2 main", source: { ref: wsm, locator: p. 593 } }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 30, h: 500, axis: x, pos: [240, 0, 0], mat: steel-zinc }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [72, 0, -20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [120, 0, -20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [165, 0, 20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [213, 0, 20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [258, 0, 20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [306, 0, 20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [351, 0, -20], mat: steel-black }
+        - { gen: box, size: [22, 64, 150], r: 10, pos: [399, 0, -20], mat: steel-black }
+  - id: pistons-and-rods
+    parent: engine-internals
+    kind: part
+    name: Pistons and connecting rods (×4)
+    explode: { dir: [0, 0, 1], dist: 300 }
+    manufacturing:
+      - { label: Pistons, value: "Aluminium alloy, steel insert in the top ring groove, 2 compression rings + oil ring", source: { ref: wsm, locator: p. 596 } }
+      - { label: Connecting rods, value: "Forged steel, I-beam section", source: { ref: wsm, locator: p. 595 } }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 42, h: 60, axis: z, pos: [96, 0, 168], mat: aluminium-machined }
+        - { gen: cyl, r: 42, h: 60, axis: z, pos: [189, 0, 72], mat: aluminium-machined }
+        - { gen: cyl, r: 42, h: 60, axis: z, pos: [282, 0, 72], mat: aluminium-machined }
+        - { gen: cyl, r: 42, h: 60, axis: z, pos: [375, 0, 168], mat: aluminium-machined }
+        - { gen: box, size: [24, 34, 150], r: 6, pos: [96, 0, 90], mat: steel-black }
+        - { gen: box, size: [24, 34, 120], r: 6, pos: [189, 0, 40], mat: steel-black }
+        - { gen: box, size: [24, 34, 120], r: 6, pos: [282, 0, 40], mat: steel-black }
+        - { gen: box, size: [24, 34, 150], r: 6, pos: [375, 0, 90], mat: steel-black }
+  - id: camshafts
+    parent: engine-internals
+    kind: part
+    name: Camshafts, intake and exhaust
+    explode: { dir: [0, 0, 1], dist: 420 }
+    manufacturing: [{ label: Material, value: "Cast iron; run directly in aluminium bearing housings (5 each), no shells", source: { ref: wsm, locator: p. 607 } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 14, h: 470, axis: x, pos: [235, 55, 385], mat: iron-cast }
+        - { gen: cyl, r: 14, h: 470, axis: x, pos: [235, -55, 385], mat: iron-cast }
+  - id: balance-shafts
+    parent: engine-internals
+    kind: part
+    name: Counter-balance shaft assembly
+    aliases: [balance shafts, balancer]
+    summary: Two counter-rotating shafts in a housing below the crankshaft (8 bolts); the housing also carries the oil pump.
+    explode: { dir: [0, 0, -1], dist: 420 }
+    verification: { sources: [{ ref: wsm, locator: p. 589 }] }
+    geometry: { gen: box, size: [300, 150, 60], r: 10, pos: [240, 0, -120], mat: iron-cast }
+  - id: oil-pump
+    parent: engine-internals
+    kind: part
+    name: Oil pump (rotor type)
+    explode: { dir: [1, 0, -1], dist: 360 }
+    verification: { sources: [{ ref: wsm, locator: p. 597, says: "The rotor type oil pump is located between the oil pan and oil pan housing" }] }
+    geometry: { gen: cyl, r: 48, h: 40, axis: x, pos: [420, 0, -130], mat: aluminium-cast }
+
+  - id: engine-roll-restrictor
+    kind: part
+    name: Lower engine mount (torque rod)
+    aliases: [roll restrictor, dog bone, lower torque mount, pendulum mount]
+    summary: Links the lower rear of the powertrain to the front subframe and limits rocking under load.
+    location: { zone: underbody-front, text: "Below the engine/gearbox, to the subframe rear cross-member" }
+    access: { from: [underside] }
+    explode: { dir: [0, 0, -1], dist: 120 }
+    contacts: [gearbox, front-subframe]
+    verification: { placement: estimated, sources: [{ ref: wsm, locator: "Engine repair: Lower Engine Mount Insulator" }] }
+    geometry:
+      gen: link
+      w: 44
+      h: 30
+      points: [[-440, 60, 180], [-130, 70, 268]]
+      eyes:
+        - { at: [-440, 60, 180], axis: [0, 1, 0], r: 34, len: 50 }
+        - { at: [-130, 70, 268], axis: [0, 1, 0], r: 26, len: 44 }

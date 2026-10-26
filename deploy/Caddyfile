@@ -1,0 +1,53 @@
+# Vehicle Atlas: the built site as static files.
+#
+# SITE_ADDRESS=:80                serves plain HTTP on port 80 (behind another proxy, or to try it out)
+# SITE_ADDRESS=atlas.example.com  serves HTTPS on 443 with an automatic certificate, and redirects 80 to it
+#                                 (the domain's DNS must point here, and /data must be a volume to keep it)
+{
+	admin off
+	servers {
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+	}
+}
+
+{$SITE_ADDRESS::80} {
+	root * /srv
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options SAMEORIGIN
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# content-hashed files (scripts, geometry, wiring, images) never change: cache them for a year
+	@hashed path_regexp ^/(assets/|data/vehicles/[^/]+/[^/]+\.[0-9a-f]+\.(glb|json|webp)$)
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+	# the page, the catalogue and the manifests are revalidated on every visit
+	@fresh not path_regexp ^/(assets/|data/vehicles/[^/]+/[^/]+\.[0-9a-f]+\.(glb|json|webp)$)
+	header @fresh Cache-Control "no-cache"
+
+	@glb path *.glb
+	header @glb Content-Type model/gltf-binary
+
+	# app routes (/v/<vehicle>, /v/<vehicle>/verification) load the single page; missing files stay 404
+	@app {
+		not path /assets/* /data/*
+		not file
+	}
+	rewrite @app /index.html
+
+	file_server {
+		precompressed br gzip
+	}
+
+	handle_errors {
+		header Cache-Control no-store
+		respond "{err.status_code} {err.status_text}"
+	}
+}
