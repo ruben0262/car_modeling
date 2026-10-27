@@ -1,0 +1,243 @@
+# Body-in-white, simplified to its main load paths (the "skeleton"). Shared with the VW Sharan.
+#
+# Transverse spacings come from the VW body dimensions (vw-body pp. 6–17), where the measuring points
+# are named: front longitudinal members 964.2 mm, suspension strut mountings 966.1 mm, wheel housing
+# corners 1338 mm, bumper brackets 1598 mm, A/B/C-pillars 1508.3/1517.2/1530.1 mm (inside), rear
+# longitudinal members 1019.1 mm, gas strut points 1400.1 mm. The fore-aft positions of these members
+# are estimated: the straightening-jig figures that fix them are blank in the copy in hand.
+system: structure
+defaults:
+  material: steel-structure
+  verification:
+    geometry: placeholder
+    placement: estimated
+    facts: unsourced
+    notes: Simplified load-path members; section sizes are estimates for orientation only.
+
+nodes:
+  - id: front-longitudinal
+    kind: part
+    sides: [left, right]
+    name: Front longitudinal member
+    aliases: [front rail, chassis leg, chassis member]
+    summary: Box-section member running from the floor under the bulkhead to the bumper bracket at the front; the engine mounting bracket sits on the right one, the gearbox mounting on the battery console on the left.
+    location: { zone: engine-bay-left, text: "Runs fore–aft along the lower side of the engine compartment, from the bulkhead to the bumper bracket" }
+    specs: [{ label: Spacing, value: "964.2 mm between the front longitudinal members (964 ± 1 at the front)", source: { ref: vw-body, locator: pp. 6–7 } }]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: vw-body, locator: pp. 6–7, says: "Distance between front longitudinal members" }, { ref: ssp-169, locator: p. 20 }] }
+    geometry:
+      gen: frame
+      beams:
+        - { a: [-620, 482, 320], b: [-260, 482, 400], w: 70, h: 100 }
+        - { a: [-260, 482, 400], b: [100, 482, 425], w: 70, h: 100 }
+        - { a: [100, 482, 425], b: [300, 482, 415], w: 70, h: 100 }
+        - { a: [300, 482, 415], b: [780, 482, 470], w: 70, h: 100 }
+
+  - id: upper-rail
+    kind: part
+    sides: [left, right]
+    name: Upper wheel housing longitudinal member
+    aliases: [apron, upper rail]
+    location: { zone: engine-bay-left, text: "Above the front wheel arch, from the A-pillar to the front" }
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: "p. 37, Renewing upper wheel housing longitudinal member" }] }
+    geometry: { gen: frame, beams: [{ a: [-420, 745, 980], b: [640, 735, 690], w: 60, h: 70 }] }
+
+  - id: strut-tower
+    kind: part
+    sides: [left, right]
+    name: Front suspension strut mounting (strut tower)
+    aliases: [strut tower, suspension tower, strut top]
+    location: { zone: engine-bay-left, text: "Top of the front wheel housing, each side of the engine compartment" }
+    specs: [{ label: Strut mountings, value: "966.1 mm apart (measuring points on the strut towers)", source: { ref: vw-body, locator: p. 6 } }]
+    contacts: [front-strut]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: vw-body, locator: p. 6, says: "Distance between suspension strut mountings" }] }
+    geometry: { gen: cyl, r: 100, r2: 84, h: 150, axis: z, pos: [-30, 560, 860] }
+
+  - id: front-crash-beam
+    kind: part
+    name: Front bumper carrier
+    aliases: [bumper reinforcement, crash bar]
+    specs: [{ label: Bumper brackets, value: "1598 ± 1 mm apart", source: { ref: vw-body, locator: p. 7 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: p. 7 }] }
+    geometry: { gen: frame, beams: [{ a: [790, 799, 470], b: [790, -799, 470], w: 60, h: 100 }] }
+
+  - id: lock-carrier
+    kind: part
+    name: Lock carrier (bolted front end)
+    aliases: [front panel, radiator support, slam panel, front-end carrier]
+    summary: Frame across the front of the engine compartment carrying the radiator, the bonnet lock and the headlamps.
+    location: { zone: front-end, text: "Frame across the front of the engine compartment, behind the bumper" }
+    access: { from: [front-end], removeFirst: [front-bumper] }
+    verification: { placement: estimated, notes: "How the lock carrier is fixed to the body (bolted or welded) is not stated in the Sharan documents in hand; the VW body repair manual covers only the rear lock carrier." }
+    geometry:
+      gen: frame
+      beams:
+        - { a: [705, 640, 860], b: [705, -640, 860], w: 40, h: 60 }
+        - { a: [705, 600, 300], b: [705, -600, 300], w: 40, h: 50 }
+        - { a: [705, 600, 300], b: [705, 600, 860], w: 40, h: 40 }
+        - { a: [705, -600, 300], b: [705, -600, 860], w: 40, h: 40 }
+
+  - id: bulkhead
+    kind: part
+    name: Bulkhead and plenum chamber (dash panel, plenum floor)
+    aliases: [firewall, dash panel, scuttle, plenum, water box]
+    summary: The bulkhead separates the engine compartment from the footwells; above it the plenum chamber runs across the car under the windscreen base and the plenum panel.
+    location: { zone: engine-bay-rear, text: "Between the engine compartment and the cabin" }
+    specs: [{ label: Vehicle identification number, value: "Stamped on the engine compartment bulkhead", source: { ref: vw-body, locator: p. 5 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: p. 5 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [8, 1400, 560], pos: [-470, 0, 680] }
+        - { gen: box, size: [380, 1400, 8], pos: [-280, 0, 965] }
+        - { gen: box, size: [8, 1400, 150], pos: [-92, 0, 1040] }
+
+  - id: plenum-panel
+    kind: part
+    name: Plenum chamber panel (scuttle cover)
+    aliases: [cowl panel, scuttle panel, water deflector]
+    material: trim-black
+    location: { zone: plenum, text: "Under the windscreen base, below the wiper arms" }
+    geometry: { gen: box, size: [180, 1420, 10], r: 4, pos: [-40, 0, 1128], rot: [0, -22, 0] }
+
+  - id: floor-front
+    kind: part
+    sides: [left, right]
+    name: Front floor panel
+    geometry: { gen: box, size: [1600, 560, 6], pos: [-1300, 430, 300] }
+
+  - id: tunnel
+    kind: part
+    name: Floor tunnel
+    summary: Shallow centre tunnel carrying the exhaust (there is no propeller shaft on the front-wheel-drive Galaxy).
+    location: { zone: underbody-centre, text: "Centre of the floor; the exhaust runs beneath it" }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [1600, 300, 6], pos: [-1300, 0, 420] }
+        - { gen: box, size: [1600, 6, 120], pos: [-1300, 150, 360] }
+        - { gen: box, size: [1600, 6, 120], pos: [-1300, -150, 360] }
+
+  - id: floor-rear
+    kind: part
+    name: Rear floor (second and third row, over the fuel tank and rear axle)
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [310, 1110, 6], pos: [-2245, 0, 330] }
+        - { gen: box, size: [6, 1110, 200], pos: [-2400, 0, 430] }
+        - { gen: box, size: [840, 1110, 6], pos: [-2820, 0, 530] }
+        - { gen: box, size: [6, 1110, 90], pos: [-3240, 0, 485] }
+
+  - id: boot-floor
+    kind: part
+    name: Luggage compartment floor
+    location: { zone: luggage, text: "Behind the third seat row, above the spare wheel" }
+    geometry: { gen: box, size: [480, 1260, 6], pos: [-3480, 0, 440] }
+
+  - id: sill
+    kind: part
+    sides: [left, right]
+    name: Side member (sill)
+    aliases: [rocker, outer side member]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: "p. 80, Renewing outer side member" }] }
+    geometry: { gen: frame, beams: [{ a: [-470, 805, 330], b: [-2440, 805, 330], w: 110, h: 140 }] }
+
+  - id: a-pillar
+    kind: part
+    sides: [left, right]
+    name: A-pillar
+    specs: [{ label: A-pillars, value: "1508.3 mm apart (inside)", source: { ref: vw-body, locator: p. 11 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: p. 11 }] }
+    geometry: { gen: frame, beams: [{ a: [-440, 790, 1000], b: [-860, 650, 1560], w: 80, h: 70 }] }
+
+  - id: b-pillar
+    kind: part
+    sides: [left, right]
+    name: B-pillar
+    specs: [{ label: B-pillars, value: "1517.2 mm apart (inside)", source: { ref: vw-body, locator: p. 11 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: p. 11 }] }
+    geometry: { gen: frame, beams: [{ a: [-1530, 815, 400], b: [-1530, 670, 1640], w: 90, h: 80 }] }
+
+  - id: c-pillar
+    kind: part
+    sides: [left, right]
+    name: C-pillar
+    specs: [{ label: C-pillars, value: "1530.1 mm apart (inside)", source: { ref: vw-body, locator: p. 14 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: p. 14 }] }
+    geometry: { gen: frame, beams: [{ a: [-2585, 812, 760], b: [-2585, 668, 1648], w: 80, h: 70 }] }
+
+  - id: d-pillar-inner
+    kind: part
+    sides: [left, right]
+    name: D-pillar (inner)
+    geometry: { gen: frame, beams: [{ a: [-3560, 820, 760], b: [-3300, 680, 1600], w: 90, h: 80 }] }
+
+  - id: cantrail
+    kind: part
+    sides: [left, right]
+    name: Roof frame side member (cantrail)
+    geometry: { gen: frame, beams: [{ a: [-860, 650, 1572], b: [-3240, 652, 1610], w: 60, h: 60 }] }
+
+  - id: roof-bows
+    kind: part
+    name: Roof cross members (front, reinforcement, rear)
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: "pp. 53–60, front and rear roof cross members, roof reinforcement" }] }
+    geometry:
+      gen: frame
+      beams:
+        - { a: [-900, 620, 1580], b: [-900, -620, 1580], w: 50, h: 40 }
+        - { a: [-1530, 640, 1625], b: [-1530, -640, 1625], w: 50, h: 40 }
+        - { a: [-2585, 640, 1630], b: [-2585, -640, 1630], w: 50, h: 40 }
+        - { a: [-3240, 640, 1590], b: [-3240, -640, 1590], w: 60, h: 50 }
+
+  - id: rear-longitudinal
+    kind: part
+    sides: [left, right]
+    name: Rear longitudinal member
+    summary: Carries the rear axle body's mountings and the shock absorber mounting; repaired with the extension arm as one section.
+    specs: [{ label: Spacing, value: "1019.1 mm between the rear longitudinal members", source: { ref: vw-body, locator: p. 15 } }]
+    verification: { placement: referenced, facts: oem, sources: [{ ref: vw-body, locator: "pp. 15, 103", says: "Distance between rear longitudinal members; includes rear shock absorber mounting and extension arm" }] }
+    geometry:
+      gen: frame
+      beams:
+        - { a: [-2250, 509.6, 330], b: [-2600, 509.6, 548], w: 70, h: 90 }
+        - { a: [-2600, 509.6, 548], b: [-3640, 509.6, 520], w: 70, h: 90 }
+
+  - id: battery-console
+    kind: part
+    name: Battery console
+    aliases: [battery tray bracket, Batteriekonsole]
+    summary: Bracket on the left front longitudinal member carrying the battery box; the gearbox mount is bolted under it and the ABS unit has a bracket to it.
+    location: { zone: engine-bay-left, text: "Left of the engine compartment, above the gearbox" }
+    verification: { placement: estimated, facts: oem, sources: [{ ref: ssp-169, locator: "pp. 20, 35", says: "Das Getriebelager ist an der Batteriekonsole verschraubt; ABS-Einheit ... mit Haltern am Längsträger und an der Batteriekonsole montiert" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [380, 280, 8], pos: [275, 510, 650] }
+        - { gen: box, size: [60, 50, 200], pos: [380, 482, 550] }
+
+  - id: rear-crash-beam
+    kind: part
+    name: Rear bumper bracket and cross member
+    geometry: { gen: frame, beams: [{ a: [-3660, 620, 470], b: [-3660, -620, 470], w: 50, h: 90 }] }
+
+  - id: rear-cross-panel
+    kind: part
+    name: Rear cross panel (lock carrier, rear)
+    summary: Panel across the bottom of the tailgate aperture carrying the tailgate lock striker.
+    specs: [{ label: Tailgate aperture, value: "Cross-panel flange to roof flange 1121.2 mm at the centre", source: { ref: vw-body, locator: p. 14 } }]
+    verification: { facts: oem, sources: [{ ref: vw-body, locator: "pp. 14, 87, 101" }] }
+    geometry: { gen: box, size: [40, 1260, 160], pos: [-3660, 0, 620] }
+
+  - id: seat-crossmember
+    kind: part
+    sides: [left, right]
+    name: Front seat cross member
+    geometry: { gen: frame, beams: [{ a: [-1560, 160, 330], b: [-1560, 740, 330], w: 70, h: 24 }] }
+
+  - id: dash-crossbeam
+    kind: part
+    name: Dash panel cross member
+    material: steel-black
+    location: { zone: cabin-dashboard, text: "Behind the dash panel, pillar to pillar" }
+    geometry: { gen: cyl, r: 30, h: 1420, axis: y, pos: [-760, 0, 880] }

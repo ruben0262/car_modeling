@@ -144,6 +144,28 @@ test('wiring by year: switching publication changes the circuits shown', async (
   await expect(picker.locator('.changes')).toContainText('Connections:');
 });
 
+test('second vehicle: the Galaxy loads with its VW wiring by build date', async ({ page }) => {
+  await page.goto('/v/ford-galaxy-wgr-1998-19tdi?part=abs-control-unit');
+  await page.waitForFunction(() => performance.getEntriesByName('vehicle-ready').length > 0, null, { timeout: 60_000 });
+  await expect(page.locator('.rail-btn')).toHaveCount(12); // 11 systems + "All"
+  await expect(page.locator('.part-title')).toHaveText('ABS control unit');
+  // the control unit's own 25-pin plug from the ABS diagram (VW codes are scoped per diagram)
+  await expect(page.locator('.panel-body')).toContainText('T25.20');
+  await expect(page.locator('.panel-body .wire-row').first()).toBeVisible();
+
+  await expect(page.locator('.panel-body')).toContainText('Ford parts catalogue');
+
+  await page.getByLabel('Search components').fill('glow plug');
+  await expect(page.locator('.search-results .r-name').first()).toHaveText('Glow plug 1');
+  await page.keyboard.press('Escape');
+
+  await page.getByRole('tab', { name: 'Wiring' }).click();
+  const picker = page.locator('.pubs');
+  await expect(picker).toContainText('Built January–April 1998');
+  await picker.getByRole('button', { name: /Built September–December 1997/ }).click();
+  await expect(page.locator('.panel-body')).toContainText('No. 9');
+});
+
 test('connected-to lists documented joints and wired parts', async ({ page }) => {
   await openVehicle(page, '?part=front-knuckle-l');
   const panel = page.locator('.panel-body');

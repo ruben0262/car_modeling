@@ -1,4 +1,7 @@
-/** Wiring netlist extracted from OEM Electrical Wiring Diagrams (see tools/ewd/import.ts). */
+/**
+ * Wiring netlist extracted from OEM wiring diagrams: Land Rover Electrical Wiring Diagrams
+ * (tools/ewd/import.ts) and Volkswagen Current Flow Diagrams (tools/ewd/import-vw.ts).
+ */
 export interface EwdWire {
   id: string;
   colour: string;
@@ -43,17 +46,18 @@ export interface EwdData {
   publication: { title: string; file: string; vin: string; market: string; pages: number };
   circuits: EwdCircuit[];
   components: Record<string, { name: string; connectors: string[]; circuits: string[] }>;
-  connectors: Record<string, { component: string | null; pins: Record<string, { wires: string[]; signal?: string }>; mates?: string }>;
+  /** `name`: the legend's description where the diagrams give one ("24-pin connector, on engine left"). */
+  connectors: Record<string, { component: string | null; pins: Record<string, { wires: string[]; signal?: string }>; mates?: string; name?: string }>;
   wires: EwdWire[];
   fuses: Record<string, { rating?: number; between: string[]; sheets: string[] }>;
-  splices: Record<string, { wires: string[] }>;
-  grounds: Record<string, { wires: string[] }>;
+  splices: Record<string, { wires: string[]; name?: string }>;
+  grounds: Record<string, { wires: string[]; name?: string }>;
   stats: Record<string, number>;
   /** Present in the published file only (added by the data build). */
   layout?: WiringLayout;
 }
 
-/** JLR wire colour codes → display colours. */
+/** Wire colour codes → display colours: JLR (BK, "BU-OG") and VW, which keeps the German codes (sw, "ro/sw"). */
 export const WIRE_COLOURS: Record<string, string> = {
   BK: '#1d1d1f',
   BN: '#7a4a24',
@@ -66,6 +70,18 @@ export const WIRE_COLOURS: Record<string, string> = {
   VT: '#8b5bd6',
   WH: '#f2f2f0',
   YE: '#f2d01f',
+  sw: '#1d1d1f',
+  br: '#7a4a24',
+  bl: '#2f6fd6',
+  gn: '#2f9e50',
+  gr: '#8c9196',
+  or: '#f08a24',
+  rs: '#f28cb8',
+  ro: '#d93a2b',
+  rt: '#d93a2b',
+  li: '#8b5bd6',
+  ws: '#f2f2f0',
+  ge: '#f2d01f',
 };
 
 export const WIRE_COLOUR_NAMES: Record<string, string> = {
@@ -80,17 +96,45 @@ export const WIRE_COLOUR_NAMES: Record<string, string> = {
   VT: 'violet',
   WH: 'white',
   YE: 'yellow',
+  sw: 'black',
+  br: 'brown',
+  bl: 'blue',
+  gn: 'green',
+  gr: 'grey',
+  or: 'orange',
+  rs: 'pink',
+  ro: 'red',
+  rt: 'red',
+  li: 'purple',
+  ws: 'white',
+  ge: 'yellow',
 };
 
+/** Main colour and tracer of a wire colour code: "BU-OG" (JLR) or "ro/sw" (VW). */
+export function colourParts(code: string): [string, string | undefined] {
+  const [main, tracer] = code.split(/[-/]/);
+  return [main, tracer];
+}
+
 export function describeColour(code: string): string {
-  const [main, tracer] = code.split('-');
+  const [main, tracer] = colourParts(code);
   const m = WIRE_COLOUR_NAMES[main] ?? main;
   return tracer ? `${m} with ${WIRE_COLOUR_NAMES[tracer] ?? tracer} tracer` : m;
 }
 
 export type EndKind = 'pin' | 'splice' | 'ground';
 
-export function endKind(end: string): EndKind {
+/**
+ * What a wire end is. With the netlist at hand the end is looked up in its splices and grounds, which every
+ * importer lists (VW names them after the diagrams: "B170", earth point "13"); without it, the Land Rover
+ * prefixes decide ("S1BB33" splice, "G1D108A-1" ground).
+ */
+export function endKind(end: string, data?: Pick<EwdData, 'splices' | 'grounds'>): EndKind {
+  if (data) {
+    if (data.splices[end]) return 'splice';
+    if (data.grounds[end] || data.grounds[end.replace(/-\d+$/, '')]) return 'ground';
+    return 'pin';
+  }
   if (/^S\d/.test(end)) return 'splice';
   if (/^G\d/.test(end)) return 'ground';
   return 'pin';

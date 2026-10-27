@@ -1,0 +1,63 @@
+# Engine ancillaries: power-steering pump, turbocharger oil lines, EGR pipe and crankcase breather hose. They
+# hang on the engine, so they use the engine-local frame (see engine.yaml). Routes are estimated.
+system: engine
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-engine-mech, locator: "pp. 16–29" }]
+
+nodes:
+  - id: power-steering-pump
+    parent: engine-assembly
+    kind: part
+    name: Power-steering vane pump
+    aliases: [PAS pump, steering pump, vane pump]
+    summary: Driven by the ribbed belt; draws fluid from the reservoir on the battery box and feeds the steering gear through the pressure hose. The pressure hose is clamped to the engine mounting with a retaining plate.
+    access: { from: [bonnet, wheel-arch-front-right], removeFirst: [accessory-belt] }
+    explode: { dir: [0, -1, 0.5], dist: 260 }
+    placement: { pos: [428, -170, 170] }
+    specs:
+      - { label: Fluid, value: "VW/SEAT G 002 000, Ford N052146 VX00; about 1 l in the system", source: { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1" } }
+      - { label: Pressure hose plate, value: "Bolts 20 Nm (4-cylinder engines); the plate must lie against the engine mounting", source: { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1, fig. 9.0 items 2–3" } }
+    verification:
+      notes: "Its place on the ribbed belt is estimated; the Sharan belt layout is not in the documents in hand."
+      sources: [{ ref: ru-manual, locator: "shar_steering_rus.pdf p. 1", says: "the pump is driven by the engine through a ribbed belt" }, { ref: vw-engine-mech, locator: "p. 29, Part III item 28", says: "Bracket for vane pump" }]
+    geometry: { gen: machine, kind: pump, r: 48, len: 110, pulleyR: 60 }
+
+  - id: turbo-oil-feed-line
+    parent: engine-assembly
+    kind: pipe
+    name: Turbocharger oil supply line
+    summary: From the oil filter bracket to the turbocharger's centre housing; banjo bolt 25 Nm with new sealing rings.
+    material: steel-zinc
+    explode: { dir: [0, 0, 1], dist: 200 }
+    specs: [{ label: Banjo bolt, value: "25 Nm, renew the sealing rings", source: { ref: vw-engine-mech, locator: "p. 27, Part III items 8–11" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 27, Part III items 9–11", says: "Banjo bolt, 25 Nm; to turbo charger (1Z, AHU …); sealing ring, renew" }] }
+    geometry: { gen: tube, r: 4, points: [[140, 192, 40], [140, 205, 240], [-30, 150, 365], [-30, -150, 365], [150, -240, 225], [200, -262, 160]] }
+  - id: turbo-oil-return-line
+    parent: engine-assembly
+    kind: pipe
+    name: Turbocharger oil return line
+    material: steel-black
+    explode: { dir: [0, -0.5, -1], dist: 200 }
+    geometry: { gen: tube, r: 8, points: [[200, -270, 110], [200, -235, 10], [200, -150, -95]] }
+  - id: egr-pipe
+    parent: engine-assembly
+    kind: pipe
+    name: Exhaust gas recirculation pipe
+    summary: Takes exhaust gas from the exhaust manifold to the EGR valve on the intake manifold.
+    material: exhaust-steel
+    explode: { dir: [-1, 0, 1], dist: 200 }
+    verification: { sources: [{ ref: vw-diesel, locator: p. 99 }, { ref: vw-engine-mech, locator: "pp. 164–168" }] }
+    geometry: { gen: tube, r: 14, points: [[200, -205, 260], [-10, -175, 330], [-30, 0, 405], [-15, 200, 400], [40, 222, 372]] }
+  - id: crankcase-breather-hose
+    parent: engine-assembly
+    kind: hose
+    name: Crankcase breather hose
+    summary: From the pressure-regulating valve on the cylinder head cover to the intake hose before the turbocharger, through the breather heater element.
+    material: coolant-hose
+    explode: { dir: [0, -0.5, 1], dist: 200 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 23, Part II items 7–9", says: "To intake hose; pressure regulating valve for crankcase breather" }] }
+    geometry: { gen: tube, r: 10, points: [[200, 130, 440], [300, 60, 455], [420, -150, 400], [445, -280, 280]] }

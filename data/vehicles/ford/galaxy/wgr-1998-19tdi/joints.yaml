@@ -1,0 +1,102 @@
+# Documented joins between components: which part is fixed to which, how and at what torque. Torques for the
+# running gear come from the workshop book (ru-manual, file and page), the engine's from the VW manuals (the
+# engine-internal ones from the Golf/Vento engine manual, the injection system's from the Sharan diesel manual).
+# A mirrored part named by its authored id is joined on both sides. "(renew)" marks fixings that must be renewed.
+# Where two places in the same book disagree, both values are given.
+joints:
+  # ---------------------------------------------------------------- front suspension and steering
+  - { a: front-subframe, b: front-longitudinal-l, type: bolted, note: "Subframe to floor group, 4 bolts (renew whenever removed)", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 1" } }
+  - { a: front-subframe, b: front-longitudinal-r, type: bolted, note: "Subframe to floor group, 4 bolts (renew whenever removed)", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 1" } }
+  - { a: front-wishbone, b: front-subframe, type: bolted, torque: "Front bush bolt M14 × 1.5 × 90: 90 Nm + 90°; rear bush bolt M14 × 1.5 × 95: 150 Nm + 90° (renew)", note: "Wishbone mountings", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 12, 17" } }
+  - { a: front-ball-joint, b: front-wishbone, type: bolted, torque: "30 Nm + 90° (renew the self-locking nut)", note: "Ball-joint pin nut; hold the pin with a 7 mm hex key", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 15" } }
+  - { a: front-ball-joint, b: front-knuckle, type: bolted, torque: "55 Nm", note: "Ball joint to wheel bearing housing, 2 bolts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 4, step 10; shar_clutch_cv_rus.pdf p. 5, step 16" } }
+  - { a: front-strut, b: front-knuckle, type: bolted, torque: "110 Nm (renew)", note: "Clamp bolt; the groove on the strut tube lines up with the bolt hole", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 4, steps 9–10" } }
+  - { a: front-strut, b: strut-tower, type: bolted, note: "Strut bearing in its rubber mounting in the body", source: { ref: ssp-169, locator: p. 27 } }
+  - { a: front-top-mount, b: front-damper, type: bolted, torque: "60 Nm (renew the self-locking nut)", note: "Piston-rod nut; undo only with the spring compressed", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 5, fig. 4.0 items 8, 10" } }
+  - { a: front-anti-roll-bar, b: front-subframe, type: bolted, torque: "55 Nm", note: "Anti-roll bar clamp nuts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 2–5" } }
+  - { a: front-drop-link, b: front-anti-roll-bar, type: bolted, torque: "100 Nm", note: "Drop link nut", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 4, 9" } }
+  - { a: front-drop-link, b: front-strut, type: bolted, torque: "100 Nm (renew the self-locking nut)", note: "Drop link to strut tube", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 4, 9" } }
+  - { a: tie-rod, b: front-knuckle, type: bolted, torque: "55 Nm in the suspension table; 30 Nm + 90° in the steering table", note: "Track rod end nut — the two tables of the book disagree", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2" } }
+  - { a: tie-rod, b: steering-rack, type: screwed, note: "Track rod screwed to the rack", source: { ref: ssp-169, locator: p. 27 } }
+  - { a: steering-rack, b: front-subframe, type: bolted, note: "Power steering gear on the subframe", source: { ref: ssp-169, locator: p. 27 } }
+  - { a: steering-intermediate-shaft, b: steering-rack, type: shaft, note: "Universal joint on the pinion", source: { ref: ssp-169, locator: p. 28 } }
+  - { a: power-steering-hoses, b: steering-rack, type: hose, torque: "Pressure line banjo bolt 40 Nm; return line union 30 Nm (steel) or 12 Nm (aluminium, marked \"12 Nm ± 2\")", note: "Pressure and return lines at the steering gear", source: { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1, fig. 9.0 items 13–17" } }
+  - { a: power-steering-hoses, b: power-steering-reservoir, type: hose, note: "Suction hose from the reservoir; return line back through the cooling loop", source: { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1, fig. 9.0 items 10–12" } }
+
+  # ---------------------------------------------------------------- rear axle
+  - { a: rear-axle-body, b: rear-longitudinal-l, type: bolted, torque: "170 Nm (renew)", note: "Front rubber-metal mounting on the longitudinal member", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 5, 24" } }
+  - { a: rear-axle-body, b: rear-longitudinal-r, type: bolted, torque: "170 Nm (renew)", note: "Front rubber-metal mounting on the longitudinal member", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 5, 24" } }
+  - { a: rear-axle-body, b: floor-rear, type: bolted, torque: "M10 × 25 bolts 65 Nm, or M10 × 30 bolts 50 Nm + 90° (renew)", note: "Rear mounting to the cross member of the floor", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 25–26" } }
+  - { a: rear-trailing-arm, b: rear-axle-body, type: bolted, torque: "260 Nm (renew)", note: "Trailing arm pivot bolts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 3, 29" } }
+  - { a: rear-damper, b: rear-longitudinal, type: bolted, torque: "110 Nm (renew)", note: "Upper damper bolt, reached through the wheel housing", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 7, fig. 6.0b items 31–35" } }
+  - { a: rear-damper, b: rear-trailing-arm, type: bolted, torque: "130 Nm", note: "Lower damper nut, tightened with the car on its wheels", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 7, fig. 6.0b items 31–35" } }
+  - { a: rear-spring, b: rear-trailing-arm, type: pressed, note: "Spring end sits in the recess of its seat", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 7, section 7" } }
+  - { a: rear-anti-roll-bar, b: rear-trailing-arm-l, type: bolted, torque: "30 Nm", note: "Clamp bolts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 11–17" } }
+  - { a: rear-anti-roll-bar, b: rear-trailing-arm-r, type: bolted, torque: "30 Nm", note: "Clamp bolts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 11–17" } }
+  - { a: rear-hub, b: rear-trailing-arm, type: bolted, torque: "Self-locking hub nut 200 Nm (renew) per the brake chapter; 170 Nm in the axle table", note: "Hub on its stub axle — the book's two figures disagree", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 13; shar_suspension_rus.pdf p. 2" } }
+
+  # ---------------------------------------------------------------- wheels
+  - { a: rim-front, b: front-hub, type: bolted, torque: "140 Nm steel wheels, 170 Nm alloy wheels (the brake chapter's figures give 170 Nm)", note: "Five M14 × 1.5 wheel bolts, clean and dry", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2; shar_brake_rus.pdf pp. 2–4" } }
+  - { a: rim-rear, b: rear-hub, type: bolted, torque: "140 Nm steel wheels, 170 Nm alloy wheels", note: "Five M14 × 1.5 wheel bolts", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2" } }
+
+  # ---------------------------------------------------------------- brakes
+  - { a: front-caliper-carrier, b: front-knuckle, type: bolted, torque: "200 Nm", note: "Brake carrier to wheel bearing housing, 2 bolts", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 3, fig. 1.0d item 17" } }
+  - { a: front-caliper-housing, b: front-caliper-carrier, type: bolted, torque: "25 Nm", note: "Guide pins", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 3, fig. 1.0d item 12" } }
+  - { a: front-brake-hose, b: front-caliper-housing, type: hose, torque: "25 Nm (torque table) / 15 Nm (hose renewal procedure)", note: "Hose union at the caliper", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 10, section 10" } }
+  - { a: front-brake-disc, b: front-hub, type: screwed, torque: "10 Nm", note: "Hex-socket disc retaining screw", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d item 1" } }
+  - { a: front-wheel-speed-sensor, b: front-knuckle, type: bolted, torque: "10 Nm", note: "Hex-socket bolt; grease the bore with G 000 650 first", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d items 7–8" } }
+  - { a: rear-caliper-carrier, b: rear-trailing-arm, type: bolted, torque: "110 Nm", note: "Brake carrier, 2 bolts", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 4, fig. 1.0e item 15" } }
+  - { a: rear-caliper-housing, b: rear-caliper-carrier, type: bolted, torque: "35 Nm (self-locking, renew)", note: "Caliper bolts; hold the guide pin while turning", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 16" } }
+  - { a: rear-brake-disc, b: rear-hub, type: screwed, torque: "10 Nm", note: "Hex-socket disc retaining screw", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 2" } }
+  - { a: rear-dust-shield, b: rear-trailing-arm, type: bolted, torque: "10 Nm", note: "Splash plate bolts", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e items 9–10" } }
+  - { a: rear-wheel-speed-sensor, b: rear-trailing-arm, type: bolted, torque: "10 Nm", note: "Hex-socket bolt", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 11" } }
+  - { a: rear-brake-hose, b: rear-caliper-housing, type: hose, torque: "25 Nm (torque table) / 15 Nm (hose renewal procedure)", note: "Hose union at the caliper", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 10, section 10" } }
+  - { a: parking-brake-cable-rear, b: rear-handbrake-lever, type: cable, note: "Cable end hooked into the lever on the caliper; adjusted so the lever lifts at most 1 mm off its stop", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 9, section 7" } }
+  - { a: parking-brake-cable-front, b: parking-brake-equaliser, type: cable, note: "Lever cable to the equaliser with the adjusting nut", source: { ref: ssp-169, locator: p. 34 } }
+  - { a: parking-brake-cable-rear, b: parking-brake-equaliser, type: cable, note: "Both rear cables hang on the equaliser", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 9, section 7" } }
+  - { a: master-cylinder, b: brake-servo, type: bolted, note: "Tandem master cylinder on the front of the servo", source: { ref: ssp-169, locator: p. 35 } }
+  - { a: brake-fluid-reservoir, b: master-cylinder, type: plugged, note: "Reservoir on the master cylinder; also feeds the clutch master cylinder", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b item 1" } }
+  - { a: brake-vacuum-hose, b: vacuum-pump, type: hose, note: "Vacuum supply from the engine's vacuum pump", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 11, step 5" } }
+  - { a: brake-vacuum-hose, b: brake-servo, type: hose, note: "Through the non-return valve into the servo", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 11" } }
+  - { a: abs-unit, b: battery-console, type: bolted, note: "ABS unit brackets on the longitudinal member and the battery console", source: { ref: ssp-169, locator: p. 35 } }
+  - { a: brake-pipe-mc-abs, b: master-cylinder, type: pipe, note: "Primary and secondary circuit outlets to the ABS hydraulic unit", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0b" } }
+
+  # ---------------------------------------------------------------- engine (AHU)
+  - { a: camshaft-sprocket, b: camshaft, type: bolted, torque: "45 Nm", note: "Sprocket on the camshaft taper", source: { ref: vw-engine-mech, locator: "p. 19, Part I items 11–12" } }
+  - { a: crankshaft-sprocket, b: crankshaft, type: bolted, torque: "90 Nm + 90° (renew; threads and shoulder free of oil and grease)", note: "Central bolt, counter-held with 3099", source: { ref: vw-engine-mech, locator: "p. 21, Part I item 24" } }
+  - { a: injection-pump-sprocket, b: injection-pump-body, type: bolted, torque: "55 Nm", note: "Sprocket nut", source: { ref: vw-diesel, locator: "p. 49, item 1" } }
+  - { a: injection-pump-body, b: cylinder-block, type: bolted, torque: "25 Nm", note: "Injection pump securing bolts (after setting the commencement of injection)", source: { ref: vw-diesel, locator: p. 62 } }
+  - { a: injector-pipes, b: injection-pump-body, type: pipe, torque: "25 Nm", note: "Delivery unions; loosen and retighten after adjusting the timing", source: { ref: vw-diesel, locator: "pp. 51, 62" } }
+  - { a: injector-pipes, b: injectors, type: pipe, torque: "25 Nm", note: "Injector unions; pipes come off as a set", source: { ref: vw-engine-mech, locator: "p. 24, Part II item 17" } }
+  - { a: injectors, b: cylinder-head, type: bolted, torque: "20 Nm", note: "Injector retainer nut", source: { ref: vw-diesel, locator: p. 66 } }
+  - { a: glow-plugs, b: cylinder-head, type: screwed, torque: "15 Nm", note: "Glow plugs, jointed spanner 3220", source: { ref: vw-diesel, locator: p. 114 } }
+  - { a: fuel-shut-off-valve, b: injection-pump-body, type: screwed, torque: "40 Nm", note: "Fuel shut-off valve", source: { ref: vw-diesel, locator: "p. 50, item 9" } }
+  - { a: oil-sump, b: cylinder-block, type: bolted, torque: "20 Nm", note: "Sump bolts (the two rear ones need jointed spanner 3185)", source: { ref: vw-engine-mech, locator: p. 92 } }
+  - { a: oil-pressure-switch-low, b: cylinder-head, type: screwed, torque: "25 Nm", note: "0.3 bar oil pressure switch", source: { ref: vw-engine-mech, locator: "p. 90, item 5" } }
+  - { a: oil-pressure-switch-high, b: oil-filter, type: screwed, torque: "25 Nm", note: "0.9 bar oil pressure switch on the filter bracket", source: { ref: vw-engine-mech, locator: "p. 90, item 9" } }
+  - { a: oil-filter, b: cylinder-block, type: bolted, torque: "25 Nm", note: "Oil filter bracket", source: { ref: vw-engine-mech, locator: "p. 91, items 10–11" } }
+  - { a: vacuum-pump, b: cylinder-block, type: bolted, torque: "20 Nm", note: "Vacuum pump clamp bolt", source: { ref: vw-engine-mech, locator: "p. 26, Part III items 4–6" } }
+  - { a: engine-speed-sender, b: cylinder-block, type: bolted, torque: "10 Nm", note: "Engine speed sender", source: { ref: vw-engine-mech, locator: "p. 28, Part III items 16–17" } }
+  - { a: cam-cover, b: cylinder-head, type: bolted, torque: "10 Nm", note: "Cylinder head cover nuts", source: { ref: vw-engine-mech, locator: "p. 23, Part II item 5" } }
+  - { a: engine-mount-bracket, b: cylinder-block, type: bolted, torque: "Bolts -2- 20 Nm first, then bolt -1- 55 Nm", note: "Engine mounting bracket at the timing end (with its balance weight)", source: { ref: vw-diesel, locator: p. 62 } }
+  - { a: engine-mount-insulator, b: front-longitudinal-r, type: bolted, note: "Hydraulic/rubber mount on its bracket on the right front longitudinal member", source: { ref: ssp-169, locator: p. 20 } }
+
+  # ---------------------------------------------------------------- clutch, gearbox and driveshafts
+  - { a: clutch-cover-plate, b: dual-mass-flywheel, type: bolted, torque: "12-point bolts 25 Nm, crosswise; hex-socket bolts 13 Nm on the dual-mass flywheel", note: "Pressure plate to flywheel", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 1, fig. 1.1a item 4" } }
+  - { a: clutch-slave-cylinder, b: gearbox-case, type: bolted, torque: "10 Nm (collar bolts)", note: "Slave cylinder with release bearing in the clutch housing; seal with AMV 188 200 03", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b items 23–24" } }
+  - { a: clutch-pipe, b: clutch-slave-cylinder, type: pipe, torque: "20 Nm", note: "Union nut at the slave cylinder", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b item 28" } }
+  - { a: clutch-pipe, b: clutch-master-cylinder, type: pipe, note: "Pressure pipe from the master cylinder (renew the O-ring)", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b items 9–12" } }
+  - { a: clutch-reservoir-hose, b: brake-fluid-reservoir, type: hose, note: "Feed from the brake fluid reservoir", source: { ref: ssp-170, locator: p. 28 } }
+  - { a: driveshaft-front-left, b: front-hub-l, type: bolted, torque: "150 Nm + 90° (renew; car on its wheels)", note: "Hub bolt", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 5, step 20; p. 6, fig. 5.0 item 5" } }
+  - { a: driveshaft-front-right, b: front-hub-r, type: bolted, torque: "150 Nm + 90° (renew; car on its wheels)", note: "Hub bolt", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 5, step 20; p. 6, fig. 5.0 item 5" } }
+  - { a: driveshaft-front-left, b: gearbox, type: plugged, note: "Inner joint splined into the gearbox and held by a circlip (gearbox oil runs out when it is pulled)", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–5" } }
+  - { a: driveshaft-front-right, b: driveshaft-intermediate, type: plugged, note: "Inner joint splined onto the intermediate shaft", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–5" } }
+  - { a: driveshaft-intermediate, b: cylinder-block, type: bolted, note: "Bearing of the intermediate shaft fixed to the crankcase", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 4" } }
+  - { a: driveshaft-intermediate, b: gearbox, type: shaft, note: "Driven by the differential", source: { ref: ssp-170, locator: p. 13 } }
+  - { a: pendulum-support, b: front-subframe, type: bolted, torque: "100 Nm; 60 Nm + 90° with an aluminium pendulum support", note: "Hex bolt through the rubber mount of the pendulum support", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 6, step 26" } }
+  - { a: pendulum-support, b: gearbox, type: bolted, note: "Pendulum support between gearbox and subframe", source: { ref: ssp-169, locator: p. 20 } }
+  - { a: gearbox-mount, b: battery-console, type: bolted, note: "Gearbox mount bolted to the battery console", source: { ref: ssp-169, locator: p. 20 } }
+  - { a: gearshift-cable-shift, b: shift-mechanism, type: cable, note: "End piece with ball head on the shift shaft; abutment sleeve in the bracket on the gearbox", source: { ref: ssp-170, locator: p. 16 } }
+  - { a: gearshift-cable-select, b: shift-mechanism, type: cable, note: "End piece with ball head on the shift shaft; abutment sleeve in the bracket on the gearbox", source: { ref: ssp-170, locator: p. 16 } }
+  - { a: gearshift-cable-shift, b: gear-lever, type: cable, note: "Abutment sleeve in a clamping groove of the lever housing; end piece locks into its holder", source: { ref: ssp-170, locator: p. 16 } }
+  - { a: gearshift-cable-select, b: gear-lever, type: cable, note: "Abutment sleeve in a clamping groove of the lever housing; end piece locks into its holder", source: { ref: ssp-170, locator: p. 16 } }

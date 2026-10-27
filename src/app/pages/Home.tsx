@@ -29,7 +29,8 @@ export default function Home() {
     const list = catalog ? searchCatalog(catalog.vehicles, q) : [];
     return make ? list.filter((v) => v.make === make) : list;
   }, [catalog, q, make]);
-  const featured = catalog?.vehicles.find((v) => v.media) ?? catalog?.vehicles[0] ?? null;
+  // the hero shows the most complete vehicle that has rendered images
+  const featured = [...(catalog?.vehicles ?? [])].filter((v) => v.media).sort((a, b) => b.stats.parts - a.stats.parts)[0] ?? catalog?.vehicles[0] ?? null;
 
   // the hero's background drifts only while it is on screen
   const hero = useRef<HTMLElement>(null);

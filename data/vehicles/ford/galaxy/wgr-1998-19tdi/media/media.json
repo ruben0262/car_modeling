@@ -1,0 +1,99 @@
+{
+  "rendered": "2026-10-27",
+  "modelHash": "125a77340e1628fdf3c533162dd91d40b9dc7ada6395ec8d7d67b965a5c776629a0777793cb520c4861ae6c36199a679c092d294f716f9",
+  "images": {
+    "hero": {
+      "width": 1600,
+      "height": 1102,
+      "files": [
+        {
+          "width": 1600,
+          "file": "hero-1600.webp"
+        },
+        {
+          "width": 800,
+          "file": "hero-800.webp"
+        }
+      ]
+    },
+    "xray": {
+      "width": 1600,
+      "height": 1102,
+      "files": [
+        {
+          "width": 1600,
+          "file": "xray-1600.webp"
+        },
+        {
+          "width": 800,
+          "file": "xray-800.webp"
+        }
+      ]
+    },
+    "exploded": {
+      "width": 1200,
+      "height": 1136,
+      "files": [
+        {
+          "width": 1200,
+          "file": "exploded-1200.webp"
+        },
+        {
+          "width": 600,
+          "file": "exploded-600.webp"
+        }
+      ]
+    },
+    "wiring": {
+      "width": 1200,
+      "height": 1083,
+      "files": [
+        {
+          "width": 1200,
+          "file": "wiring-1200.webp"
+        },
+        {
+          "width": 600,
+          "file": "wiring-600.webp"
+        }
+      ]
+    }
+  },
+  "hotspots": [
+    {
+      "id": "battery",
+      "x": 0.3232,
+      "y": 0.6149
+    },
+    {
+      "id": "multi-function-unit",
+      "x": 0.5362,
+      "y": 0.5752
+    },
+    {
+      "id": "abs-unit",
+      "x": 0.4263,
+      "y": 0.5775
+    },
+    {
+      "id": "injection-pump",
+      "x": 0.1946,
+      "y": 0.5723
+    },
+    {
+      "id": "fuel-tank",
+      "x": 0.6185,
+      "y": 0.4026
+    },
+    {
+      "id": "gearbox",
+      "x": 0.3234,
+      "y": 0.6779
+    },
+    {
+      "id": "auxiliary-heater",
+      "x": 0.7132,
+      "y": 0.5649
+    }
+  ]
+}

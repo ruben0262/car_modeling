@@ -1,0 +1,329 @@
+# Power supply, central electrics, control units and the main harness trunks. A 1998 car has VW's
+# "multi-function unit" (electronic central electrics from 09.1997) under the dash on the left, with the fuse
+# holder below it and two relay plates behind it (fitting-locations binder, book from January 1998:
+# 000566860204, Nos. 4/2–4/12). The pre-09.1997 relay plate and the additional relay carrier in the engine
+# compartment described in ssp-169 p. 44 belong to the earlier cars.
+#
+# Alternator and starter are attached to the engine and gearbox, so they use the engine-local frame (see
+# engine.yaml); everything else is in the vehicle frame. Harness routes are estimated: the diagrams print
+# connections, not positions.
+system: electrical
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-wd-1997, locator: "No. 1/1–1/3" }]
+
+nodes:
+  # ---------------------------------------------------------------- battery
+  - id: battery
+    kind: assembly
+    name: Battery (12 V)
+    aliases: [car battery, accumulator, starter battery]
+    summary: Low-maintenance 12 V battery in a box with a cover on the battery console at the left of the engine compartment; the earth strap runs to the body and a second strap joins the gearbox to the body.
+    location: { zone: engine-bay-left, text: "Left of the engine compartment, on the battery console above the gearbox, behind a cover" }
+    access:
+      from: [bonnet]
+      removeFirst: [battery-box]
+      tools: [Spanners for the terminal clamps and the hold-down]
+      notes: "Disconnect the earth strap first and reconnect it last. Before disconnecting, get the radio's anti-theft code. Never charge a frozen battery; the magic eye (if fitted) shows the acid level."
+      sources: [{ ref: vw-owner-tips, locator: "pp. 40–42" }, { ref: vw-engine-mech, locator: p. 9 }]
+    placement: { pos: [275, 520, 656] }
+    explode: { dir: [0, 0.4, 1], dist: 380 }
+    contacts: [battery-console]
+    ewd: [A]
+    specs:
+      - { label: Battery (1.9 TDI), value: "12 V 330 A 61 Ah, low-maintenance", source: { ref: ssp-169, locator: p. 44 } }
+      - { label: Battery (1.9 TDI with air conditioning), value: "12 V 450 A 92 Ah, low-maintenance", source: { ref: ssp-169, locator: p. 44 } }
+      - { label: Case size (modelled), value: "353 × 175 × 190 mm, the usual size of a 92 Ah battery (open question: 61 or 92 Ah)" }
+    verification:
+      notes: "ssp-169 places the battery in the engine compartment with the gearbox mount and the ABS unit bolted to its console on the left; its exact position on the console is estimated."
+      sources: [{ ref: ssp-169, locator: "pp. 20, 35, 44", says: "Das Getriebelager ist an der Batteriekonsole verschraubt; Zusatzrelaisträger im Motorraum hinter der Batterie; 12 V 330 A 61 Ah für 1,9l-TDI-Motor; 12 V 450 A 92 Ah für 1,9l-TDI-Motor mit Klimaanlage" }, { ref: vw-wd-1997, locator: "No. 1/2", says: "A Battery; 1 Earth strap, battery - body" }]
+  - { id: battery-case, parent: battery, kind: part, name: Battery case, explode: { dir: [0, 0, -1], dist: 60 }, geometry: { gen: battery, size: [353, 175, 190], part: case } }
+  - { id: battery-terminals, parent: battery, kind: part, name: Battery terminal posts, explode: { dir: [0, 0, 1], dist: 80 }, geometry: { gen: battery, size: [353, 175, 190], part: terminals } }
+  - id: battery-box
+    parent: battery
+    kind: part
+    name: Battery box and cover
+    aliases: [battery tray, battery cover]
+    summary: Plastic box on the battery console; the power-steering reservoir is held on a bracket at its side.
+    material: plastic-black
+    explode: { dir: [0, 0, 1], dist: 260 }
+    verification: { sources: [{ ref: ru-manual, locator: "shar_steering_rus.pdf p. 1, fig. 9.0 items 4, 6", says: "battery box; bracket on the battery box" }, { ref: vw-owner-tips, locator: p. 30, says: "Vehicle battery behind a cover" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [375, 197, 14], r: 4, pos: [0, 0, -2] }
+        - { gen: box, size: [377, 6, 120], r: 2, pos: [0, 101, 55] }
+        - { gen: box, size: [377, 6, 120], r: 2, pos: [0, -101, 55] }
+        - { gen: box, size: [380, 204, 22], r: 6, pos: [0, 0, 224] }
+  - id: battery-positive-clamp
+    parent: battery
+    kind: connector
+    name: Battery terminal clamps
+    summary: Positive clamp with the main cables to the starter and alternator and the supply to the multi-function unit; earth clamp with the earth strap to the body.
+    connector: { ewd: A, pins: 2 }
+    material: cable-red
+    explode: { dir: [0.4, -0.4, 1], dist: 160 }
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 1/2" }] }
+    geometry: { gen: box, size: [40, 30, 24], r: 4, pos: [146, -62, 214] }
+  - id: battery-cables
+    kind: harness
+    name: Battery cables (starter, alternator and earth straps)
+    aliases: [main cable, earth strap, ground strap]
+    summary: Positive cable from the battery to the starter (terminal 30) and the alternator (B+); earth strap from the battery to the body at earth point 12 below the battery, and an earth strap from the gearbox to the body.
+    material: cable-red
+    harness: { connects: [battery, starter] }
+    explode: { dir: [0, 0, 1], dist: 160 }
+    verification:
+      sources: [{ ref: vw-wd-1997, locator: "No. 1/2", says: "1 Earth strap, battery - body; 2 Earth strap, gearbox - body" }, { ref: vw-fitting-locations-1997, locator: "000566860206-005, No. 6/5", says: "Earth point 12, in engine compartment left, below the battery" }]
+    geometry: { gen: tube, r: 8, points: [[421, 458, 870], [445, 400, 820], [430, 330, 700], [390, 290, 540], [355, 270, 470]] }
+
+  # ---------------------------------------------------------------- charging and starting (engine-local frame)
+  - id: alternator
+    parent: engine-assembly
+    kind: part
+    name: Alternator with voltage regulator
+    aliases: [generator, dynamo, charging alternator]
+    summary: Driven by the ribbed belt at the timing end on the radiator side; on the AHU its belt pulley has a freewheel (overrunning) coupling. The voltage regulator is built into it.
+    location: { zone: engine-bay-front, text: "Front (radiator side) of the engine at the timing end, on the ribbed belt" }
+    access: { from: [bonnet, front-end], removeFirst: [accessory-belt] }
+    explode: { dir: [0, 1, 0.5], dist: 280 }
+    placement: { pos: [423, 285, 330] }
+    ewd: [C, C1]
+    faults:
+      - { symptom: "Alternator warning lamp stays on", cause: "Check fuses 3 and 19 in the fuse holder below the multi-function unit, the belt and the voltage regulator (fault finding programme No. 4).", source: { ref: vw-fitting-locations-1997, locator: "000566860404, No. 4" } }
+    verification:
+      notes: "Its position on the belt follows the engine's estimated accessory drive."
+      sources: [{ ref: vw-fitting-locations-1997, locator: "000566860406, No. 6", says: "Alternator and voltage regulator: freewheel coupling in ribbed-belt pulley (AHU, AFN)" }, { ref: vw-wd-1997, locator: "No. 1/2", says: "C Alternator; C1 Voltage regulator" }]
+    geometry: { gen: machine, kind: alternator, r: 62, len: 120, pulleyR: 30 }
+
+  - id: starter
+    parent: gearbox
+    kind: part
+    name: Starter
+    aliases: [starter motor]
+    summary: Bolted to the clutch housing with its pinion into the flywheel ring gear; terminal 30 from the battery, terminal 50 from the ignition/starter switch (through the push-in bridge at relay position 14 from January 1998).
+    location: { zone: engine-bay-front, text: "On the clutch housing, low on the radiator side, where the engine meets the gearbox" }
+    access: { from: [underside, bonnet] }
+    explode: { dir: [-0.5, 1, -0.6], dist: 260 }
+    placement: { pos: [-150, 150, -90] }
+    contacts: [gearbox-case]
+    ewd: [B]
+    faults:
+      - { symptom: "Starter does not turn", cause: "Battery and earth straps first, then terminal 50 from the ignition switch and the immobilizer (fault finding programme No. 2)", source: { ref: vw-fitting-locations-1997, locator: "000566860402, No. 2" } }
+    verification:
+      notes: "Which side of the clutch housing it sits on is estimated."
+      sources: [{ ref: vw-wd-1997, locator: "No. 1/2", says: "B Starter" }, { ref: vw-fitting-locations-1997, locator: "000566860204-010, No. 4/10", says: "14 – Bridge, terminal 50" }]
+    geometry: { gen: machine, kind: starter, r: 40, len: 160 }
+
+  # ---------------------------------------------------------------- central electrics (cabin, LHD)
+  - id: multi-function-unit
+    kind: assembly
+    name: Multi-function unit (central electrics) with fuse holder and relay plates
+    aliases: [fuse box, central electrics, relay plate, MFU, fusebox, relay box, central locking control unit]
+    summary: VW's electronic central electrics from September 1997, under the dash panel on the left. It carries fuses 51–62 and contains the logic for the central locking, anti-theft alarm, electric windows and interior lights; the 34-fuse holder sits below it and two relay plates (19 and 8 positions) behind it. Cars built before September 1997 have a conventional relay plate and a separate central-locking control unit under the front left seat instead.
+    location: { zone: cabin-driver-footwell, text: "Under the dash panel on the left, behind the cover above the driver's footwell" }
+    access:
+      from: [cabin-front]
+      notes: "Fuses 1–34 are in the holder below the unit, fuses 51–62 on the unit, fuses 1–6 (high current) and relays 20–27 on the lower relay plate, relays 1–19 on the upper relay plate behind the unit. Fuse colours: 30 A green, 25 A white, 20 A yellow, 15 A blue, 10 A red, 7.5 A brown, 5 A beige, 3 A lilac."
+      sources: [{ ref: vw-fitting-locations-1997, locator: "000566860204-002…-011, Nos. 4/2–4/11" }, { ref: vw-wd-1997, locator: "No. 1/1" }]
+    placement: { pos: [-820, 560, 610] }
+    explode: { dir: [0, 0.5, -0.4], dist: 300 }
+    verification:
+      notes: "Under the dash panel on the left per ssp-169; the exact position is estimated."
+      sources:
+        - { ref: ssp-169, locator: p. 44, says: "Die Zentral-Elektrik-Box befindet sich im Innenraum links unter der Schalttafel" }
+        - { ref: vw-wd-1997, locator: "No. 37/1–37/11", says: "Central locking with remote control and anti-theft alarm system, from September 1997 (drawn inside the multi-function unit)" }
+        - { ref: vw-fitting-locations-1997, locator: "000566860204-012, No. 4/12", says: "Multi-pin connectors P1–P7 on the multi-function unit" }
+  - id: mfu-housing
+    parent: multi-function-unit
+    kind: part
+    name: Multi-function unit housing with fuses 51–62
+    explode: { dir: [0, 0, 1], dist: 120 }
+    geometry: { gen: enclosure, size: [140, 220, 130], lid: true, sockets: 4, socketFace: x- }
+  - id: fuse-holder
+    parent: multi-function-unit
+    kind: part
+    name: Fuse holder below the multi-function unit (fuses 1–34)
+    aliases: [fuses, fuse panel]
+    explode: { dir: [0, 0, -1], dist: 140 }
+    ewd: [S128, S150, S151, S152, S153, S154, S155, S156, S157, S158, S190, S191, S192, S193, S194, S199, S200, S201, S202, S203, S204, S205, S206, S207, S208, S210, S211, S212, S213, S215, S216, S217, S218, S222, S23, S28, S38, S41, S53, S54]
+    verification: { sources: [{ ref: vw-fitting-locations-1997, locator: "000566860204-003…-007, Nos. 4/3–4/7", says: "Fuses 1–34 in fuse holder below multi-function unit" }, { ref: vw-wd-1997, locator: "Nos. 1–80, fuse legends (\"No. N in fuse box\")" }] }
+    placement: { pos: [0, 0, -95] }
+    geometry: { gen: enclosure, size: [120, 230, 50], lid: false, sockets: 0 }
+  - id: upper-relay-plate
+    parent: multi-function-unit
+    kind: part
+    name: Upper relay plate behind the multi-function unit (19 positions)
+    aliases: [relays, relay carrier]
+    summary: "Positions used on this car: 8 headlight washer relay, 10a dual tone horn relay, 10b warm air blower relay, 14 bridge (terminal 50, from January 1998), 16 rear vent wing relay, 18a A/C magnetic coupling switch-off relay, 19 terminal 30 voltage supply relay (AHU)."
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    ewd: [J39, J4, J164, TV23, J385, J246, J317]
+    specs: [{ label: Relay positions, value: "8 J39 (95), 10a J4 (404), 10b J164 (404), 14 bridge TV23, 16 J385 (149), 18a J246 (404), 19 J317 (109) — control numbers in brackets", source: { ref: vw-fitting-locations-1997, locator: "000566860204-009…-010, Nos. 4/9–4/10" } }]
+    verification: { sources: [{ ref: vw-fitting-locations-1997, locator: "000566860204-009…-010, Nos. 4/9–4/10" }] }
+    placement: { pos: [-95, 0, 20] }
+    geometry: { gen: enclosure, size: [40, 200, 150], lid: false, sockets: 0, mat: connector-grey }
+  - id: lower-relay-plate
+    parent: multi-function-unit
+    kind: part
+    name: Lower relay plate behind the multi-function unit (relays 20–27, high-current fuses 1–6)
+    summary: "Relays used on this car: 21 wiper motor relief relay, 22 high heater output relay, 23 heated windscreen relay, 24 glow plug relay, 25 low heater output relay, 26 X-contact relief relay. Fuses: 1 and 2 radiator fan (40 A), 3 glow plugs (80 A), 4 heated windscreen / coolant heater elements (50 A), 5 electric windows (30 A)."
+    explode: { dir: [-1, 0, -0.3], dist: 160 }
+    ewd: [J384, J360, J410, J52, J359, J59, S125, S109, S127, S43, S107, S108]
+    specs:
+      - { label: Relay positions, value: "21 J384 (53), 22 J360 (103), 23 J410 (100), 24 J52 (103), 25 J359 (103), 26 J59 (100)", source: { ref: vw-fitting-locations-1997, locator: "000566860204-011, No. 4/11" } }
+      - { label: Fuses, value: "1, 2 radiator fan 40 A; 3 glow plugs 80 A; 4 heated windscreen / coolant heater elements 50 A; 5 electric windows 30 A", source: { ref: vw-fitting-locations-1997, locator: "000566860204-008, No. 4/8" } }
+    verification:
+      notes: "The diagram legends still place the heater output relays J359/J360 'in engine compartment, left' (earlier relay-plate design); the fitting locations for the multi-function unit put them on this plate."
+      sources: [{ ref: vw-fitting-locations-1997, locator: "000566860204-008, -011, Nos. 4/8, 4/11" }]
+    placement: { pos: [-95, 0, -110] }
+    geometry: { gen: enclosure, size: [40, 200, 90], lid: false, sockets: 0, mat: connector-grey }
+  - { id: mfu-connector-p1, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P1", connector: { ewd: P1 }, placement: { pos: [-75, -80, 40] }, explode: { dir: [-1, -0.4, 0], dist: 120 }, geometry: { gen: connector, size: [26, 20, 18], mat: connector-black } }
+  - { id: mfu-connector-p2, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P2", connector: { ewd: P2 }, placement: { pos: [-75, -40, 40] }, explode: { dir: [-1, -0.2, 0], dist: 120 }, geometry: { gen: connector, size: [26, 30, 22], mat: connector-black } }
+  - { id: mfu-connector-p3, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P3", connector: { ewd: P3 }, placement: { pos: [-75, 0, 40] }, explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: connector, size: [26, 30, 22], mat: connector-black } }
+  - { id: mfu-connector-p4, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P4", connector: { ewd: P4 }, placement: { pos: [-75, 40, 40] }, explode: { dir: [-1, 0.2, 0], dist: 120 }, geometry: { gen: connector, size: [26, 34, 22], mat: connector-black } }
+  - { id: mfu-connector-p5, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P5", connector: { ewd: P5 }, placement: { pos: [-75, 80, 40] }, explode: { dir: [-1, 0.4, 0], dist: 120 }, geometry: { gen: connector, size: [26, 38, 22], mat: connector-black } }
+  - { id: mfu-connector-p6, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P6", connector: { ewd: P6 }, placement: { pos: [-75, -60, -20] }, explode: { dir: [-1, -0.4, -0.3], dist: 120 }, geometry: { gen: connector, size: [26, 50, 24], mat: connector-black } }
+  - { id: mfu-connector-p7, parent: multi-function-unit, kind: connector, name: "Multi-function unit connector P7", connector: { ewd: P7 }, placement: { pos: [-75, 0, -20] }, explode: { dir: [-1, 0, -0.3], dist: 120 }, geometry: { gen: connector, size: [26, 50, 24], mat: connector-black } }
+
+  - id: socket-fuse
+    kind: part
+    name: Fuse for the 12 V sockets
+    summary: Single fuse in the floor harness under the front passenger's seat.
+    location: { zone: cabin-front, text: "Under the front right seat" }
+    access: { from: [cabin-front] }
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [S61]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/7", says: "S61 Fuse for sockets, under front right seat" }] }
+    geometry: { gen: box, size: [40, 24, 20], r: 4, pos: [-1170, -560, 318], mat: plastic-black }
+
+  # ---------------------------------------------------------------- control units behind the instrument cluster
+  - id: engine-control-unit
+    kind: part
+    name: Diesel direct injection system control unit
+    aliases: [ECU, ECM, engine control unit, EDC control unit, J248, MSA15, MSA12]
+    summary: Behind the dash panel insert (instrument cluster), in the middle of the three control units stacked there (bulb monitoring above, immobilizer below). It contains the intake manifold pressure sender and the altitude sender, has a vacuum hose to the intake manifold, and is coded to the gearbox (00002 for a manual gearbox, MSA15) and matched to the immobilizer.
+    location: { zone: cabin-dashboard, text: "Behind the instrument cluster, left of centre" }
+    access:
+      from: [cabin-front]
+      notes: "Remove the dash panel insert (instrument cluster), unscrew the bulb monitoring unit above the control unit and the driver's side cover, undo the clip screw, pull off the vacuum hose and the connector. A replacement must be coded (MSA15: 00002 manual gearbox; cruise control activated if fitted) and matched to the immobilizer."
+      sources: [{ ref: vw-diesel, locator: "pp. 108–112" }]
+    explode: { dir: [1, 0, 0.3], dist: 240 }
+    ewd: [J248]
+    specs:
+      - { label: Versions, value: "MSA12 (plastic housing, 028 906 021 C, not coded) or MSA15 (aluminium housing, e.g. 028 906 021 DF, coded)", source: { ref: vw-diesel, locator: p. 110 } }
+      - { label: Integrated senders, value: "Intake manifold pressure sender G71 and altitude sender F96", source: { ref: vw-diesel, locator: p. 46 } }
+    verification:
+      sources: [{ ref: vw-diesel, locator: "pp. 46, 109", says: "Location: behind dash panel insert in passenger compartment; unscrew bulb monitor unit (above engine control unit)" }, { ref: ssp-169, locator: p. 42, says: "Drei Steuergeräte hinter dem Schalttafeleinsatz: Lampenkontrollgerät (oben), Motorsteuergerät (mitte), Wegfahrsicherung (unten)" }]
+    geometry: { gen: enclosure, size: [40, 170, 110], lid: false, sockets: 2, socketFace: x-, mat: aluminium-cast }
+    placement: { pos: [-830, 360, 1060] }
+  - id: immobilizer-control-unit
+    kind: part
+    name: Immobilizer control unit
+    aliases: [immobiliser, J362, WFS]
+    summary: Lowest of the three control units behind the dash panel insert; it reads the key transponder through the reading coil on the ignition lock and releases the engine control unit. A new engine control unit must be matched to it.
+    location: { zone: cabin-dashboard, text: "Behind the dash panel, left (below the engine control unit)" }
+    access: { from: [cabin-front], notes: "Reached after removing the dash panel insert (instrument cluster)." }
+    explode: { dir: [1, 0, -0.3], dist: 240 }
+    ewd: [J362]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 63/3", says: "J362 Immobilizer control unit, behind the dash panel, left" }, { ref: ssp-169, locator: p. 42 }, { ref: vw-fitting-locations-1997, locator: "000566860203-008, No. 3/8" }] }
+    geometry: { gen: enclosure, size: [36, 110, 70], lid: false, sockets: 1, socketFace: x- }
+    placement: { pos: [-830, 360, 955] }
+
+  - id: diagnosis-connector
+    kind: connector
+    name: Self-diagnosis connector (16-pin)
+    aliases: [OBD socket, diagnostic socket, T16, VAG 1551 connector]
+    summary: 16-pin socket for the fault reader V.A.G 1551/1552, in the centre console behind the ashtray housing cover.
+    location: { zone: cabin-centre-console, text: "Centre console, behind the ashtray housing cover" }
+    access: { from: [cabin-front] }
+    connector: { ewd: T16, pins: 16 }
+    explode: { dir: [1, 0, 0.3], dist: 160 }
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 2/1–2/3", says: "T16 16-pin connector, behind ashtray housing cover, self-diagnosis connection" }, { ref: ssp-169, locator: p. 45 }] }
+    geometry: { gen: connector, size: [24, 50, 30], mat: connector-black }
+    placement: { pos: [-830, 0, 760] }
+
+  # ---------------------------------------------------------------- main harness trunks (routes estimated)
+  - id: engine-harness
+    parent: engine-assembly
+    kind: harness
+    material: harness-black
+    name: Engine harness (on the engine)
+    aliases: [engine loom, injection harness]
+    summary: Runs along the radiator side of the cylinder head to the injection pump, injectors, glow plugs and senders, and down to the engine speed sender.
+    harness: { connects: [injection-pump-connector, coolant-temperature-sender, injector-3] }
+    explode: { dir: [0, 0.4, 1], dist: 180 }
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 45–48" }] }
+    geometry: { gen: tube, r: 9, points: [[-40, 60, 330], [78, 125, 335], [166, 128, 340], [254, 128, 340], [300, 200, 270], [250, 240, 160], [120, 230, 40], [40, 175, -50]] }
+  - id: engine-bay-harness
+    kind: harness
+    material: harness-black
+    name: Engine compartment harness
+    summary: From the bulkhead grommet on the left behind the brake servo, along the left of the engine compartment past the battery console to the front end, with a branch across the bulkhead to the engine and the right side.
+    harness: { connects: [abs-unit, battery] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 1/1, harness legends (\"in engine compartment wiring harness\")" }] }
+    geometry: { gen: tube, r: 11, points: [[-470, 600, 700], [-330, 640, 720], [-180, 650, 690], [80, 660, 700], [300, 660, 720], [470, 640, 740], [640, 560, 760], [660, 0, 760], [640, -560, 760]] }
+  - id: engine-bay-harness-across
+    kind: harness
+    material: harness-black
+    name: Engine compartment harness, bulkhead run
+    summary: Along the bulkhead under the plenum from the left to the engine harness and the right side of the engine compartment.
+    harness: { connects: [engine-bay-harness] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 10, points: [[-330, 640, 720], [-420, 400, 940], [-420, 150, 940], [-300, 60, 930], [-160, 60, 900], [-420, -150, 940], [-420, -500, 900], [-250, -650, 850], [0, -680, 800], [300, -660, 760], [640, -560, 760]] }
+  - id: engine-harness-feed
+    kind: harness
+    material: harness-black
+    name: Engine harness feed (bulkhead to engine)
+    harness: { connects: [engine-bay-harness-across, engine-harness] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 10, points: [[-420, 150, 940], [-200, 130, 930], [100, 125, 900], [215, 125, 855]] }
+  - id: dash-harness
+    kind: harness
+    material: harness-black
+    name: Dash panel harness
+    summary: Behind the dash panel from the multi-function unit to the control units behind the instrument cluster, the centre console and the passenger side.
+    harness: { connects: [multi-function-unit, engine-control-unit, immobilizer-control-unit] }
+    explode: { dir: [-1, 0, 0.3], dist: 200 }
+    geometry: { gen: tube, r: 12, points: [[-700, 560, 640], [-760, 500, 760], [-800, 400, 900], [-800, 360, 1000], [-800, 200, 1000], [-800, 0, 980], [-800, -300, 960], [-800, -620, 900], [-760, -680, 700]] }
+  - id: dash-harness-console
+    kind: harness
+    material: harness-black
+    name: Centre console harness
+    harness: { connects: [dash-harness, diagnosis-connector] }
+    explode: { dir: [-1, 0, 0.3], dist: 200 }
+    geometry: { gen: tube, r: 8, points: [[-800, 0, 980], [-810, 0, 860], [-815, 0, 780]] }
+  - id: bulkhead-grommet-harness
+    kind: harness
+    material: harness-black
+    name: Bulkhead pass-through (engine compartment to multi-function unit)
+    harness: { connects: [engine-bay-harness, multi-function-unit] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 12, points: [[-470, 600, 700], [-560, 590, 680], [-700, 570, 640]] }
+  - id: floor-harness-left
+    kind: harness
+    material: harness-black
+    name: Floor harness, left (to the rear)
+    summary: From the multi-function unit down the left side under the sill trim to the rear of the car (doors, seats, rear lights, luggage compartment).
+    harness: { connects: [multi-function-unit] }
+    explode: { dir: [0, 1, -0.3], dist: 200 }
+    geometry: { gen: tube, r: 11, points: [[-760, 620, 560], [-800, 700, 420], [-1500, 735, 410], [-2400, 735, 420], [-2700, 735, 560], [-3300, 720, 760], [-3600, 680, 820]] }
+  - id: floor-harness-right
+    kind: harness
+    material: harness-black
+    name: Floor harness, right
+    summary: Across behind the dash and down the right side to the passenger seat and the right-hand rear.
+    harness: { connects: [dash-harness, socket-fuse] }
+    explode: { dir: [0, -1, -0.3], dist: 200 }
+    geometry: { gen: tube, r: 10, points: [[-760, -680, 700], [-820, -720, 420], [-1150, -735, 330], [-1170, -580, 322], [-1160, -735, 335], [-2400, -735, 420], [-2700, -735, 560], [-3300, -720, 760], [-3600, -680, 820]] }
+  - id: roof-harness
+    kind: harness
+    material: harness-black
+    name: Roof harness
+    summary: Up the left A-pillar and along the roof frame to the interior lights, sunroof and tailgate.
+    harness: { connects: [dash-harness] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 8, points: [[-800, 400, 900], [-860, 640, 1200], [-1000, 600, 1600], [-1500, 400, 1630], [-2600, 400, 1640], [-3240, 300, 1600], [-3300, 0, 1590]] }

@@ -1,0 +1,64 @@
+# Interior trim: the panels a mechanic removes to reach switches, motors, control units and harnesses. The trim
+# design is Ford's and not in the VW documents; outlines follow the structure they cover and are estimated.
+system: interior
+defaults:
+  material: interior-trim
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-wd-1997 }]
+
+nodes:
+  - id: front-door-trim
+    parent: front-door
+    kind: part
+    name: Front door trim panel
+    aliases: [door card, door panel]
+    summary: Covers the window motor and control unit, the lock and the harness; the driver's carries the window and mirror switch pack and the SAFE warning LED in its top edge.
+    explode: { dir: [0, -1, 0], dist: 160 }
+    geometry: { gen: box, size: [900, 24, 580], r: 20, pos: [-1020, 775, 710] }
+  - id: rear-door-trim
+    parent: rear-door
+    kind: part
+    name: Rear door trim panel
+    aliases: [door card]
+    explode: { dir: [0, -1, 0], dist: 160 }
+    geometry: { gen: box, size: [790, 24, 580], r: 20, pos: [-2005, 775, 710] }
+  - id: b-pillar-trim-lower
+    kind: part
+    sides: [left, right]
+    name: B-pillar lower trim
+    summary: Holds the anti-theft alarm's ultrasonic sensor where the alarm is fitted.
+    location: { zone: cabin-front, text: "Inside the B-pillar, below the belt line" }
+    access: { from: [cabin-front] }
+    explode: { dir: [0, -1, 0], dist: 120 }
+    contacts: [b-pillar, ultrasonic-sensor]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/9", says: "in lower left B pillar trim" }] }
+    geometry: { gen: box, size: [110, 20, 560], r: 10, pos: [-1530, 735, 700] }
+  - id: floor-console
+    kind: part
+    name: Floor console between the front seats
+    material: interior-dark
+    location: { zone: cabin-centre-console, text: "On the tunnel between the front seats" }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    contacts: [tunnel, handbrake-lever, centre-stack]
+    geometry: { gen: box, size: [560, 200, 150], r: 20, pos: [-1250, 0, 500] }
+  - id: luggage-side-trim
+    kind: part
+    sides: [left, right]
+    name: Luggage compartment side trim
+    summary: The left one covers the rear heater (2nd heat exchanger) and the trailer wiring connector and carries the 12 V socket; the vehicle tools and the jack are behind the right one.
+    location: { zone: luggage, text: "Luggage compartment sides" }
+    access: { from: [luggage], sources: [{ ref: vw-owner-tips, locator: "pp. 56–58", says: "Vehicle tools and jack behind the right-hand luggage compartment trim" }] }
+    explode: { dir: [0, -1, 0], dist: 160 }
+    contacts: [rear-heater, trailer-wiring-connector, luggage-lights, luggage-socket]
+    verification: { sources: [{ ref: vw-owner-tips, locator: "pp. 56–58" }] }
+    geometry: { gen: box, size: [300, 20, 560], r: 10, pos: [-3420, 600, 760] }
+  - id: headlining
+    kind: part
+    name: Headlining
+    aliases: [roof lining, headliner]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    contacts: [roof-bows, cantrail-l, cantrail-r, front-interior-light, centre-reading-lights-l, centre-reading-lights-r, rear-reading-lamps-l, rear-reading-lamps-r, rear-interior-light, sun-visor-l, sun-visor-r, sunroof-motor, roof-console-switches]
+    geometry: { gen: box, size: [2150, 1240, 8], r: 4, pos: [-2025, 0, 1585] }

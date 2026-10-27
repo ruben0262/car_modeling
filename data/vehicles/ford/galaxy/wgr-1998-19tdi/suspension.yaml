@@ -1,0 +1,372 @@
+# Suspension and steering, vehicle frame unless a node has its own placement. Shared with the VW Sharan.
+#
+# Front: MacPherson struts, forged wishbones in rubber-metal bushes on a subframe ("Aggregateträger")
+# bolted to the floor with 4 bolts, forged wheel bearing housings clamped to the struts, 18 mm
+# anti-roll bar with two drop links to the struts, power steering gear on the subframe (ssp-169 pp. 26–27).
+# Rear: semi-trailing arm axle: a tubular axle body bolted to the floor at three points (rubber-metal
+# mounts on the longitudinal members at the front, one on the floor at the rear) carries cast trailing
+# arms in horizontal rubber bushes; separate coil springs and gas dampers; 21 mm anti-roll bar
+# (ssp-169 pp. 30–31). Torques are from the workshop book (ru-manual), which is not an OEM document.
+#
+# Positions: wheel centres follow the published wheelbase and track; the mounting points are estimated
+# around them (the straightening-jig figures that would fix them are blank in the copy of vw-body in hand).
+system: suspension
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: ssp-169, locator: "pp. 24–31" }]
+
+nodes:
+  # ---------------------------------------------------------------- front
+  - id: front-subframe
+    kind: part
+    name: Front subframe (assembly carrier)
+    aliases: [front crossmember, engine cradle, K-frame, Aggregateträger, front axle carrier]
+    summary: Carries the wishbones, the anti-roll bar, the power steering gear and the bracket for the engine's pendulum support; bolted to the floor group with 4 bolts.
+    location: { zone: underbody-front, text: "Under the engine and gearbox" }
+    access: { from: [underside], notes: "Renew the subframe bolts whenever they are removed.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 1" }] }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    material: steel-black
+    contacts: [front-longitudinal-l, front-longitudinal-r]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 27, says: "Der Aggregateträger ist mit 4 Schrauben an der Bodengruppe befestigt" }]
+    geometry:
+      gen: frame
+      r: 6
+      beams:
+        - { a: [410, 470, 215], b: [-120, 470, 205], w: 80, h: 60 }
+        - { a: [-120, 470, 205], b: [-430, 440, 230], w: 80, h: 60 }
+        - { a: [410, -470, 215], b: [-120, -470, 205], w: 80, h: 60 }
+        - { a: [-120, -470, 205], b: [-430, -440, 230], w: 80, h: 60 }
+        - { a: [-300, 455, 200], b: [-300, -455, 200], w: 90, h: 56 }
+        - { a: [395, 470, 215], b: [395, -470, 215], w: 60, h: 50 }
+      nodes:
+        - { at: [410, 470, 245], size: 60 }
+        - { at: [410, -470, 245], size: 60 }
+        - { at: [-430, 440, 260], size: 60 }
+        - { at: [-430, -440, 260], size: 60 }
+
+  - id: front-wishbone
+    kind: part
+    sides: [left, right]
+    name: Front wishbone (forged)
+    aliases: [lower arm, track control arm, wishbone, Querlenker]
+    summary: Forged arm on two rubber-metal bushes in the subframe; the front bush is horizontal, the rear bush vertical and must be pressed in the right way round. The ball joint is bolted to the arm and to the wheel bearing housing.
+    location: { zone: wheel-arch-front-left, text: "Between the subframe and the bottom of the wheel bearing housing" }
+    access: { from: [underside, wheel-arch-front-left], removeFirst: [wheel-front] }
+    explode: { dir: [0, 1, -1], dist: 220 }
+    contacts: [front-subframe, front-ball-joint]
+    specs:
+      - { label: Front bush bolt, value: "M14 × 1.5 × 90, 90 Nm + 90° (renew)", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 17" } }
+      - { label: Rear bush bolt, value: "M14 × 1.5 × 95, 150 Nm + 90° (renew)", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 12" } }
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 27, says: "Die geschmiedeten Querlenker sind in Gummimetallagern gelagert: horizontale Anordnung der Gummimetallager vorn, vertikale Anordnung hinten (richtungsgebunden einpressen!)" }]
+    geometry:
+      gen: link
+      w: 44
+      h: 26
+      points: [[170, 380, 215], [0, 690, 190], [-240, 400, 215]]
+      eyes:
+        - { at: [170, 380, 215], axis: [1, 0, 0], r: 28, len: 64 }
+        - { at: [-240, 400, 215], axis: [0, 0, 1], r: 40, len: 50 }
+
+  - id: front-ball-joint
+    kind: part
+    sides: [left, right]
+    name: Front ball joint
+    aliases: [lower ball joint, Achsgelenk]
+    summary: Bolted to the wheel bearing housing with two bolts and fixed in the wishbone by its tapered pin and a self-locking nut.
+    location: { zone: wheel-arch-front-left, text: "Outer end of the wishbone, under the wheel bearing housing" }
+    access: { from: [underside, wheel-arch-front-left], removeFirst: [wheel-front], tools: [7 mm hex key to hold the pin, Ball joint puller (e.g. Kukko 204-2)], notes: "Pin nut 30 Nm + 90° (new nut), holding the pin with a 7 mm hex key; ball joint to wheel bearing housing bolts 55 Nm.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 3–4" }] }
+    explode: { dir: [0, 1, -1], dist: 260 }
+    contacts: [front-knuckle]
+    specs:
+      - { label: Pin nut, value: "Self-locking, 30 Nm + 90° (renew)", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b item 15" } }
+      - { label: To wheel bearing housing, value: "2 bolts, 55 Nm", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 4, step 10" } }
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 27, says: "Das Achsgelenk ist am Querlenker und am Radlagergehäuse angeschraubt" }]
+    geometry: { gen: cyl, r: 26, h: 50, axis: z, pos: [0, 690, 205], mat: steel-zinc }
+
+  - id: front-knuckle
+    kind: part
+    sides: [left, right]
+    name: Front wheel bearing housing (forged)
+    aliases: [hub carrier, steering knuckle, upright, Radlagergehäuse]
+    summary: Forged housing carrying the wheel bearing with the driveshaft stub and hub, the track rod, the brake caliper and the ABS wheel sensor; clamped to the strut with a clamp bolt.
+    placement: { pos: [0, 765, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 260 }
+    contacts: [front-strut, front-hub, front-brake, front-ball-joint]
+    specs: [{ label: Strut clamp bolt, value: "110 Nm (new bolt); the groove on the strut tube lines up with the bolt hole", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 4, steps 9–10" } }]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 27, says: "Das geschmiedete Radlagergehäuse nimmt die Radlager mit Antriebswellenstumpf und Radnabe, die Spurstange, den Bremssattel und den ABS-Radsensor auf. Das Federbein ist mit dem Radlagergehäuse durch eine Klemmverbindung mit Klemmschraube verbunden" }]
+    geometry:
+      gen: knuckle
+      boss: { y: -42, r: 50, len: 56 }
+      arms:
+        - { to: [-10, -140, 135], w: 40, h: 34 }
+        - { to: [0, -75, -115], w: 36, h: 28 }
+        - { to: [-150, -110, -10], w: 30, h: 24, eye: 16 }
+
+  - id: front-hub
+    kind: part
+    sides: [left, right]
+    name: Front hub and wheel bearing
+    aliases: [hub bearing, wheel bearing]
+    summary: Double-row angular-contact ball bearing (the same part as at the rear), pressed into the wheel bearing housing; no adjustment. Pressing it out destroys it, so it is always renewed.
+    location: { zone: wheel-arch-front-left, text: "Centre of the front wheel, in the wheel bearing housing" }
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front, front-caliper, front-brake-disc], notes: "Hub nut 150 Nm + 90°.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 2, 5" }] }
+    placement: { pos: [0, 765, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 320 }
+    contacts: [front-brake, wheel-front]
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 27, 31", says: "Die Radnabe läuft in einem doppelreihigen Schrägkugellager; eine Einstellung der Radlager ist nicht erforderlich" }] }
+    geometry: { gen: hub, face: 55, studs: 0, pcd: 112 }
+
+  - id: front-strut
+    kind: assembly
+    sides: [left, right]
+    name: Front suspension strut
+    aliases: [shock absorber, damper, macpherson strut, coilover, strut, Federbein]
+    summary: Gas damper with the coil spring, bump stop, protective sleeve, thrust ball bearing and strut bearing; supported in the body on a rubber mount. Springs come in tolerance classes marked by colour; fit only springs with the same colour code.
+    location: { zone: wheel-arch-front-left, text: "From the wheel bearing housing up to the strut tower under the plenum" }
+    access:
+      from: [wheel-arch-front-left, bonnet]
+      removeFirst: [wheel-front]
+      tools: [7 mm hex key / VW 3186 or HAZET 2593-21, Spring compressor (HAZET 4900-1 or VW 1752)]
+      notes: "Remove the plenum trim/air duct and the partition between the engine compartment and the battery; with the car on its wheels undo the top nut holding the piston rod with a 7 mm hex key. Then raise the front, remove the drop link from the strut tube and the clamp bolt, and pull the strut down out of the wheel bearing housing (spread the slot if tight). Top nut 60 Nm, clamp bolt 110 Nm (new), drop link nut 100 Nm (new). Check toe after replacing a strut."
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 4–5" }]
+    placement: { pos: [-10, 625, 455], rot: [13, -3, 0] }
+    explode: { dir: [0, 0.5, 1], dist: 320 }
+    contacts: [strut-tower]
+    verification: { sources: [{ ref: ssp-169, locator: p. 27, says: "stützt sich über ein Gummilager in der Karosserie ab" }, { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 5, fig. 4.0" }] }
+  - id: front-damper
+    parent: front-strut
+    kind: part
+    name: Front gas damper with bump stop and protective sleeve
+    explode: { dir: [0, 0, -1], dist: 160 }
+    geometry: { gen: strut, part: damper, bodyLen: 300, seatZ: 280, topZ: 420, bracket: true }
+  - id: front-spring
+    parent: front-strut
+    kind: part
+    name: Front coil spring
+    summary: The end of the coil must rest against the stop on the lower spring plate. Springs are made in tolerance classes; use only springs with the same colour code.
+    explode: { dir: [0, 1, 0], dist: 200 }
+    geometry: { gen: strut, part: spring, bodyLen: 300, seatZ: 280, topZ: 420, coilR: 66, turns: 4.5 }
+  - id: front-top-mount
+    parent: front-strut
+    kind: part
+    name: Strut bearing with thrust ball bearing and upper spring plate
+    explode: { dir: [0, 0, 1], dist: 200 }
+    specs: [{ label: Top nut, value: "60 Nm, self-locking (renew); undo only with the spring compressed", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 5, fig. 4.0 items 8, 10" } }]
+    geometry: { gen: strut, part: top-mount, bodyLen: 300, seatZ: 280, topZ: 420 }
+
+  - id: front-anti-roll-bar
+    kind: part
+    name: Front anti-roll bar (18 mm)
+    aliases: [stabilizer bar, sway bar, stabiliser bar]
+    summary: 18 mm bar in rubber mounts and clamps on the subframe, joined to both struts by drop links.
+    location: { zone: underbody-front, text: "Across the subframe, behind the front axle" }
+    access: { from: [underside], notes: "Clamp nuts 55 Nm.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 2–5" }] }
+    explode: { dir: [0, 0, -1], dist: 180 }
+    material: steel-black
+    contacts: [front-subframe]
+    specs: [{ label: Diameter, value: "18 mm", source: { ref: ssp-169, locator: p. 27 } }]
+    verification: { sources: [{ ref: ssp-169, locator: p. 27, says: "Der Stabilisator (ø 18 mm) ist mit zwei Koppelstangen mit den Federbeinen verbunden" }] }
+    geometry: { gen: tube, r: 9, points: [[-180, 600, 300], [-250, 530, 250], [-300, 380, 236], [-300, -380, 236], [-250, -530, 250], [-180, -600, 300]] }
+
+  - id: front-drop-link
+    kind: part
+    sides: [left, right]
+    name: Front anti-roll bar drop link
+    aliases: [drop link, stabiliser link, coupling rod, Koppelstange]
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front], notes: "Nuts 100 Nm at both ends (renew the self-locking nut at the strut).", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 3, fig. 1.0b items 4, 9" }] }
+    explode: { dir: [0, 1, 0], dist: 180 }
+    contacts: [front-anti-roll-bar, front-strut]
+    geometry:
+      gen: link
+      round: true
+      w: 16
+      points: [[-180, 600, 300], [-62, 600, 590]]
+      eyes:
+        - { at: [-180, 600, 300], type: ball, axis: [0, -1, 0], r: 20, len: 24 }
+        - { at: [-62, 600, 590], type: ball, axis: [0, -1, 0], r: 20, len: 24 }
+
+  # ---------------------------------------------------------------- steering (gear authored for LHD)
+  - id: steering-rack
+    kind: part
+    name: Power steering gear (rack and pinion)
+    aliases: [steering rack, rack and pinion, power steering rack, Servolenkgetriebe]
+    summary: Hydraulically assisted rack and pinion on the subframe; the control valve in the gear housing meters fluid to either side of the rack piston as the column turns the pinion.
+    location: { zone: underbody-front, text: "On the subframe behind the engine" }
+    access: { from: [underside] }
+    handed: true
+    placement: { pos: [-175, 0, 330] }
+    explode: { dir: [-1, 0, -0.4], dist: 220 }
+    contacts: [front-subframe]
+    verification: { sources: [{ ref: ssp-169, locator: p. 26 }, { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 8" }] }
+    geometry: { gen: steering-rack, halfLen: 340, pinionAt: 200 }
+
+  - id: tie-rod
+    kind: part
+    sides: [left, right]
+    name: Track rod and track rod end
+    aliases: [tie rod, track rod end, steering arm link]
+    summary: Low-friction joints with lifetime lubrication. Only the toe can be set at the front axle.
+    access: { from: [wheel-arch-front-left, underside], removeFirst: [wheel-front], notes: "Track rod end nut: 55 Nm in the front suspension table; 30 Nm + 90° in the steering table of the same book.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2" }] }
+    explode: { dir: [0, 1, 0], dist: 200 }
+    contacts: [steering-rack, front-knuckle]
+    verification: { sources: [{ ref: ssp-169, locator: p. 27, says: "An der Vorderachse kann nur die Spur eingestellt werden. Die Spurstangen haben reibungsarme Gelenke und Lebensdauerschmierung" }] }
+    geometry:
+      gen: link
+      round: true
+      w: 22
+      points: [[-175, 470, 330], [-150, 655, 307]]
+      eyes: [{ at: [-150, 655, 307], type: ball, axis: [0, 0, 1], r: 22, len: 32 }]
+
+  - id: steering-intermediate-shaft
+    kind: part
+    name: Steering column lower shaft and universal joints
+    aliases: [steering column lower shaft, UJ shaft]
+    handed: true
+    explode: { dir: [-1, 0, 0.5], dist: 200 }
+    material: steel-zinc
+    contacts: [steering-rack, bulkhead]
+    verification: { sources: [{ ref: ssp-169, locator: p. 28, says: "Höhen- und längsverstellbare Sicherheits-Lenksäule mit zwei Kreuzgelenken" }] }
+    geometry: { gen: tube, r: 11, points: [[-195, 200, 360], [-330, 290, 520], [-470, 360, 660]] }
+
+  - id: power-steering-reservoir
+    kind: part
+    name: Power steering fluid reservoir
+    summary: Expansion reservoir on the battery box with a dipstick in the cap; 1 L of fluid in the system.
+    location: { zone: engine-bay-left, text: "On the battery box, left of the engine compartment" }
+    access: { from: [bonnet], notes: "Fluid VW/SEAT G 002 000, Ford N052146 VX00; about 1 L. Reservoir to battery box: bolt 10 Nm, hex-socket bolt 10 Nm.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 1, 8 (fig. 9.0 items 4–9)" }] }
+    explode: { dir: [0, 0.5, 1], dist: 280 }
+    verification:
+      facts: secondary
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 8, fig. 9.0", says: "4 battery box; 6 bracket on the battery box; 8 cap with dipstick; 9 expansion reservoir" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 45, h: 110, axis: z, chamfer: 8, pos: [120, 340, 905], mat: plastic-white }
+        - { gen: cyl, r: 26, h: 18, axis: z, chamfer: 3, pos: [120, 340, 968], mat: plastic-black }
+  - id: power-steering-hoses
+    kind: hose
+    name: Power steering hoses and lines (suction, pressure, return, cooling loop)
+    summary: Suction hose from the reservoir to the pump on the engine, pressure hose and line to the gear (banjo bolt 40 Nm), return line back to the reservoir. Steel return lines were replaced by aluminium ones; their union nuts are 30 Nm (steel) or 12 Nm (aluminium, marked "12 Nm ± 2").
+    material: coolant-hose
+    explode: { dir: [0, 0, -1], dist: 160 }
+    verification:
+      facts: secondary
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 8, fig. 9.0 items 1, 12–17" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 9, points: [[120, 340, 850], [40, 220, 965], [-150, 0, 975], [-130, -280, 790], [-20, -330, 720]] }
+        - { gen: tube, r: 6, points: [[-10, -330, 650], [-140, -300, 470], [-170, -150, 360], [-170, -60, 335]] }
+        - { gen: tube, r: 6, points: [[-170, 60, 330], [-60, 200, 450], [80, 310, 820], [110, 335, 850]] }
+
+  # ---------------------------------------------------------------- rear: semi-trailing arm axle
+  - id: rear-axle-body
+    kind: part
+    name: Rear axle body (tubular axle carrier)
+    aliases: [rear subframe, rear crossmember, axle beam, Achskörper, Hinterachsträger]
+    summary: Tubular carrier for the cast trailing arms, bolted to the floor at three points through rubber-metal mounts (one on each longitudinal member at the front, pressed in direction-dependent; one on the floor at the rear) so that rolling noise is decoupled from the body. Not adjustable; it is aligned to the body lengthwise and crosswise.
+    location: { zone: underbody-rear, text: "Under the rear floor, ahead of the rear wheels" }
+    access: { from: [underside], notes: "Front mounts: bolt 170 Nm (new). Rear mount to the cross beam: M10 × 25 bolts 65 Nm, or M10 × 30 bolts 50 Nm + 90° (new); damaged threads can only be repaired with Heli-Coil inserts on the M10 × 30 version.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 5, 24–26" }] }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    material: steel-black
+    contacts: [rear-longitudinal-l, rear-longitudinal-r]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 31, says: "Der Achskörper ist an drei Punkten mit der Bodengruppe verschraubt: vorn mit je einem Gummimetallager am Längsträger ... hinten mit einem Gummimetallager an der Bodengruppe" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 34, points: [[-2470, 515, 330], [-2560, 330, 300], [-2580, 0, 290], [-2560, -330, 300], [-2470, -515, 330]], mat: steel-black }
+        - { gen: tube, r: 26, points: [[-2560, 300, 300], [-2780, 180, 310], [-3020, 0, 350]], mat: steel-black }
+        - { gen: tube, r: 26, points: [[-2560, -300, 300], [-2780, -180, 310], [-3020, 0, 350]], mat: steel-black }
+        - { gen: cyl, r: 48, h: 50, axis: z, pos: [-2470, 515, 365], mat: rubber }
+        - { gen: cyl, r: 48, h: 50, axis: z, pos: [-2470, -515, 365], mat: rubber }
+        - { gen: cyl, r: 44, h: 50, axis: z, pos: [-3030, 0, 385], mat: rubber }
+
+  - id: rear-trailing-arm
+    kind: part
+    sides: [left, right]
+    name: Rear trailing arm (cast, semi-trailing)
+    aliases: [diagonal arm, rear control arm, Schräglenker, Achslenker]
+    summary: Cast arm pivoting on the axle body in two horizontal rubber bushes; it carries the hub, the brake, the spring seat and the damper. A service bush with an eccentric sleeve at the inner pivot allows camber and toe corrections of up to 18′.
+    location: { zone: underbody-rear, text: "From the axle body back to the rear wheel" }
+    access: { from: [underside], notes: "Pivot bolts 260 Nm (new).", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 3, 29" }] }
+    explode: { dir: [0, 1, -0.6], dist: 220 }
+    contacts: [rear-axle-body, rear-hub]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 31, says: "Die Guß-Achslenker sind in horizontal angeordneten Gummilagern am Achskörper befestigt ... Gummimetallager mit exzentrischer Buchse an der inneren Lagerstelle ... Sturz- und Spurkorrekturen bis 18′" }]
+    geometry:
+      gen: link
+      w: 70
+      h: 44
+      points: [[-2530, 260, 290], [-2640, 560, 285], [-2835, 690, 300]]
+      eyes:
+        - { at: [-2530, 260, 290], axis: [0.94, 0.34, 0], r: 32, len: 64 }
+        - { at: [-2470, 480, 300], axis: [0.94, 0.34, 0], r: 32, len: 64 }
+
+  - id: rear-spring
+    kind: part
+    sides: [left, right]
+    name: Rear coil spring
+    summary: Barrel-shaped spring between the trailing arm and the body; the spring end sits in the recess of the upper seat. Both upper damper bolts must be removed, even to change one spring, or the axle will not drop far enough.
+    location: { zone: underbody-rear, text: "On the trailing arm, inboard of the rear wheel" }
+    access: { from: [underside, wheel-arch-rear-left], removeFirst: [rear-damper], sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 7, section 7" }] }
+    explode: { dir: [0, 0, -1], dist: 200 }
+    contacts: [rear-trailing-arm, rear-longitudinal]
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 30–31" }, { ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 6–7" }] }
+    geometry: { gen: coil-spring, r: 62, wire: 12, h: 190, turns: 5, mat: steel-black }
+    placement: { pos: [-2690, 540, 305] }
+
+  - id: rear-damper
+    kind: part
+    sides: [left, right]
+    name: Rear gas damper
+    aliases: [rear shock absorber, rear shock]
+    summary: Separate gas damper (up to 25 bar) from the trailing arm up to the body; its upper bolt is reached through the wheel housing after folding back the rear of the wheel housing liner.
+    location: { zone: wheel-arch-rear-left, text: "Behind the rear wheel centre, from the trailing arm up into the wheel housing" }
+    access:
+      from: [wheel-arch-rear-left, underside]
+      removeFirst: [arch-liner-rear]
+      notes: "Upper bolt 110 Nm (new), lower nut 130 Nm; fit the lower nut loosely and tighten it with the car on its wheels."
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 6–7, fig. 6.0b items 31–35" }]
+    explode: { dir: [-0.3, 0.5, 0.6], dist: 220 }
+    contacts: [rear-trailing-arm, rear-longitudinal]
+    verification: { sources: [{ ref: ssp-169, locator: p. 30 }, { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 7" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 25, points: [[-2965, 640, 260], [-3010, 625, 520]], mat: steel-black }
+        - { gen: tube, r: 11, points: [[-3010, 625, 520], [-3040, 615, 700]], mat: chrome }
+        - { gen: cyl, r: 18, h: 50, axis: x, pos: [-2965, 640, 245], mat: rubber }
+        - { gen: cyl, r: 18, h: 50, axis: y, pos: [-3042, 615, 712], mat: rubber }
+
+  - id: rear-anti-roll-bar
+    kind: part
+    name: Rear anti-roll bar (21 mm)
+    aliases: [rear stabilizer bar, rear sway bar]
+    summary: 21 mm bar linking both trailing arms, in slotted rubber mounts and clamps.
+    access: { from: [underside], notes: "Clamp bolts 30 Nm.", sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 6, fig. 6.0b items 11–17" }] }
+    explode: { dir: [-1, 0, -0.5], dist: 160 }
+    material: steel-black
+    contacts: [rear-trailing-arm-l, rear-trailing-arm-r]
+    specs: [{ label: Diameter, value: "21 mm", source: { ref: ssp-169, locator: p. 31 } }]
+    verification: { sources: [{ ref: ssp-169, locator: p. 31, says: "Querstabilisator-Durchmesser: 21 mm" }] }
+    geometry: { gen: tube, r: 10.5, points: [[-2760, 600, 300], [-2700, 450, 245], [-2700, -450, 245], [-2760, -600, 300]] }
+
+  - id: rear-hub
+    kind: part
+    sides: [left, right]
+    name: Rear hub and wheel bearing
+    summary: The same double-row angular-contact bearing as at the front, clamped by a central bolt and nut; no adjustment. Hub nut 170 Nm in the axle table (200 Nm in the book's specification list).
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear, rear-caliper, rear-brake-disc], sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf pp. 2, 6" }] }
+    placement: { pos: [-2835, 762, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 320 }
+    contacts: [rear-brake, wheel-rear]
+    verification: { sources: [{ ref: ssp-169, locator: p. 31, says: "Die Radnabe läuft in einem doppelreihigen Schrägkugellager (Gleichteil mit Vorderachse); beide Teile sind mit einer Zentralschraube und Mutter verspannt" }] }
+    geometry: { gen: hub, face: 55, studs: 0, pcd: 112 }

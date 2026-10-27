@@ -1,0 +1,187 @@
+# Reference sources. Reliability: A = OEM document in hand, B = faithful copy
+# of OEM material or reputable specialist, C = aggregator / supplier listing,
+# D = owner forum or video. Facts only reach "oem" level with type oem-*.
+#
+# The Galaxy shares its platform, body structure, running gear, VW engines, gearbox and most of
+# its wiring with the VW Sharan (7M), built alongside it at AutoEuropa. The OEM documents below are
+# Volkswagen's official Sharan documentation; they are cited for the shared parts only. Every
+# local copy was downloaded from vwts.ru (https://vwts.ru/vw_sharan_7m.html) into
+# ~/Downloads/vw_ford_parts_manuals/ (and ~/Downloads/sharan_ffp/).
+#
+# Locators "p. N" are PDF page numbers of the files named in `notes`, so a reviewer can open the
+# exact page; current flow diagrams are cited by diagram and sheet ("No. 14/4").
+sources:
+  # ---------------------------------------------------------------- OEM: wiring
+  - id: vw-wd-1997
+    title: VW Sharan Current Flow Diagrams (wiring diagrams), from September 1997, with Fitting Locations
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1997-wd-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      Local copy "vw-sharan-1997-wd-eng.pdf" (745 pages, English, editions 09.1997 to 05.1999). 103 diagrams, one
+      per engine and per item of equipment, each dated ("from September 1997", "from January 1998", "from May
+      1998"); pages 691–746 are the Fitting Locations section (relay plate, fuses, multi-pin connectors, earth
+      points). Imported with tools/ewd/import-vw.ts. Sister model: the Galaxy-specific Ford radio and the Ford
+      styling items are not in it.
+  - id: vw-wd-1995
+    title: VW Sharan Current Flow Diagrams (wiring diagrams), from June 1995
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1995-wd-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      Local copy "vw-sharan-1995-wd-eng.pdf" (336 pages, English). 53 diagrams for model years 1996–1997, including
+      the 1.9 l 66 kW TDI engine codes 1Z and AHU (diagram No. 10) and the basic equipment from September 1996
+      (No. 42). Imported with tools/ewd/import-vw.ts for the earlier wiring.
+  - id: vw-wd-2000
+    title: VW Sharan from May 2000, Current Flow Diagrams (wiring diagrams)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-2000-wd-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      Local copy "vw-sharan-2000-wd-eng.pdf" (1334 pages). Facelift model with the ANU, AUY, ASZ and later engines; it
+      has no AHU engine, so it is not imported for this car. Kept for the later Galaxy (2000–2006).
+  - id: vw-fitting-locations-1997
+    title: VW Sharan Fitting Locations, relay plate with fuse box and additional relay plates (Edition 06.97, 000.5662.11.20)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw_doc2/sharan_ffp.zip
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      211 page scans in ~/Downloads/sharan_ffp/Sharan/ (published on vwts.ru as "Sharan Fault Finding Programme").
+      Fuse and relay locations, the additional relay plates (above the relay plate, behind the dash panel left,
+      and left in the engine compartment) and multi-pin connector locations. Locator = image file stem and page.
+
+  # ---------------------------------------------------------------- OEM: workshop manuals (Sharan 1996 ➤)
+  - id: vw-body
+    title: VW Sharan 1996 ➤ Body Repairs (Edition 11.2004)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1997-body-repairs-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      Local copy "vw-sharan-1997-body-repairs-eng.pdf" (120 pages). Body dimensions with hole-to-hole spacings (pp.
+      6–17), panel gaps (pp. 18–20), straightening-jig points (pp. 21–27; the jig figures are blank in this copy),
+      galvanized parts and panel renewal. Values in the figures print the tenths as a smaller last digit
+      ("966¹" = 966.1 mm).
+  - id: vw-diesel
+    title: VW Sharan 1996 ➤ Diesel direct injection and glow plug system, engine codes AFN, AHU, 1Z, AVG (Edition 10.1996)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1996-diesel-direct-injection-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: Local copy "vw-sharan-1996-diesel-direct-injection-eng.pdf" (114 pages). Fitting locations overview of the injection system in the Sharan (pp. 45–48), injection pump, fuel filter, accelerator, injectors, glow plugs, torques.
+  - id: vw-heating
+    title: VW Sharan 1996 ➤ Heating, air conditioning (Repair Manual)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1996-heating-air-conditioning-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: Local copy "vw-sharan-1996-heating-air-conditioning-eng.pdf" (159 pages).
+  - id: vw-aux-heating
+    title: VW Sharan 1996 ➤ Supplementary heating (Repair Manual)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw/sharan/vw-sharan-1996-supplementary-heating-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: Local copy "vw-sharan-1996-supplementary-heating-eng.pdf" (104 pages). Auxiliary and parking heaters.
+  - id: vw-engine-mech
+    title: VW 4-cylinder diesel engine 1.9 l, mechanics, engine codes AAZ, AEY, AFN, 1Y, 1Z, AHU, ALE, AVG (Golf 1992, Vento 1992 ➤, Edition 04.1996)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/engine/engine-aaz-aey-afn-1y-1z-ahu-ale-avg-mechanical-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: >-
+      Local copy "engine-aaz-aey-afn-1y-1z-ahu-ale-avg-mechanical-eng.pdf" (181 pages). The AHU engine itself (data,
+      crank group, head, timing belt, lubrication, turbocharger, torques) is the same in the Sharan; this manual is
+      written for the Golf/Vento installation, so only engine-internal facts are cited from it.
+  - id: vw-engine-b5
+    title: VW engines AFN, AHH, AHU, AVG, repair manual (Passat 1997 ➤)
+    publisher: Volkswagen AG
+    url: https://vwts.ru/engine/engine-afn-ahh-ahu-avg-repair-manual-eng.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: Local copy "engine-afn-ahh-ahu-avg-repair-manual-eng.pdf" (137 pages). Longitudinal installation; cited only for engine-internal facts that agree with vw-engine-mech.
+  - id: vw-owner-tips
+    title: VW Sharan owner's manual, booklet 3.2 "Tips and Maintenance"
+    publisher: Volkswagen AG
+    url: https://vwts.ru/vw_doc2/vw_sharan.pdf
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: Local copy "vw_sharan.pdf" (87 pages). An edition for the later Sharan (it describes ESP and 4MOTION); cited only for what the first-generation layout shares.
+
+  # ---------------------------------------------------------------- OEM: training (self-study programmes)
+  - id: ssp-169
+    title: VW Self-Study Programme 169 "Der VW Sharan, Konstruktion und Funktion"
+    publisher: Volkswagen AG Kundendienst
+    url: https://www.volkspage.net/technik/ssp/ssp/SSP_169.PDF
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-26
+    notes: >-
+      German, 72 scanned pages. Dimensions (p. 8), the VW/Ford joint venture (p. 4), engines (pp. 18–19), engine
+      mounting (p. 20), 006 gearbox (p. 21), running gear (pp. 24–31), brakes and ABS (pp. 32–40), fuel system (p.
+      41), control-unit locations (pp. 42–43), batteries (p. 44), electrics (pp. 44–59), heating and A/C (pp. 60–
+      67, TDI auxiliary heater p. 65).
+  - id: ssp-170
+    title: VW Self-Study Programme 170 "Schaltgetriebe 006 mit hydraulischer Kupplungsbetätigung"
+    publisher: Volkswagen AG Kundendienst
+    url: https://www.volkspage.net/technik/ssp/ssp/SSP_170.PDF
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: German, 36 scanned pages. The 5-speed gearbox 006, its cable gearshift and the hydraulic clutch release.
+  - id: ssp-153
+    title: VW Self-Study Programme 153 "1,9 l-TDI-Motor mit Abgasreinigung"
+    publisher: Volkswagen AG Kundendienst
+    url: https://www.volkspage.net/technik/ssp/ssp/SSP_153.PDF
+    type: oem-manual
+    reliability: A
+    accessed: 2026-10-27
+    notes: German, 41 scanned pages. The 1.9 TDI (engine code 1Z, the AHU's predecessor) with its electronic diesel control, EGR and catalyst.
+
+  # ---------------------------------------------------------------- secondary
+  - id: ru-manual
+    title: "Volkswagen Sharan, SEAT Alhambra, Ford Galaxy from 1995: workshop manual chapters 8 (clutch and driveshafts), 9 (brakes), 10 (suspension and steering) and 12 (body electrics), Russian edition"
+    publisher: Third-party workshop book (Russian edition), chapters hosted on volkswagen.msk.ru / vwts.ru
+    url: https://vwts.ru/vw_sharan_7m.html
+    type: other
+    reliability: B
+    accessed: 2026-10-27
+    notes: >-
+      Scanned chapters in ~/Downloads/vw_ford_parts_manuals/ (shar_clutch_cv_rus.pdf 7 pp., shar_brake_rus.pdf 11
+      pp., shar_suspension_rus.pdf 9 pp., shar_steering_rus.pdf 4 pp., shar_el_body_rus.pdf 20 pp.), cited as
+      "<file> p. N". Covers all three sister models with their specifications and torques; not an OEM document.
+  - id: adac-galaxy-19tdi
+    title: ADAC Autokatalog, Ford Galaxy 1.9 TDI GLX 66 kW (07/95 – 09/98) and 1.9 TDI Ghia (03/97 – 07/00)
+    publisher: ADAC
+    url: https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/ford/galaxy/i/984954/
+    type: press
+    reliability: C
+    accessed: 2026-10-27
+    notes: >-
+      Galaxy-specific published data: length 4617 mm, width 1810 mm, height 1730 mm (Ghia 1762 mm), wheelbase 2835
+      mm, turning circle 11.1 m, kerb weight 1720 kg, 70 L tank, 195/65 R15 T tyres (Ghia 215/55 R16); ABS, driver
+      and passenger airbags, air conditioning, central locking and front electric windows standard. Ghia page:
+      https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/ford/galaxy/i/984955/
+  - id: wikipedia-galaxy
+    title: Ford Galaxy (Wikipedia)
+    publisher: Wikipedia
+    url: https://en.wikipedia.org/wiki/Ford_Galaxy
+    type: other
+    reliability: D
+    accessed: 2026-10-26
+    notes: Used only for what Ford changed on the shared platform (Ford-designed fascia with a Golf-derived instrument pack and VW switchgear; VW engines with Ford badges). Never the sole source of a technical fact.

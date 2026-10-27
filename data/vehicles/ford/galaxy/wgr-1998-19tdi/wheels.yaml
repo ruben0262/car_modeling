@@ -1,0 +1,100 @@
+# Road wheels. Wheel-centre frame: origin at the wheel centre, +Y outboard.
+system: wheels
+defaults:
+  verification:
+    geometry: representative
+    placement: referenced
+    facts: oem
+    notes: >-
+      Centres follow the published wheelbase (2835 mm) and tracks (1530/1524 mm with offset 55 mm wheels), checked
+      automatically by the data build. Standard on the 1.9 TDI: 6J × 15 steel wheels with 195/65 R15 T tyres;
+      7J × 15 alloys with 215/60 R15 H were an option (the Galaxy Ghia was listed with 215/55 R16).
+    sources:
+      - { ref: ssp-169, locator: "pp. 8, 25, 26, 30", says: "Radstand 2835; Spurweite 1530 mm bei ET 55 (vorn), 1524 mm bei ET 55 (hinten); 195/65 R15 T auf Stahl 6J x 15 serienmäßig beim 1,9l TDI" }
+
+nodes:
+  - id: wheel-front
+    kind: assembly
+    sides: [left, right]
+    name: Front road wheel
+    aliases: [front wheel, wheel and tyre]
+    location: { zone: wheel-arch-front-left, text: "Front axle" }
+    access:
+      from: [exterior]
+      tools: [Wheel brace / torque wrench]
+      notes: "Five M14 × 1.5 wheel bolts: 140 Nm on steel wheels, 170 Nm on alloy wheels (the book's figures; VW raised the torque to 170 Nm for every wheel from model year 2000). Bolts clean and dry, never greased."
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2" }, { ref: vw-owner-tips, locator: p. 48 }]
+    placement: { pos: [0, 765, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 780 }
+  - id: tyre-front
+    parent: wheel-front
+    kind: part
+    name: Front tyre 195/65 R15 T
+    aliases: [tire]
+    specs: [{ label: Size, value: "195/65 R15 T on 6J × 15 steel (standard on the 1.9 TDI); winter tyres only in this size", source: { ref: ssp-169, locator: p. 25 } }]
+    geometry: { gen: tyre, width: 195, aspect: 65, rim: 15 }
+  - id: rim-front
+    parent: wheel-front
+    kind: part
+    name: Front steel wheel 6J × 15
+    aliases: [steel wheel, rim]
+    specs:
+      - { label: Size, value: "6J × 15 steel, offset 55 mm (alloy 7J × 15, offset 59 mm)", source: { ref: ssp-169, locator: p. 25 } }
+      - { label: Bolt pattern, value: "5 × M14 × 1.5 wheel bolts on a 112 mm pitch circle", source: { ref: ssp-169, locator: p. 25 } }
+    verification: { geometry: schematic }
+    geometry: { gen: rim, diameter: 15, width: 6, offset: 55, spokes: 6, twin: false, studs: 5, pcd: 112, well: 17, style: steel }
+
+  - id: wheel-rear
+    kind: assembly
+    sides: [left, right]
+    name: Rear road wheel
+    aliases: [rear wheel]
+    location: { zone: wheel-arch-rear-left, text: "Rear axle" }
+    access:
+      from: [exterior]
+      tools: [Wheel brace / torque wrench]
+      notes: "Wheel bolts 140 Nm on steel wheels, 170 Nm on alloy wheels."
+      sources: [{ ref: ru-manual, locator: "shar_suspension_rus.pdf p. 2" }]
+    placement: { pos: [-2835, 762, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 780 }
+  - id: tyre-rear
+    parent: wheel-rear
+    kind: part
+    name: Rear tyre 195/65 R15 T
+    geometry: { gen: tyre, width: 195, aspect: 65, rim: 15 }
+  - id: rim-rear
+    parent: wheel-rear
+    kind: part
+    name: Rear steel wheel 6J × 15
+    verification: { geometry: schematic }
+    geometry: { gen: rim, diameter: 15, width: 6, offset: 55, spokes: 6, twin: false, studs: 5, pcd: 112, well: 17, style: steel }
+
+  - id: spare-wheel
+    kind: assembly
+    name: Spare wheel (full size)
+    summary: >-
+      A full-size wheel in a bracket under the rear of the floor, held by a rope. It is lowered from inside the car:
+      fold forward the small cover in the luggage floor by the tailgate lock, lift the rubber seal, press the locking
+      ring down with the wheel spanner and turn it anticlockwise. A changed wheel goes back outer side down.
+    location: { zone: underbody-rear, text: "Under the rear of the vehicle, below the luggage compartment floor" }
+    access:
+      from: [luggage, underside]
+      tools: [Wheel spanner from the vehicle tools]
+      notes: "The securing bolt is released from inside the vehicle (anti-theft). Vehicle tools and jack are behind the right-hand luggage compartment trim."
+      sources: [{ ref: ssp-169, locator: p. 25 }, { ref: vw-owner-tips, locator: "pp. 56–58" }]
+    placement: { pos: [-3440, 0, 250], rot: [90, 0, 0] }
+    explode: { dir: [0, 0, -1], dist: 500 }
+    verification:
+      placement: referenced
+      geometry: schematic
+      sources: [{ ref: ssp-169, locator: p. 25, says: "Das Reserverad hat Fahr-Bereifung und befindet sich hinten unter dem Fahrzeug ... Kabelhalterung" }, { ref: vw-owner-tips, locator: p. 58 }]
+  - id: tyre-spare
+    parent: spare-wheel
+    kind: part
+    name: Spare tyre 195/65 R15
+    geometry: { gen: tyre, width: 195, aspect: 65, rim: 15, grooves: 3 }
+  - id: rim-spare
+    parent: spare-wheel
+    kind: part
+    name: Spare wheel rim 6J × 15
+    geometry: { gen: rim, diameter: 15, width: 6, offset: 55, spokes: 6, twin: false, studs: 5, pcd: 112, well: 17, style: steel }

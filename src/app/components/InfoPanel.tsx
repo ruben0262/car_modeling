@@ -438,7 +438,7 @@ const NodeDetails = memo(function NodeDetails({ node, manifest }: { node: Runtim
       <div className="section">
         <h3>Part numbers</h3>
         {node.partNumbers.length === 0 ? (
-          <div className="empty">None recorded yet — to be taken from the Land Rover parts catalogue, not guessed.</div>
+          <div className="empty">None recorded yet — to be taken from the {manifest.vehicle.make} parts catalogue, not guessed.</div>
         ) : (
           node.partNumbers.map((p) => (
             <div key={p.number} className="mono">

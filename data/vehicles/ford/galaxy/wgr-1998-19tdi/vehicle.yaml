@@ -1,0 +1,229 @@
+# Ford Galaxy (first generation, WGR), 1998, 1.9 TDI 66 kW (engine code AHU), 5-speed manual,
+# left-hand drive (EU).
+#
+# The Galaxy was built by AutoEuropa (Palmela, Portugal) on the same platform as the VW Sharan (7M)
+# and SEAT Alhambra: body structure, running gear, VW engines and gearbox and most of the electrical
+# system are shared. The facts in this folder come from Volkswagen's official Sharan documentation
+# (workshop manuals, current flow diagrams, self-study programmes; see sources.yaml), which is the
+# OEM documentation of the shared parts. Parts Ford styled for the Galaxy (front and rear styling,
+# the instrument-panel fascia, the radio) are not covered by it and say so.
+#
+# Coordinates everywhere in this folder: ISO 8855 vehicle frame, millimetres.
+#   +X forward, +Y left, +Z up; origin on the ground, on the centreline,
+#   directly under the front axle. Rotations: degrees, XYZ order.
+# Mirrored pairs (`sides: [left, right]`) are authored for the LEFT (+Y)
+# side; the build reflects the right-hand copy.
+# Handed parts (`handed: true`: pedals, steering, glovebox…) are authored for
+# LEFT-hand drive; a right-hand-drive variant reflects them.
+#
+# Variant assumptions still to confirm (no VIN yet) are listed in
+# docs/verification.md ("Open questions").
+
+id: ford-galaxy-wgr-1998-19tdi
+make: Ford
+model: Galaxy
+generation: { code: WGR, years: [1995, 2000] }
+modelYear: 1998
+variant:
+  name: 1.9 TDI
+  engine: 1.9 TDI 66 kW (VW engine code AHU) I4 direct-injection turbodiesel, distributor pump
+  transmission: 5-speed manual (VW/Ford gearbox 006)
+  drive: Front-wheel drive
+  body: 5-door MPV, 5–7 seats
+  market: EU (left-hand drive)
+  steering: left
+aliases: [Galaxy Mk1, Galaxy 1, WGR, Galaxy TDI, VW Sharan 7M, SEAT Alhambra, AutoEuropa MPV]
+# The owner's car is blue; the Ford paint name and code are not known yet, so a generic mid blue is shown.
+bodyColor: '#2f5185'
+disclaimer: >-
+  Educational model built from Volkswagen's official documentation for the VW Sharan, which shares its
+  platform, engines, gearbox and most of its wiring with the first-generation Ford Galaxy. Parts Ford
+  styled for the Galaxy are not covered by those documents and are marked as estimated. Shapes are
+  simplified unless a component's verification panel says otherwise. Always confirm against the
+  workshop manual before working on a vehicle.
+
+envelope:
+  length: 4617
+  width: 1810
+  height: 1730
+  wheelbase: 2835
+  trackFront: 1530
+  trackRear: 1524
+  xFront: 870
+  xRear: -3747
+
+specs:
+  - { label: Length, value: "4617 mm (Galaxy; the Sharan is 4620 mm)", source: { ref: adac-galaxy-19tdi, locator: Maße und Gewichte } }
+  - { label: Width, value: "1810 mm", source: { ref: ssp-169, locator: p. 8 } }
+  - { label: Height, value: "1730 mm (with roof rails)", source: { ref: ssp-169, locator: p. 8 } }
+  - { label: Wheelbase, value: "2835 mm", source: { ref: ssp-169, locator: p. 8 } }
+  - { label: Track front / rear, value: "1530 / 1524 mm with offset 55 mm wheels; 1538 / 1532 mm with offset 59 mm", source: { ref: ssp-169, locator: "pp. 26, 30" } }
+  - { label: Ride height (wheel centre to wheel housing edge), value: "Front 429 mm (+17/−10), rear 438 mm (+17/−10), empty with a full tank, normal suspension", source: { ref: ru-manual, locator: "shar_suspension_rus.pdf p. 1" } }
+  - { label: Turning circle, value: "11.7 m (VW, p. 26); ADAC lists 11.1 m for the Galaxy", source: { ref: ssp-169, locator: "pp. 8, 26" } }
+  - { label: Permissible axle loads, value: "Front 1230 kg, rear 1280 kg", source: { ref: ssp-169, locator: "pp. 26, 30" } }
+  - { label: Kerb weight, value: "1720 kg (Galaxy 1.9 TDI GLX, EU)", source: { ref: adac-galaxy-19tdi, locator: Maße und Gewichte } }
+  - { label: Fuel tank, value: "70 L", source: { ref: adac-galaxy-19tdi, locator: Maße und Gewichte } }
+  - { label: Engine, value: "1.9 l, 66 kW at 4000 rpm, 202 Nm at 1900 rpm, bore × stroke 79.5 × 95.5 mm, compression 19.5:1", source: { ref: vw-engine-mech, locator: p. 8 } }
+  - { label: Gearbox, value: "5-speed manual 006 (developed by Ford), 47 kg dry, input torque up to 250 Nm, VW ATF filling", source: { ref: ssp-169, locator: p. 21 } }
+  - { label: Wheels and tyres, value: "6J × 15 steel with 195/65 R15 T (standard on the 1.9 TDI); 7J × 15 alloy with 215/60 R15 H option; 5 × M14 × 1.5 bolts on 112 mm", source: { ref: ssp-169, locator: p. 25 } }
+  - { label: Drag coefficient, value: "cw 0.34 (Sharan)", source: { ref: ssp-169, locator: p. 8 } }
+specSources: [{ ref: ssp-169 }, { ref: adac-galaxy-19tdi }, { ref: vw-engine-mech }]
+
+systems:
+  - { id: body, name: Body exterior, short: Body, color: '#a9b7c6', icon: car, layer: 10,
+      summary: "Panels, glass, lamps and trim: the vehicle's skin.",
+      explode: { dir: [0, 0, 1], dist: 1450 } }
+  - { id: structure, name: Body structure, short: Structure, color: '#e9e2d0', icon: frame, layer: 9,
+      summary: "Body-in-white: longitudinal members, pillars, floor and bulkhead that carry the loads.",
+      explode: { dir: [0, 0, 1], dist: 900 } }
+  - { id: interior, name: Interior, short: Interior, color: '#a18cff', icon: armchair, layer: 8,
+      summary: "Seats, dash panel, steering wheel and controls.",
+      explode: { dir: [-0.25, 0, 1], dist: 520 } }
+  - { id: engine, name: Engine, short: Engine, color: '#ff7b54', icon: engine, layer: 6,
+      summary: "1.9 TDI diesel engine with distributor injection pump, turbocharger, EGR and ancillaries.",
+      explode: { dir: [0.55, 0, 1], dist: 420 } }
+  - { id: driveline, name: Gearbox & driveshafts, short: Driveline, color: '#f6b93b', icon: cog, layer: 5,
+      summary: "Clutch, 5-speed gearbox 006 with final drive, gearshift cables and front driveshafts.",
+      explode: { dir: [0, 0, -1], dist: 90 } }
+  - { id: suspension, name: Suspension & steering, short: Suspension, color: '#3cc6b4', icon: spring, layer: 4,
+      summary: "Subframe, MacPherson struts, wishbones, semi-trailing arm rear axle and power steering.",
+      explode: { dir: [0, 0, -1], dist: 200 } }
+  - { id: brakes, name: Brakes, short: Brakes, color: '#ff4f6d', icon: disc, layer: 3,
+      summary: "Discs, calipers, servo, master cylinder, ABS and brake lines.",
+      explode: { dir: [0, 0, 0], dist: 0 } }
+  - { id: wheels, name: Wheels & tyres, short: Wheels, color: '#93a0b4', icon: circle, layer: 2,
+      summary: "Road wheels, tyres and the spare wheel under the rear.",
+      explode: { dir: [0, 0, 0], dist: 0 } }
+  - { id: cooling, name: "Cooling, climate & air intake", short: Cooling, color: '#4da6ff', icon: wind, layer: 7,
+      summary: "Radiator, charge-air cooler, condenser, fans, heater, air conditioning, auxiliary heater and air intake.",
+      explode: { dir: [1, 0, 0.15], dist: 620 } }
+  - { id: fuel-exhaust, name: Fuel & exhaust, short: Fuel/Exhaust, color: '#b8e05a', icon: fuel, layer: 1,
+      summary: "Fuel tank, filter and lines; catalytic converter, pipes and silencers.",
+      explode: { dir: [0, 0, -1], dist: 380 } }
+  - { id: electrical, name: Electrical, short: Electrical, color: '#ffd84a', icon: zap, layer: 6,
+      summary: "Battery, multi-function unit with relays and fuses, control units, harnesses and connectors.",
+      explode: { dir: [0, 0, 1], dist: 260 } }
+
+zones:
+  engine-bay: Engine compartment
+  engine-bay-front: Engine compartment, front (radiator side)
+  engine-bay-left: Engine compartment, left side
+  engine-bay-right: Engine compartment, right side
+  engine-bay-rear: Engine compartment, rear (bulkhead side)
+  front-end: Front end, behind the bumper
+  underbody-front: Underbody, front
+  underbody-centre: Underbody, centre (tunnel)
+  underbody-rear: Underbody, rear
+  wheel-arch-front-left: Front left wheel arch
+  wheel-arch-front-right: Front right wheel arch
+  wheel-arch-rear-left: Rear left wheel arch
+  wheel-arch-rear-right: Rear right wheel arch
+  cabin-dashboard: Cabin, dash panel
+  cabin-driver-footwell: Cabin, driver footwell (left on LHD)
+  cabin-passenger-footwell: Cabin, passenger footwell (right on LHD)
+  plenum: Plenum chamber, below the windscreen
+  cabin-front: Cabin, front seats
+  cabin-centre-console: Cabin, centre console
+  cabin-rear: Cabin, second and third seat rows
+  luggage: Luggage compartment
+  roof: Roof
+  exterior-front: Exterior, front
+  exterior-rear: Exterior, rear
+  exterior-side: Exterior, side
+
+# Directions are from the part towards the viewer (ISO frame).
+approaches:
+  - { id: overview, label: Overview, dir: [1, 1.1, 0.65] }
+  - { id: bonnet, label: From above (bonnet open), dir: [0.45, 0.15, 1] }
+  - { id: underside, label: From below (vehicle on a lift), dir: [0.25, 0.35, -1] }
+  - { id: front-end, label: From the front (bumper off), dir: [1, 0.15, 0.3] }
+  - { id: wheel-arch-front-left, label: Front left wheel arch (wheel off), dir: [0.25, 1, 0.2] }
+  - { id: wheel-arch-front-right, label: Front right wheel arch (wheel off), dir: [0.25, -1, 0.2] }
+  - { id: wheel-arch-rear-left, label: Rear left wheel arch (wheel off), dir: [-0.25, 1, 0.2] }
+  - { id: wheel-arch-rear-right, label: Rear right wheel arch (wheel off), dir: [-0.25, -1, 0.2] }
+  - { id: cabin-front, label: 'Cabin, front', dir: [-0.35, 0.8, 0.75] }
+  - { id: cabin-rear, label: 'Cabin, rear', dir: [-0.6, 0.8, 0.8] }
+  - { id: luggage, label: Luggage compartment (tailgate open), dir: [-1, 0.2, 0.55] }
+  - { id: exterior, label: Exterior, dir: [0.9, 1, 0.35] }
+
+# Netlists extracted from the VW Sharan current flow diagrams with tools/ewd/import-vw.ts. VW draws one diagram per
+# engine and item of equipment and dates each one ("from January 1998"), so a set is chosen by build date: the
+# 1.9 TDI AHU engine, manual gearbox, air conditioner and the body equipment diagrams. VW T-connector codes are
+# per diagram: where two diagrams use the same code for different connectors the id carries the diagram number
+# ("T2.20" = T2 of diagram No. 20). The Galaxy-specific Ford radio is not in these diagrams.
+wiring:
+  id: vw-1998-jan
+  file: wiring/vw-sharan-1998-jan.json
+  source: vw-wd-1997
+  label: Built January–April 1998
+  years: "1998"
+  note: >-
+    VW Sharan diagrams (issue of September 1997) for a car built between January and April 1998: Nos. 1–5, 7, 8, 14
+    (1.9 TDI AHU from 09.1997), 19–24, 37, 39, 40, 47, 55, 56, 62 and 63 (from 01.1998), 74 (air conditioner AHU from
+    01.1998) and 80. Optional equipment (sunroof, seat heating, trailer socket, auxiliary heater, headlamp washers,
+    heated windscreen, rear vent wings, 2nd heat exchanger) is included and marked as fitment on its parts. Wires
+    without a printed far end continue on a sheet that is not part of this set.
+  publications:
+    - { id: vw-1998-sep, file: wiring/vw-sharan-1998-sep.json, source: vw-wd-1997, label: Built September–December 1997, years: "1998", note: "Dual tone horn No. 6, immobilizer No. 9 with relay J447, air conditioner No. 32 and 2nd heat exchanger No. 18 (all from 09.1997)." }
+    - { id: vw-1998-may, file: wiring/vw-sharan-1998-may.json, source: vw-wd-1997, label: Built May–August 1998, years: "1998", note: "Engine No. 85, airbag No. 86 and exterior mirrors No. 88 from 05.1998." }
+    - { id: vw-1999-nov, file: wiring/vw-sharan-1999-nov.json, source: vw-wd-1997, label: Built from November 1998, years: "1999", note: "Adds heated windows No. 97 (09.1998), wash/wipe No. 90, immobilizer No. 98 and 12 V socket No. 96 (11.1998)." }
+    - { id: vw-1997-my, file: wiring/vw-sharan-1997-my.json, source: vw-wd-1995, label: "1997 model year (from September 1996)", years: "1997", note: "1995 issue: basic equipment No. 42 (from 09.1996), 1Z/AHU engine No. 10, air conditioning No. 11 and the equipment diagrams. Fewer far ends were found in this older issue (88 % of wires)." }
+  notApplicable:
+    - codes: [J217, J226]
+      reason: Automatic gearbox only (gearbox control unit; starter inhibitor and reversing light relay, drawn dashed "Only models with automatic gearbox"); this car has the 5-speed manual gearbox.
+      source: { ref: vw-wd-1997, locator: "No. 1/2, No. 2/3" }
+    - codes: [J220, J361]
+      reason: Petrol engine control units (2.8 VR6 Motronic, 2.0 Simos) drawn on the shared self-diagnosis sheet.
+      source: { ref: vw-wd-1997, locator: "No. 2/2" }
+    - codes: [J255]
+      reason: Climatronic control unit; the car is taken to have the manual air conditioner (diagram No. 74), which the ADAC lists as standard. Open question until the car's equipment is known.
+      source: { ref: vw-wd-1997, locator: "No. 2/3" }
+    - codes: [J17]
+      reason: Fuel pump relay of the petrol engines, drawn on the shared dash-panel-insert sheet; on the AHU the same slot (24) of the lower relay plate holds the glow plug relay J52.
+      source: { ref: vw-fitting-locations-1997, locator: "000566860204-011, No. 4/11" }
+    - codes: [J447]
+      reason: Immobilizer relay "up to December 1997"; from January 1998 the push-in bridge TV23 takes its place.
+      source: { ref: vw-wd-1997, locator: "No. 1/3, No. 14/2" }
+    - codes: [N125, N126]
+      reason: Differential lock (EDS, Ford "TCS") valves, "only models with EDS"; taken as not fitted. Open question until the car's equipment is known.
+      source: { ref: vw-wd-1997, locator: "No. 20/3" }
+
+joints: joints.yaml
+files:
+  - body.yaml
+  - structure.yaml
+  - wheels.yaml
+  - suspension.yaml
+  - brakes.yaml
+  - engine.yaml
+  - driveline.yaml
+  - cooling.yaml
+  - fuel-exhaust.yaml
+  - electrical.yaml
+  - electrical-body.yaml
+  - body-hardware.yaml
+  - interior.yaml
+  - interior-trim.yaml
+  - engine-ancillaries.yaml
+
+shapes:
+  # Exterior surface stations (see tools/geometry/body.ts), traced from the VW Sharan dimension drawing
+  # (ssp-169 p. 8: side, front and rear views) and mapped onto the published wheelbase, length, width and
+  # height. The drawing is to scale between the axles but draws the overhangs short, so the overhangs are
+  # stretched to the published length (front 870 mm, rear 912 mm: the split is estimated from the drawing's
+  # proportions). Ford styled the Galaxy's nose and tail; their exact contour is estimated.
+  body:
+    x:     [-3747, -3738, -3722, -3707, -3688, -3658, -3601, -3506, -3411, -3316, -3202, -3031, -2835, -2525, -2210, -1895, -1580, -1266,  -951,  -793,  -636,  -479,  -321,  -164,    -6,   183,   373,   506,   647,   735,   792,   830,   857,   870]
+    zSill: [  411,   396,   372,   358,   352,   342,   333,   325,   317,   311,   303,   290,   276,   262,   248,   248,   248,   248,   248,   248,   248,   248,   255,   258,   260,   264,   268,   279,   314,   340,   364,   396,   443,   490]
+    zBelt: [  486,   499,   545,   612,   738,  1104,  1104,  1104,  1104,  1104,  1104,  1104,  1102,  1086,  1082,  1082,  1082,  1056,  1055,  1054,  1054,  1056,  1057,  1057,  1057,   975,   883,   820,   798,   729,   682,   638,   597,   565]
+    zTop:  [  521,   534,   580,   647,   773,  1151,  1277,  1403,  1497,  1560,  1607,  1630,  1639,  1661,  1674,  1680,  1680,  1661,  1604,  1554,  1488,  1412,  1337,  1249,  1164,  1088,  1006,   931,   843,   764,   717,   673,   632,   600]
+    wLow:  [  600,   720,   790,   822,   845,   860,   872,   882,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   886,   878,   860,   830,   790,   720,   600]
+    wMax:  [  650,   760,   815,   845,   865,   880,   892,   902,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   905,   900,   885,   860,   822,   762,   650]
+    wBelt: [  560,   680,   760,   800,   826,   842,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   848,   832,   815,   800,   770,   740,   712,   680,   620,   520]
+    wTop:  [  520,   640,   700,   730,   750,   752,   700,   668,   655,   652,   648,   648,   647,   647,   646,   646,   646,   646,   640,   637,   665,   692,   720,   741,   762,   806,   790,   775,   745,   715,   688,   656,   596,   500]
+    crown: [   14,    14,    14,    14,    14,    19,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    45,    45,    45,    45,    45,    45,    83,    93,    81,    15,    10,    10,    10,    10,    10]
+    # Arch radius = ride height of the empty car with a full tank, wheel centre to wheel housing edge:
+    # X1 front 429 mm, X2 rear 438 mm (5–7 seats, normal suspension; ru-manual, shar_suspension_rus.pdf p. 1)
+    arches:
+      - { x: 0, z: 317.25, r: 429 }
+      - { x: -2835, z: 317.25, r: 438 }

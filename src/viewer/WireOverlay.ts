@@ -16,7 +16,7 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-import { WIRE_COLOURS } from '../shared/wiring';
+import { colourParts, WIRE_COLOURS } from '../shared/wiring';
 
 export interface OverlayWire {
   id: string;
@@ -25,7 +25,7 @@ export interface OverlayWire {
 }
 
 /** Visible stand-in for colours that vanish on the dark background. */
-const display = (code: string | undefined) => (code === 'BK' ? '#4a4a52' : (code && WIRE_COLOURS[code]) || '#bbbbbb');
+const display = (code: string | undefined) => (code === 'BK' || code === 'sw' ? '#4a4a52' : (code && WIRE_COLOURS[code]) || '#bbbbbb');
 
 const RADIAL = 6;
 const COS = Array.from({ length: RADIAL }, (_, k) => Math.cos((k / RADIAL) * Math.PI * 2));
@@ -183,7 +183,7 @@ export class WireOverlay {
       }
       if (pts.length < 2) return;
       pts = simplify(pts, SIMPLIFY);
-      const [main, tracer] = w.colour.split('-');
+      const [main, tracer] = colourParts(w.colour);
       const strands: Strand[] = [{ pts, radius: 0.0016, colour: new THREE.Color(display(main)) }];
       if (tracer) strands.push({ pts: pts.map((p) => p.clone().add(tracerShift)), radius: 0.0009, colour: new THREE.Color(display(tracer)) });
       for (const st of strands) {

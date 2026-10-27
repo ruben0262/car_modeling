@@ -21,7 +21,7 @@
 import * as THREE from 'three';
 import { MM_TO_M, type Vec3 } from '../../src/shared/frames';
 import type { CheckResult } from '../../src/shared/manifest';
-import { splitPin, type EwdData, type EwdWire, type WiringLayout } from '../../src/shared/wiring';
+import { endKind, splitPin, type EwdData, type EwdWire, type WiringLayout } from '../../src/shared/wiring';
 import { merge, roundedBox, type Sub } from '../geometry/util';
 import type { BuiltNode } from './assemble';
 import { relevantEwdComponents } from './emit';
@@ -641,8 +641,9 @@ export function synthesizeHarness(v: LoadedVehicle, built: Map<string, BuiltNode
     const spliceAt = new Map<string, { v: number; p: V3 }>();
     const groundAt = new Map<string, { v: number; p: V3; fit: ReturnType<typeof fit> }>();
     const resolve = (end: string): { v: number; p: V3 } | null => {
-      if (/^S\d/.test(end)) return spliceAt.get(end) ?? null;
-      if (/^G\d/.test(end)) return groundAt.get(groundKey(end)) ?? null;
+      const kind = endKind(end, data);
+      if (kind === 'splice') return spliceAt.get(end) ?? null;
+      if (kind === 'ground') return groundAt.get(data.grounds[end] ? end : groundKey(end)) ?? null;
       const a = anchors.get(splitPin(end).connector);
       return a ? { v: a.v, p: a.p } : null;
     };
@@ -669,7 +670,7 @@ export function synthesizeHarness(v: LoadedVehicle, built: Map<string, BuiltNode
       pairs.push({ key, a, b });
     }
     const pinWires = (conn: string) => Object.values(data.connectors[conn]?.pins ?? {}).flatMap((p) => p.wires);
-    const ownPin = (conn: string) => (e: string) => !/^[SG]\d/.test(e) && splitPin(e).connector === conn;
+    const ownPin = (conn: string) => (e: string) => endKind(e, data) === 'pin' && splitPin(e).connector === conn;
     const spliceFit = new Map<string, ReturnType<typeof fit>>();
     for (let pass = 0, progress = true; progress && pass < 8; pass++) {
       progress = false;
@@ -770,7 +771,7 @@ export function synthesizeHarness(v: LoadedVehicle, built: Map<string, BuiltNode
     // wires to equipment this variant does not have (other engine, gearbox or market) cannot be drawn by design
     const fitted = relevantEwdComponents(data, new Set((v.vehicle.wiring!.notApplicable ?? []).flatMap((n) => n.codes)));
     const notFitted = (end: string) => {
-      if (/^[SG]\d/.test(end)) return false;
+      if (endKind(end, data) !== 'pin') return false;
       const comp = data.connectors[splitPin(end).connector]?.component;
       return !!comp && !fitted.has(comp);
     };
@@ -829,7 +830,7 @@ export function synthesizeHarness(v: LoadedVehicle, built: Map<string, BuiltNode
   const byPart = new Map<string, number[]>();
   for (const w of ewd.wires) {
     const len = lengthOf(w);
-    if (!len || w.ends.length !== 2 || w.ends.some((e) => /^[SG]\d/.test(e))) continue;
+    if (!len || w.ends.length !== 2 || w.ends.some((e) => endKind(e, ewd) !== 'pin')) continue;
     const [ea, eb] = w.ends.map((e) => anchorOf.get(splitPin(e).connector));
     if (!ea || !eb || !ewd.connectors[splitPin(w.ends[0]).connector]?.component || !ewd.connectors[splitPin(w.ends[1]).connector]?.component) continue;
     const route = distFrom(ea.v)[eb.v] + ea.p.distanceTo(graph.pos[ea.v]) + eb.p.distanceTo(graph.pos[eb.v]);

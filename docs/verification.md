@@ -64,6 +64,8 @@ These checks found and forced fixes for real packaging errors while the Freeland
 
 ## Sources in use
 
+### Land Rover Freelander 2
+
 The Freelander 2 data is now built from official Land Rover documentation, cited by page:
 
 | Source | What it gives |
@@ -96,7 +98,7 @@ The atlas mixes two kinds of information, and the viewer always says which is wh
 
 Generated nodes (`branch-…`, `inline-…`, `ground-…`) carry `generated: true`, schematic geometry and estimated placement, and cite the wiring-diagram sheets they come from.
 
-## Open questions for this vehicle
+## Open questions: Land Rover Freelander 2
 
 The variant is a **2010 model year, 2.2 TD4, 6-speed manual, left-hand drive (EU)**. Without a VIN these remain open:
 
@@ -114,6 +116,46 @@ The variant is a **2010 model year, 2.2 TD4, 6-speed manual, left-hand drive (EU
 12. **Variant codes not fitted.** 26 diagram components belong to the petrol engine, the automatic gearbox, or North American and Japanese equipment. They are listed with their reasons under `wiring.notApplicable` in `vehicle.yaml` and excluded from the coverage count.
 13. **Harness routes.** The printed wire lengths show the real harness runs differ from the modelled trunks. For example, wires from the CJB to the right-hand rear lamps are about 1.6 m longer than to the left-hand ones, so the body harness reaches the rear down the left side; some runs are far longer than a direct path. The `wire-lengths` check lists the parts concerned. Harness layout drawings (TOPIx or the Electrical Reference Library) would settle the routes.
 14. **Right-hand-drive lengths in the service issues.** For wires that cross the car, the TOPIx service issues print the same lengths as right-hand-drive cars; the LHD engineering issue differs by 0.5–1 m. The engineering figures are used.
+
+## Ford Galaxy 1998 1.9 TDI
+
+### Sources in use
+
+The Galaxy shares its platform, engine, gearbox and most electrics with the VW Sharan (7M), so it is built from Volkswagen's official Sharan documents, cited by PDF page or by diagram and sheet:
+
+| Source | What it gives |
+| --- | --- |
+| Sharan current flow diagrams 09.1997 and 06.1995 (`vw-wd-1997`, `vw-wd-1995`) | Netlists by build date: components, connectors and pins, wire colours and sizes, fuses, connections and earth points, with the locations printed in the legends |
+| Fitting-locations binder (`vw-fitting-locations-1997`) | Multi-function unit, relays, fuses and connectors |
+| Self-study programmes 169, 170, 153 (`ssp-169`, `ssp-170`, `ssp-153`) | Layout and function of every system; dimensions; gearbox ratios |
+| Body repairs (`vw-body`) | Body dimensions with hole-to-hole spacings, VIN location, panel gaps |
+| Diesel injection, heating/A/C, supplementary heating (`vw-diesel`, `vw-heating`, `vw-aux-heating`) | The Sharan installation of the AHU injection system, the climate system and the auxiliary heater |
+| VW 1.9 TDI engine manuals (`vw-engine-mech`, `vw-engine-b5`) | Engine-internal facts only (they are written for the Golf and Passat) |
+| Russian workshop book (`ru-manual`, grade B) | Running-gear, brake, clutch and body-electrics torques and limits; facts resting on it alone are `secondary` |
+| ADAC, Wikipedia (`adac-galaxy-19tdi` C, `wikipedia-galaxy` D) | Galaxy-specific dimensions and equipment; never the sole source of a technical fact |
+
+The VW wiring importer (`tools/ewd/import-vw.ts`) reads the current flow diagrams from their vector drawing. VW connector codes are per diagram, so a code that two diagrams use for different connectors gets the diagram number (`T2.20`).
+
+Using the VW documents as references is fine. Republishing their text, figures or the full netlist on a public site may need permission from Volkswagen; decide this before hosting.
+
+### Open questions
+
+The variant is a **Ford Galaxy Mk1 (WGR), 1998, 1.9 TDI 66 kW (VW AHU), 5-speed manual, left-hand drive (EU)**, colour "blue". Without a VIN, trim level and build date these remain open:
+
+1. **Build date and wiring set.** VW changed diagrams in January and May 1998. The default netlist is for a car built January–April 1998 (immobilizer bridge TV23 instead of relay J447); the sets for September–December 1997, May–August 1998, from November 1998 and the 1997 model year are selectable.
+2. **Equipment.** Trim level (CL/GLX/Ghia) decides manual air conditioning or Climatronic, steel or alloy wheels, 5 or 7 seats, EDS (Ford "TCS"), alarm, sunroof, seat heating, heated windscreen, rear vent wings and the auxiliary heater. Optional parts are included and marked as fitment; Climatronic and EDS are listed as not applicable until the car's equipment is known.
+3. **Battery.** ssp-169 p. 44 lists 61 Ah for the 1.9 TDI and 92 Ah for the 1.9 TDI with air conditioning, which the ADAC lists as standard.
+4. **Body colour and Ford colour code.** The car is blue; a generic mid blue is shown until the Ford paint name and code are known.
+5. **Torques the workshop book gives twice:** wheel bolts 140 Nm (steel) / 170 Nm (alloy) in the axle table but 170 Nm in the brake chapter (VW raised all to 170 Nm from model year 2000); track rod end 55 Nm vs 30 Nm + 90°; rear hub nut 170 Nm vs 200 Nm; brake hose union 25 Nm vs 15 Nm. Both values are shown on the parts.
+6. **Turning circle and tracks.** VW gives an 11.7 m turning circle, the ADAC 11.1 m; the Russian book prints tracks of 1510/1497 mm against ssp-169's 1530/1524 mm (offset 55 wheels), which are used.
+7. **Rear axle type.** The book's specification page calls it a torsion beam, but ssp-169 and the book's own figures show the semi-trailing-arm axle that is modelled.
+8. **ABS sensor connectors.** The diagram legend places T2/T2a at the "rear suspension strut, left/right", while the drawing joins T2 to the front right sensor and T2a to the front left one.
+9. **Dual-mass flywheel.** The workshop book says turbocharged models have one; no VW document in hand confirms it for the 66 kW AHU.
+10. **Engine oil capacity, accessory-belt layout.** The capacity of the Sharan installation and the positions of alternator, power-steering pump and A/C compressor on the ribbed belt are not in the documents in hand (the Golf figures are not used); the belt routing is estimated.
+11. **Underbody positions.** The fore-aft positions of the longitudinal members, subframe and rear axle mountings are estimated: the straightening-jig figures in the body repair manual are blank in this copy. VW body sheets `vw48a.tif`/`vw48y.tif` (see references) would let them be calculated.
+12. **Exterior proportions.** The body surface follows the ssp-169 dimension drawing, which is to scale between the axles but draws the overhangs short; the overhang split (front 870 / rear 912 mm) is estimated.
+13. **Ford-specific parts.** Bumpers, grille, lamps, bonnet, wings, fascia, radio and badges are Ford designs not covered by the VW documents and are estimated.
+14. **1997 model-year wiring.** Imported from the 1995 issue, where fewer far ends are found (88 % of wires); which radiator-fan diagram applied is open.
 
 ## Workflow for raising a part's status
 

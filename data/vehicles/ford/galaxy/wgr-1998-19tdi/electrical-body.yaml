@@ -1,0 +1,477 @@
+# Body electrics: exterior lighting, wipers and washers, horns, central locking, windows, mirrors, sunroof,
+# anti-theft alarm and the harness runs into the doors, tailgate and roof. Codes and locations from the VW current
+# flow diagrams (diagrams 4, 5, 8, 21–23, 37, 39, 47, 56, 62) and fitting locations; bulbs and lamp work from the
+# workshop book's body-electrics chapter (ru-manual, shar_el_body_rus.pdf), which covers the Galaxy. The lamp
+# housings, bumpers and wings are Ford parts not drawn in the VW documents, so everything in them is estimated.
+# Parts inside a lamp, mirror, door or tailgate are children of it (local frame where the parent has a placement).
+system: electrical
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-wd-1997, locator: "No. 4/1–4/9" }]
+
+nodes:
+  # ---------------------------------------------------------------- front lighting (in the Ford headlamps)
+  - id: headlamp-bulb
+    parent: headlamp
+    kind: part
+    name: Headlamp bulb H4 (main and dipped beam)
+    aliases: [headlight bulb, H4 bulb, dipped beam bulb, main beam bulb]
+    summary: Twin-filament H4 bulb, 60/55 W, reached from the engine compartment behind the headlamp.
+    access: { from: [bonnet], notes: "Do not touch the glass of a halogen bulb.", sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1, bulb table; p. 5, section 15" }] }
+    contacts: [lock-carrier]
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    ewd: [M29:l, M31:r]
+    specs: [{ label: Bulb, value: "H4, 60/55 W (first version); H1/H7 55 W on the later version", source: { ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" } }]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/4", says: "M29 Dipped beam bulb, left; M31 Dipped beam bulb, right" }] }
+    geometry: { gen: cyl, r: 16, h: 50, axis: x, pos: [-30, 60, 10], mat: glass }
+  - id: side-light-bulb
+    parent: headlamp
+    kind: part
+    name: Side light bulb (5 W)
+    aliases: [parking light bulb, position lamp]
+    contacts: [lock-carrier]
+    explode: { dir: [-1, 0.3, 0.3], dist: 160 }
+    ewd: [M1:l, M3:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/4" }] }
+    geometry: { gen: cyl, r: 7, h: 22, axis: x, pos: [-20, 10, 10], mat: glass }
+  - id: front-turn-signal-bulb
+    parent: headlamp
+    kind: part
+    name: Front turn signal bulb (21 W)
+    aliases: [indicator bulb, blinker bulb]
+    contacts: [lock-carrier]
+    explode: { dir: [-1, 0.6, 0.3], dist: 160 }
+    ewd: [M5:l, M7:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/5" }] }
+    geometry: { gen: cyl, r: 13, h: 34, axis: x, pos: [-20, 120, -20], mat: lens-amber }
+  - id: headlight-range-motor
+    parent: headlamp
+    kind: part
+    name: Headlight range control motor
+    aliases: [headlamp levelling motor, beam adjuster motor]
+    summary: On the back of the headlamp; set from the adjuster on the dash panel.
+    access: { from: [bonnet], sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 8, section 19" }] }
+    contacts: [lock-carrier]
+    explode: { dir: [-1, -0.4, 0.2], dist: 180 }
+    ewd: [V48:l, V49:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 4/3", says: "V48 Headlight range control motor, left; V49 right; E102 adjuster" }] }
+    geometry: { gen: cyl, r: 20, h: 40, axis: x, pos: [-62, -40, 0], mat: plastic-black }
+  - id: side-repeater
+    parent: front-wing
+    kind: part
+    name: Side turn signal repeater (5 W)
+    aliases: [side indicator, side marker]
+    explode: { dir: [0, 1, 0], dist: 140 }
+    ewd: [M18:l, M19:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/5" }] }
+    geometry: { gen: box, size: [50, 12, 22], r: 6, pos: [480, 905, 800], mat: lens-amber }
+  - id: front-fog-lamp
+    kind: part
+    sides: [left, right]
+    name: Front fog lamp (H1 55 W)
+    aliases: [fog light, foglamp]
+    location: { zone: exterior-front, text: "In the front bumper, outer corners" }
+    access: { from: [underside, front-end] }
+    explode: { dir: [1, 0.4, -0.2], dist: 260 }
+    contacts: [front-bumper]
+    ewd: [L22:l, L23:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1", says: "fog lamps H1 55 W" }, { ref: vw-wd-1997, locator: "No. 4/3" }] }
+    geometry: { gen: lamp, size: [60, 140, 70], lens: lens-clear, reflectors: 1 }
+    placement: { pos: [800, 640, 380], rot: [0, 0, 8] }
+
+  # ---------------------------------------------------------------- rear lighting
+  - id: tail-brake-bulb
+    parent: tail-lamp
+    kind: part
+    name: Tail and brake light bulb (21/5 W)
+    contacts: [tailgate]
+    explode: { dir: [1, 0, 0.3], dist: 140 }
+    ewd: [M4:l, M2:r, M9:l, M10:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1, bulb table; p. 8, section 21" }, { ref: vw-wd-1997, locator: "No. 4/7" }] }
+    geometry: { gen: cyl, r: 13, h: 34, axis: x, pos: [10, 30, 40], mat: glass }
+  - id: rear-turn-signal-bulb
+    parent: tail-lamp
+    kind: part
+    name: Rear turn signal bulb (21 W)
+    contacts: [tailgate]
+    explode: { dir: [1, 0.4, 0.3], dist: 140 }
+    ewd: [M6:l, M8:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/7" }] }
+    geometry: { gen: cyl, r: 13, h: 34, axis: x, pos: [10, 30, -40], mat: lens-amber }
+  - id: tailgate-lamp
+    parent: tailgate
+    kind: part
+    sides: [left, right]
+    name: Tailgate lamp (reversing light and rear fog light, 21 W)
+    aliases: [reversing light, reverse light, rear fog lamp]
+    summary: Inner rear lamps in the tailgate beside the number plate; one side carries the reversing light, the other position the rear fog light, wired through the tailgate harness.
+    access: { from: [luggage], notes: "Open the tailgate and remove the trim panel to reach the bulb holder.", sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 9, section 22" }] }
+    explode: { dir: [-1, 0, 0], dist: 160 }
+    ewd: [M16:l, M17:r, L46:l, L47:r]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 9, section 22", says: "Removing and installing the rear lamps in the tailgate" }, { ref: vw-wd-1997, locator: "No. 4/9" }] }
+    geometry: { gen: lamp, size: [50, 220, 110], lens: lens-red, reflectors: 2 }
+    placement: { pos: [-3690, 380, 880], rot: [0, 0, 180] }
+  - id: high-level-brake-light
+    parent: tailgate
+    kind: part
+    name: High-level brake light
+    aliases: [third brake light, CHMSL]
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    ewd: [M25]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 4/8", says: "M25 High level brake light bulb" }] }
+    geometry: { gen: box, size: [40, 300, 40], r: 8, pos: [-3315, 0, 1570], mat: lens-red }
+  - id: number-plate-lights
+    parent: tailgate
+    kind: part
+    name: Number plate lights (5 W)
+    aliases: [licence plate lamps]
+    explode: { dir: [-1, 0, -0.2], dist: 140 }
+    ewd: [X]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1" }, { ref: vw-wd-1997, locator: "No. 4/9", says: "X Number plate light" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [24, 60, 18], r: 4, pos: [-3712, 140, 760], mat: lens-clear }
+        - { gen: box, size: [24, 60, 18], r: 4, pos: [-3712, -140, 760], mat: lens-clear }
+
+  # ---------------------------------------------------------------- wipers, washers, horns
+  - id: windscreen-wiper-motor
+    kind: part
+    name: Windscreen wiper motor with control unit
+    aliases: [wiper motor, J400, front wiper motor]
+    summary: In the plenum chamber below the windscreen, driving both wiper arms through a linkage; the wiper control unit is built onto the motor and works with the wiper motor relief relay on the lower relay plate.
+    location: { zone: plenum, text: "Below the plenum panel, left of centre" }
+    access: { from: [bonnet], removeFirst: [plenum-panel], sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 14, section 35" }] }
+    explode: { dir: [0, 0, 1], dist: 220 }
+    contacts: [plenum-panel]
+    ewd: [V, J400]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 8/3", says: "V Windscreen wiper motor; J400 Wiper motor control unit; J384 Wiper motor relief relay" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 40, h: 110, axis: y, pos: [-30, 250, 1035], mat: steel-black }
+        - { gen: box, size: [70, 60, 50], r: 8, pos: [-30, 180, 1035], mat: aluminium-cast }
+  - id: rear-wiper-motor
+    parent: tailgate
+    kind: part
+    name: Rear window wiper motor
+    aliases: [rear wiper motor]
+    explode: { dir: [1, 0, 0], dist: 160 }
+    ewd: [V12]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 8/4", says: "V12 Rear window wiper motor" }] }
+    geometry: { gen: cyl, r: 38, h: 80, axis: x, pos: [-3600, 0, 1040], mat: steel-black }
+  - id: washer-reservoir
+    kind: assembly
+    name: Washer fluid reservoir with pumps and level sender
+    aliases: [washer bottle, screenwash tank]
+    summary: Reservoir in the front left corner of the engine compartment with the windscreen/rear window washer pump, the headlight washer pump and the fluid level sender.
+    location: { zone: front-end, text: "Front left of the engine compartment, ahead of the wheel arch (position estimated)" }
+    access: { from: [bonnet], notes: "Filler in the engine compartment.", sources: [{ ref: vw-owner-tips, locator: p. 30, says: "6 - Windscreen washer container" }] }
+    explode: { dir: [0.3, 0.6, 0.5], dist: 260 }
+    verification: { sources: [{ ref: vw-owner-tips, locator: "pp. 30, 37" }, { ref: vw-wd-1997, locator: "No. 3/7, No. 8/4, No. 56/2" }] }
+  - { id: washer-tank, parent: washer-reservoir, kind: part, name: Washer reservoir, material: plastic-white, explode: { dir: [0, 0, 1], dist: 100 }, geometry: { gen: compound, parts: [{ gen: box, size: [170, 160, 260], r: 20, pos: [570, 670, 470] }, { gen: tube, r: 18, points: [[540, 640, 600], [520, 630, 700], [505, 625, 780]] }] } }
+  - { id: washer-pump, parent: washer-reservoir, kind: part, name: Windscreen and rear window washer pump, aliases: [washer pump, V59], explode: { dir: [0, 1, -0.3], dist: 120 }, ewd: [V59], verification: { sources: [{ ref: vw-wd-1997, locator: "No. 8/4" }, { ref: ru-manual, locator: "shar_el_body_rus.pdf p. 15, section 36" }] }, geometry: { gen: cyl, r: 16, h: 70, axis: z, pos: [600, 755, 365], mat: plastic-black } }
+  - { id: headlight-washer-pump, parent: washer-reservoir, kind: part, name: Headlight washer pump, aliases: [V11], fitment: Headlight washer system, explode: { dir: [1, 0.5, -0.3], dist: 120 }, ewd: [V11], verification: { sources: [{ ref: vw-wd-1997, locator: "No. 56/2", says: "V11 Headlight washer system pump; J39 relay" }] }, geometry: { gen: cyl, r: 22, h: 80, axis: z, pos: [640, 720, 370], mat: plastic-black } }
+  - { id: washer-level-sender, parent: washer-reservoir, kind: part, name: Washer fluid level sender, aliases: [G33], explode: { dir: [-1, 0.4, -0.3], dist: 120 }, ewd: [G33], verification: { sources: [{ ref: vw-wd-1997, locator: "No. 3/7" }] }, geometry: { gen: cyl, r: 12, h: 40, axis: z, pos: [505, 700, 360], mat: plastic-black } }
+  - id: washer-jet-heater
+    parent: bonnet
+    kind: part
+    sides: [left, right]
+    name: Heated washer jet
+    aliases: [washer nozzle heater]
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [Z20:l, Z21:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 7/3", says: "Z20 Heater element, left washer jet; Z21 right" }] }
+    geometry: { gen: box, size: [30, 20, 16], r: 4, pos: [60, 330, 1112], mat: plastic-black }
+  - id: horns
+    kind: part
+    name: Dual tone horns
+    aliases: [horn, hooter, H1]
+    summary: Two horns behind the front bumper on the right, switched by the dual tone horn relay on the upper relay plate from the horn plate in the steering wheel.
+    location: { zone: front-end, text: "Behind the front bumper, right" }
+    access: { from: [front-end, underside], sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf p. 2, section 6" }] }
+    explode: { dir: [1, -0.5, -0.2], dist: 200 }
+    ewd: [H1]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 62/2", says: "H1 Dual tone horn; J4 Dual tone horn relay" }, { ref: ru-manual, locator: "shar_el_body_rus.pdf p. 2" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 42, h: 30, axis: x, pos: [630, -575, 405], mat: steel-black }
+        - { gen: cyl, r: 36, h: 30, axis: x, pos: [600, -575, 412], mat: steel-black }
+  - id: alarm-horn
+    kind: part
+    name: Alarm horn (anti-theft alarm)
+    aliases: [siren, H12]
+    fitment: Anti-theft alarm system
+    location: { zone: plenum, text: "In the plenum chamber, centre" }
+    explode: { dir: [0, 0, 1], dist: 180 }
+    ewd: [H12]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/10", says: "H12 Alarm horn, in plenum chamber, centre" }] }
+    geometry: { gen: cyl, r: 30, h: 50, axis: x, pos: [-30, 30, 1035], mat: plastic-black }
+  - id: bonnet-contact-switch
+    kind: part
+    name: Bonnet switch (engine compartment lighting switch)
+    aliases: [F214, bonnet alarm switch]
+    summary: At the bonnet lock; the alarm uses it to watch the bonnet (the diagram legend calls it the engine compartment lighting switch).
+    fitment: Anti-theft alarm system
+    explode: { dir: [0, 0, 1], dist: 160 }
+    contacts: [lock-carrier, bonnet]
+    ewd: [F214]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/3", says: "F214 Engine compartment lighting switch" }] }
+    geometry: { gen: box, size: [30, 30, 30], r: 4, pos: [665, 120, 830], mat: plastic-black }
+  - id: ambient-temperature-sensor
+    kind: part
+    name: Ambient temperature sensor (outside temperature display)
+    aliases: [outside air temperature sensor, G17]
+    summary: Behind the front bumper; feeds the outside temperature to the multi-function display and the instrument cluster.
+    explode: { dir: [1, 0, -0.3], dist: 140 }
+    ewd: [G17]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 3/4", says: "G17 Ambient temperature sensor" }] }
+    geometry: { gen: cyl, r: 10, h: 30, axis: z, pos: [790, 450, 380], mat: plastic-black }
+
+  # ---------------------------------------------------------------- doors (children of the door assemblies)
+  - id: front-door-lock
+    parent: front-door
+    kind: part
+    name: Front door lock with central locking actuator
+    aliases: [door latch, lock actuator, F131, F133]
+    explode: { dir: [-1, 0, 0], dist: 140 }
+    ewd: [F131:l, F133:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/5–37/6", says: "F131 Central locking actuator, front left; F133 front right" }] }
+    geometry: { gen: box, size: [60, 40, 110], r: 6, pos: [-1460, 820, 760], mat: steel-zinc }
+  - id: front-door-lock-switch
+    parent: front-door
+    kind: part
+    name: Central locking switch in the front door lock
+    aliases: [F59, F114, lock cylinder switch]
+    summary: "Switch on the door lock that tells the multi-function unit the key has locked or unlocked the door (legend names: \"tailgate/boot lid central locking switch, driver's / front passenger's side\")."
+    explode: { dir: [-1, 0.3, 0.3], dist: 160 }
+    ewd: [F59:l, F114:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/4, No. 23/2–23/3" }] }
+    geometry: { gen: box, size: [30, 30, 40], r: 4, pos: [-1430, 835, 860], mat: plastic-black }
+  - id: front-window-motor
+    parent: front-door
+    kind: part
+    name: Front window lifter motor with control unit
+    aliases: [window motor, electric window motor, window regulator motor]
+    summary: From September 1997 each door has its own window lifter control unit built onto the motor; the doors talk to the multi-function unit.
+    access: { from: [exterior], removeFirst: [front-door-trim], sources: [{ ref: vw-fitting-locations-1997, locator: "000566860203-003, No. 3/3", says: "Electric window control unit (in doors)" }] }
+    explode: { dir: [-0.5, -1, 0], dist: 160 }
+    ewd: [V14:l, V15:r, J295:l, J296:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 23/2–23/6" }, { ref: vw-fitting-locations-1997, locator: "000566860203-003, No. 3/3" }] }
+    geometry: { gen: cyl, r: 45, h: 50, axis: y, pos: [-1000, 820, 600], mat: steel-black }
+  - id: front-door-switches
+    parent: front-door
+    kind: part
+    name: Front door switch pack
+    aliases: [window switches, mirror switch, E40, E81, E43, E48, E41]
+    summary: "In the door trim armrest. Driver's door: switches for both front windows and the mirror adjustment and change-over switch; passenger's door: its own window switch."
+    explode: { dir: [0, -1, 0.5], dist: 140 }
+    ewd: [E40:l, E81:l, E43:l, E48:l, L78:l, E41:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 23/2, 23/6, 22/2", says: "E40 Window lifter switch, front left (in driver's door); E81 front right (in driver's door); E41 front right; E43 Mirror adjustment switch; E48 change-over switch" }] }
+    geometry: { gen: box, size: [160, 40, 30], r: 6, pos: [-1000, 760, 780], mat: interior-dark }
+  - id: rear-door-lock
+    parent: rear-door
+    kind: part
+    name: Rear door lock with central locking actuator
+    aliases: [F132, F134]
+    explode: { dir: [-1, 0, 0], dist: 140 }
+    ewd: [F132:l, F134:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/7–37/8" }] }
+    geometry: { gen: box, size: [60, 40, 110], r: 6, pos: [-2480, 820, 810], mat: steel-zinc }
+  - id: rear-window-motor
+    parent: rear-door
+    kind: part
+    name: Rear window lifter motor with control unit
+    aliases: [V26, V27, J297, J298]
+    explode: { dir: [-0.5, -1, 0], dist: 160 }
+    ewd: [V26:l, V27:r, J297:l, J298:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 23/4, 23/7" }] }
+    geometry: { gen: cyl, r: 45, h: 50, axis: y, pos: [-2000, 820, 600], mat: steel-black }
+  - id: rear-door-window-switch
+    parent: rear-door
+    kind: part
+    name: Rear door window switch
+    aliases: [E52, E54]
+    explode: { dir: [0, -1, 0.5], dist: 140 }
+    ewd: [E52:l, E54:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 23/4, 23/7", says: "E52 Window lifter switch, rear left (in door); E54 rear right (in door)" }] }
+    geometry: { gen: box, size: [60, 40, 30], r: 6, pos: [-2000, 765, 780], mat: interior-dark }
+  - id: door-contact-switch-front
+    kind: part
+    sides: [left, right]
+    name: Front door contact switch
+    aliases: [door switch, courtesy light switch, F2, F3]
+    location: { zone: exterior-side, text: "In the B-pillar, at the front door's rear edge" }
+    explode: { dir: [0, 1, 0], dist: 120 }
+    contacts: [b-pillar]
+    ewd: [F2:l, F3:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 3/6, No. 5/6" }, { ref: ru-manual, locator: "shar_el_body_rus.pdf p. 12, section 29" }] }
+    geometry: { gen: cyl, r: 9, h: 30, axis: x, pos: [-1500, 775, 520], mat: rubber }
+  - id: door-contact-switch-rear
+    kind: part
+    sides: [left, right]
+    name: Rear door contact switch
+    aliases: [F10, F11]
+    location: { zone: exterior-side, text: "In the C-pillar, at the rear door's rear edge" }
+    explode: { dir: [0, 1, 0], dist: 120 }
+    ewd: [F10:l, F11:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 3/7, No. 5/6" }] }
+    geometry: { gen: cyl, r: 9, h: 30, axis: x, pos: [-2545, 780, 520], mat: rubber }
+  - id: door-warning-led
+    kind: part
+    name: Immobilizer and central locking warning LED (SAFE)
+    aliases: [K117, K133, SAFE lamp]
+    summary: In the top edge of the driver's door trim; shows the immobilizer and the central locking SAFE state.
+    location: { zone: cabin-front, text: "Top edge of the driver's door trim" }
+    handed: true
+    explode: { dir: [0, -1, 0.5], dist: 140 }
+    contacts: [front-door-trim-l]
+    ewd: [K117, K133]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/5, No. 63/3", says: "K117 Immobilizer warning lamp, in top edge of driver's door trim; K133 Central locking warning lamp -SAFE-" }] }
+    geometry: { gen: cyl, r: 6, h: 12, axis: z, pos: [-900, 775, 1000], mat: lens-red }
+  - id: mirror-adjustment-motor
+    parent: door-mirror
+    kind: part
+    name: Mirror adjustment motor
+    aliases: [V17, V25]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    ewd: [V17:l, V25:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 22/2–22/3" }] }
+    geometry: { gen: box, size: [40, 60, 50], r: 8, pos: [-30, 140, 0], mat: plastic-black }
+  - id: mirror-glass-heater
+    parent: door-mirror
+    kind: part
+    name: Heated mirror glass element
+    aliases: [Z4, Z5]
+    explode: { dir: [-1, 0.5, 0], dist: 120 }
+    ewd: [Z4:l, Z5:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 22/2", says: "Z4 Heated exterior mirror, driver's side; Z5 front passenger's side" }] }
+    geometry: { gen: box, size: [4, 170, 100], r: 2, pos: [-50, 150, 0], mat: steel-zinc }
+
+  # ---------------------------------------------------------------- tailgate, rear and roof
+  - id: tailgate-lock
+    parent: tailgate
+    kind: part
+    name: Tailgate lock with motor, central locking switch and contact switch
+    aliases: [V120, F218, F160, tailgate latch, boot lock]
+    summary: The tailgate lock motor releases the tailgate from the release switch; the lock's central locking switch and contact switch report its state (legend name of F160 "rear left door contact switch (rear)").
+    explode: { dir: [-1, 0, -0.4], dist: 160 }
+    contacts: [rear-cross-panel]
+    ewd: [V120, F218, F160]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/4, No. 3/7", says: "V120 Tailgate/bootlid lock motor; F218 Tailgate/boot lid central locking switch" }] }
+    geometry: { gen: box, size: [60, 140, 60], r: 8, pos: [-3700, 0, 600], mat: steel-zinc }
+  - id: tailgate-release-switch
+    parent: tailgate
+    kind: part
+    name: Tailgate release switch
+    aliases: [E165, tailgate button]
+    explode: { dir: [-1, 0, 0], dist: 140 }
+    ewd: [E165]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/4" }] }
+    geometry: { gen: box, size: [24, 60, 24], r: 6, pos: [-3712, 0, 800], mat: interior-dark }
+  - id: fuel-flap-actuator
+    kind: part
+    name: Fuel filler flap central locking actuator
+    aliases: [F219, filler flap lock]
+    location: { zone: exterior-side, text: "Behind the fuel filler flap, right rear" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    ewd: [F219]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/8" }] }
+    geometry: { gen: box, size: [50, 40, 40], r: 6, pos: [-3340, -770, 880], mat: plastic-black }
+  - id: rear-vent-wing-motor
+    kind: part
+    sides: [left, right]
+    name: Rear vent wing window motor
+    aliases: [V83, V84, rear quarter window motor]
+    summary: Opens the rear side window (third row) outwards a little; switched from the dash and the rear vent wing window relay.
+    fitment: Electrically opening rear vent wing windows
+    location: { zone: cabin-rear, text: "At the rear edge of the third-row side window" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    contacts: [d-pillar-inner]
+    ewd: [V83:l, V84:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 21/2–21/3", says: "V83 Vent wing motor, left; V84 right; J385 Rear vent wing window relay" }] }
+    geometry: { gen: box, size: [70, 40, 90], r: 8, pos: [-3420, 735, 1170], mat: plastic-black }
+  - id: ultrasonic-sensor
+    kind: part
+    sides: [left, right]
+    name: Anti-theft alarm ultrasonic sensor
+    aliases: [G170, G171, interior protection sensor]
+    fitment: Anti-theft alarm system
+    location: { zone: cabin-front, text: "In the lower B-pillar trim" }
+    explode: { dir: [0, -1, 0], dist: 120 }
+    ewd: [G170:l, G171:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 37/9", says: "G170 Left ultra-sonic sensor for anti-theft alarm system, in lower left B pillar trim" }] }
+    geometry: { gen: box, size: [40, 20, 40], r: 6, pos: [-1530, 715, 700], mat: interior-dark }
+  - id: sunroof-motor
+    kind: part
+    name: Sliding sunroof motor with control unit
+    aliases: [V1, J245, sunroof motor]
+    fitment: Sliding/tilting sunroof
+    location: { zone: roof, text: "In the roof above the windscreen, behind the front interior light" }
+    explode: { dir: [0, 0, 1], dist: 160 }
+    ewd: [V1, J245]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 39/2" }, { ref: vw-fitting-locations-1997, locator: "000566860203-003, No. 3/3", says: "Sunroof control unit behind front interior light" }] }
+    geometry: { gen: box, size: [80, 120, 40], r: 8, pos: [-985, 0, 1555], mat: steel-black }
+  - id: trailer-socket
+    kind: part
+    name: Trailer socket with rear fog light cut-out
+    aliases: [U10, F216, tow bar socket]
+    fitment: Towing bracket
+    location: { zone: exterior-rear, text: "Under the rear bumper, on the towing bracket" }
+    explode: { dir: [-1, 0, -0.3], dist: 160 }
+    contacts: [rear-bumper]
+    ewd: [U10, F216]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 47/3", says: "U10 Trailer socket; F216 Rear fog light cut-out, contact switch, in trailer socket" }] }
+    geometry: { gen: cyl, r: 30, h: 50, axis: x, pos: [-3690, -420, 330], mat: plastic-black }
+  - id: trailer-wiring-connector
+    kind: part
+    name: Trailer wiring connector (TV15)
+    aliases: [TV15]
+    fitment: Towing bracket
+    location: { zone: luggage, text: "Behind the lower left D-pillar trim" }
+    explode: { dir: [0, -1, 0], dist: 120 }
+    ewd: [TV15]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 4/9", says: "TV15 Wiring connector, behind lower left D pillar trim" }] }
+    geometry: { gen: box, size: [40, 30, 50], r: 4, pos: [-3600, 620, 560], mat: connector-black }
+
+  # ---------------------------------------------------------------- harness runs into the doors, tailgate and roof (routes estimated)
+  - id: front-door-harness
+    parent: front-door
+    kind: harness
+    material: harness-black
+    name: Front door harness
+    summary: From the A-pillar through the hinge-side grommet into the door (window motor and control unit, lock, switches, mirror); the 29-pin connector is in the A-pillar.
+    harness: { connects: [front-window-motor, front-door-lock] }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    verification: { sources: [{ ref: vw-fitting-locations-1997, locator: "000566860202-004, No. 2/4", says: "29-pin connector on left/right A-pillar" }] }
+    geometry: { gen: tube, r: 7, points: [[-520, 730, 640], [-560, 815, 700], [-1000, 822, 640], [-1450, 822, 740]] }
+  - id: rear-door-harness
+    parent: rear-door
+    kind: harness
+    material: harness-black
+    name: Rear door harness
+    summary: From the B-pillar (21-pin connector) into the rear door.
+    harness: { connects: [rear-window-motor, rear-door-lock] }
+    explode: { dir: [0, 1, 0], dist: 160 }
+    verification: { sources: [{ ref: vw-fitting-locations-1997, locator: "000566860202-004, No. 2/4", says: "21-pin connector on left/right B-pillar" }] }
+    geometry: { gen: tube, r: 6, points: [[-1560, 740, 640], [-1600, 815, 700], [-2000, 822, 640], [-2470, 822, 740]] }
+  - id: tailgate-harness
+    parent: tailgate
+    kind: harness
+    material: harness-black
+    name: Tailgate harness
+    summary: From the roof frame through the hinge-side grommet down the tailgate to the wiper motor, lock, lamps and heated rear window.
+    harness: { connects: [rear-wiper-motor, tailgate-lock] }
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    geometry: { gen: tube, r: 7, points: [[-3300, 0, 1590], [-3390, 100, 1560], [-3560, 120, 1200], [-3610, 60, 1050], [-3680, 30, 700]] }
+  - id: front-end-harness
+    kind: harness
+    material: harness-black
+    name: Front end harness (lamps, horns, fog lamps)
+    harness: { connects: [engine-bay-harness] }
+    explode: { dir: [1, 0, 0], dist: 200 }
+    geometry: { gen: tube, r: 7, points: [[640, 560, 760], [740, 560, 640], [760, 500, 520], [740, 0, 290], [760, -500, 520], [740, -560, 640], [640, -560, 760]] }

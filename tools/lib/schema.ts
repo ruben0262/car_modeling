@@ -71,8 +71,8 @@ const Fault = z.object({ symptom: z.string(), cause: z.string().optional(), sour
 
 const Connector = z
   .object({
-    /** Connector id in the wiring diagrams (e.g. C1E109A); the viewer shows its pin-out. */
-    ewd: z.string().regex(/^C\d[A-Z0-9]{1,8}$/).optional(),
+    /** Connector id in the wiring diagrams (Land Rover C1E109A; VW T68, the in-line half T24', relay-plate P7); the viewer shows its pin-out. */
+    ewd: z.string().regex(/^(?:C\d[A-Z0-9]{1,8}|T\d{1,3}[a-z]{0,2}(?:\.\d{1,3})?'?|P\d{1,2}|[A-Z]{1,3}\d{0,4})$/).optional(),
     pins: z.number().int().positive().optional(),
     mates: Id.optional(),
     housing: z.string().optional(),
@@ -97,7 +97,8 @@ const Link = z
   })
   .strict();
 
-const EwdCode = z.string().regex(/^[A-Z]\d{3}$/, 'EWD codes look like D131');
+/** Wiring-diagram component codes: Land Rover D131; VW J248, A (battery), TV23, MFU (the unnamed multi-function unit). */
+const EwdCode = z.string().regex(/^(?:[A-Z]\d{3}|[A-Z]{1,3}\d{0,4})$/, 'EWD codes look like D131 (Land Rover) or J248 (VW)');
 
 /** Geometry generator call: `gen` picks the generator, remaining keys are its parameters. */
 export const GeometryCall = z.looseObject({ gen: z.string().min(1) });
@@ -126,7 +127,7 @@ export const NodeInput = z
      * Electrical Wiring Diagram component codes represented by this node, e.g. [D131].
      * On a mirrored node, suffix ":l" / ":r" to bind a code to one side (T150:l, T149:r).
      */
-    ewd: z.array(z.string().regex(/^[A-Z]\d{3}(:[lr])?$/, 'EWD codes look like D131 or T150:l')).default([]),
+    ewd: z.array(z.string().regex(/^(?:[A-Z]\d{3}|[A-Z]{1,3}\d{0,4})(:[lr])?$/, 'EWD codes look like D131, J248 or T150:l')).default([]),
     faults: z.array(Fault).default([]),
     placement: Placement.optional(),
     geometry: GeometryCall.optional(),

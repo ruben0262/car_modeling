@@ -107,6 +107,8 @@ A vehicle can carry several issues of its diagrams (`wiring.publications`, each 
 
 The importer reads both formats JLR used: service issues (sheet headers like `303-14 Petrol 01/05`) and engineering issues (`ENGINE MANAGEMENT DIESEL CIRCUIT 9G92-…`, footer `System Page 01 of 05`). Wires printed without an id (`RD,25.0`) are named from their two ends (`W:C1R213-1~C21D-8`) and merged with the labelled wire that has the same ends.
 
+`tools/ewd/import-vw.ts` reads Volkswagen-group current flow diagrams, which have no wire ids: it traces the vector drawing (`pdftocairo -svg`) — thick lines are wires, ringed codes are connections (`B163`) and earth points (`29`), the relay plate band gives the multi-function unit's pins (`P7/22`, connector `MFU`), and page-edge letters and boxed track numbers continue a wire on another sheet. Wires are named from their ends (`W:G45-1~T2.20'-1`). VW dates each diagram, so a publication is a list of diagram numbers for one build date. Its T-connector codes are per diagram: a code that two diagrams use for different connectors carries the diagram number (`T2.20`); the two halves of an in-line connector are `T2.20` and `T2.20'`. Because VW splice and earth codes look like pin codes, end types are looked up in the netlist (`endKind(end, data)`).
+
 A publication covers several variants. Components this car cannot have (the other engine, the other gearbox, other markets) are listed under `wiring.notApplicable` with a reason and a citation; they leave the coverage count, and the build fails if one of them is mapped to a part.
 
 ### Harness network (generated)

@@ -1,0 +1,327 @@
+# Exterior body: panels are cut from the parametric body surface
+# (vehicle.yaml shapes.body). t: 0 sill · 1 beltline · 2 roof edge · 3 centre
+# (mirrored 3…6 on the right). "z:600" = where the side reaches 600 mm.
+#
+# Shared with the VW Sharan: doors, roof, glass, side panels and the structure behind them. Styled by
+# Ford for the Galaxy: bumpers, grille, bonnet, front wings, headlamps and rear lamps. The VW documents
+# give the openings (vw-body body dimensions) but not Ford's styling, so those parts are estimated.
+system: body
+defaults:
+  material: paint
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: unsourced
+    notes: The body surface is traced from the VW Sharan dimension drawing (ssp-169 p. 8) and fitted to the published length, width, height and wheelbase; panel split lines follow the same drawing.
+
+nodes:
+  # ---------------------------------------------------------------- front end (Ford styling)
+  - id: front-bumper
+    kind: part
+    name: Front bumper cover
+    aliases: [front bumper, bumper cover]
+    summary: Plastic bumper cover over the bumper bracket ends; Ford-styled for the Galaxy, with the lower air intake.
+    location: { zone: exterior-front, text: "Front of vehicle, below the headlamps" }
+    access: { from: [front-end, underside] }
+    explode: { dir: [1, 0, -0.1], dist: 480 }
+    specs: [{ label: Bumper brackets, value: "1598 ± 1 mm apart", source: { ref: vw-body, locator: p. 7 } }]
+    verification: { notes: "Galaxy-specific styling: the outline is estimated; the bracket spacing behind it is from the VW body dimensions." }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [455, 870], t: [0, 'z:665'] }
+        - { gen: body-panel, x: [455, 870], t: ['zr:665', 6] }
+        - { gen: body-cap, end: front, z: [490, 665] }
+        - { gen: box, size: [16, 700, 70], r: 10, pos: [858, 0, 560], mat: trim-black }
+
+  - id: grille
+    kind: part
+    name: Radiator grille (Ford)
+    location: { zone: exterior-front, text: "Centre of the front end, between the headlamps" }
+    explode: { dir: [1, 0, 0], dist: 620 }
+    placement: { pos: [840, 0, 718], rot: [0, -28, 0] }
+    verification: { notes: "Galaxy-specific styling; position estimated between the headlamps." }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [24, 560, 96], r: 10, mat: trim-satin }
+        - { gen: box, size: [16, 520, 70], r: 6, pos: [6, 0, 0], mat: trim-black }
+
+  - id: headlamp
+    kind: part
+    sides: [left, right]
+    name: Headlamp unit
+    aliases: [headlight, front lamp]
+    location: { zone: exterior-front, text: "Front corners, below the bonnet leading edge" }
+    access: { from: [front-end, bonnet] }
+    explode: { dir: [1, 0.5, 0.1], dist: 420 }
+    placement: { pos: [745, 600, 790], rot: [0, -24, 10] }
+    verification: { notes: "Galaxy-specific unit; position from the Sharan drawing's headlamp outline (ssp-169 p. 8)." }
+    geometry: { gen: lamp, size: [92, 300, 116], lens: lens-clear, reflectors: 2 }
+
+  - id: bonnet
+    kind: part
+    name: Bonnet
+    aliases: [hood, engine cover panel]
+    summary: Short, steeply sloping bonnet ahead of the windscreen; it opens forwards on two hinges at the plenum.
+    location: { zone: exterior-front, text: "Over the engine compartment" }
+    explode: { dir: [0.25, 0, 1], dist: 480 }
+    specs: [{ label: Hinge position, value: "Bonnet hinge mounting to wheel housing corner 559.2 mm; diagonal to the other side's corner 1450.2 mm", source: { ref: vw-body, locator: p. 8 } }]
+    geometry: { gen: body-panel, x: [-6, 830], t: [1, 5], gap: 4 }
+
+  - id: front-wing
+    kind: part
+    sides: [left, right]
+    name: Front wing
+    aliases: [front fender, wing]
+    location: { zone: exterior-side, text: "Around the front wheel arch, below the bonnet shut line" }
+    explode: { dir: [0.15, 1, 0], dist: 320 }
+    specs: [{ label: Wheel housing corners, value: "1338 ± 3 mm apart", source: { ref: vw-body, locator: p. 7 } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-470, 455], t: [0, 1] }
+        - { gen: body-panel, x: [455, 700], t: ['z:665', 1] }
+
+  # ---------------------------------------------------------------- sides (shared with the Sharan)
+  - id: a-pillar-quarter-glass
+    kind: part
+    sides: [left, right]
+    name: Front quarter window (fixed, A-pillar)
+    material: glass
+    location: { zone: exterior-side, text: "Small fixed triangular window between the A-pillar and the front door" }
+    explode: { dir: [0, 1, 0.2], dist: 300 }
+    geometry: { gen: body-panel, x: [-170, -465], t: [1.06, 1.85], inset: 5 }
+
+  - id: front-door
+    kind: assembly
+    sides: [left, right]
+    name: Front door
+    location: { zone: exterior-side, text: "Between the A- and B-pillars" }
+    explode: { dir: [0, 1, 0], dist: 620 }
+    specs: [{ label: Door aperture, value: "921.2 mm wide, 1159.2 mm high", source: { ref: vw-body, locator: p. 10 } }]
+    verification: { placement: referenced, sources: [{ ref: vw-body, locator: p. 10 }] }
+  - id: front-door-skin
+    parent: front-door
+    kind: part
+    name: Front door outer skin
+    geometry: { gen: body-panel, x: [-475, -1500], t: ['z:332', 1], gap: 4 }
+  - id: front-door-glass
+    parent: front-door
+    kind: part
+    name: Front door window
+    material: glass
+    geometry: { gen: body-panel, x: [-505, -1460], t: [1.07, 1.86], inset: 5 }
+  - id: front-door-belt-moulding
+    parent: front-door
+    kind: part
+    name: Front door window shaft strip
+    material: trim-black
+    geometry: { gen: body-panel, x: [-475, -1500], t: [1.0, 1.06], inset: -1 }
+  - id: door-mirror
+    parent: front-door
+    kind: part
+    name: Exterior mirror
+    aliases: [wing mirror, side mirror, door mirror]
+    placement: { pos: [-500, 846, 1110], rot: [0, 0, 6] }
+    geometry: { gen: mirror }
+
+  - id: rear-door
+    kind: assembly
+    sides: [left, right]
+    name: Rear door
+    summary: Conventional hinged rear door (the first-generation Galaxy and Sharan have no sliding doors); the lower rear corner is cut around the rear wheel arch.
+    location: { zone: exterior-side, text: "Between the B- and C-pillars" }
+    explode: { dir: [0, 1, 0], dist: 620 }
+    specs: [{ label: Door aperture, value: "969.2 mm wide, 1151.2 mm high", source: { ref: vw-body, locator: p. 12 } }]
+    verification: { placement: referenced, sources: [{ ref: vw-body, locator: p. 12 }, { ref: ssp-169, locator: p. 8 }] }
+  - id: rear-door-skin
+    parent: rear-door
+    kind: part
+    name: Rear door outer skin
+    geometry: { gen: body-panel, x: [-1560, -2525], t: ['z:332', 1], gap: 4 }
+  - id: rear-door-glass
+    parent: rear-door
+    kind: part
+    name: Rear door window
+    material: glass
+    geometry: { gen: body-panel, x: [-1595, -2490], t: [1.07, 1.86], inset: 5 }
+  - id: rear-door-belt-moulding
+    parent: rear-door
+    kind: part
+    name: Rear door window shaft strip
+    material: trim-black
+    geometry: { gen: body-panel, x: [-1560, -2525], t: [1.0, 1.06], inset: -1 }
+
+  - id: b-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: B-pillar outer trim
+    material: trim-black
+    explode: { dir: [0, 1, 0], dist: 240 }
+    specs: [{ label: B-pillars, value: "1517.2 mm apart (inside)", source: { ref: vw-body, locator: p. 11 } }]
+    geometry: { gen: body-panel, x: [-1500, -1560], t: [1.0, 1.86], inset: -2, gap: 0 }
+
+  - id: c-pillar-trim
+    kind: part
+    sides: [left, right]
+    name: C-pillar outer trim
+    material: trim-black
+    explode: { dir: [0, 1, 0], dist: 240 }
+    specs: [{ label: C-pillars, value: "1530.1 mm apart (inside)", source: { ref: vw-body, locator: p. 14 } }]
+    geometry: { gen: body-panel, x: [-2525, -2645], t: [1.0, 1.86], inset: -2, gap: 0 }
+
+  - id: sill-cover
+    kind: part
+    sides: [left, right]
+    name: Sill panel trim
+    aliases: [side skirt, rocker cover]
+    material: trim-black
+    location: { zone: exterior-side, text: "Below the doors, between the wheel arches" }
+    explode: { dir: [0, 1, -0.25], dist: 300 }
+    geometry: { gen: body-panel, x: [-410, -2475], t: [0, 'z:332'] }
+
+  - id: rear-quarter
+    kind: part
+    sides: [left, right]
+    name: Side panel, rear (quarter panel)
+    aliases: [rear wing, quarter panel]
+    location: { zone: exterior-side, text: "Around the rear wheel arch, behind the rear door" }
+    explode: { dir: [-0.1, 1, 0], dist: 300 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-2525, -3380], t: [0, 1] }
+        - { gen: body-panel, x: [-3380, -3625], t: ['z:663', 1] }
+
+  - id: rear-quarter-glass
+    kind: part
+    sides: [left, right]
+    name: Rear side window (third-row window)
+    aliases: [rear quarter glass, vent wing window]
+    summary: Fixed, or hinged at its front edge and opened electrically on cars with the rear vent wing window option.
+    material: glass
+    explode: { dir: [0, 1, 0.2], dist: 360 }
+    geometry: { gen: body-panel, x: [-2645, -3480], t: [1.07, 1.86], inset: 5 }
+
+  - id: d-pillar
+    kind: part
+    sides: [left, right]
+    name: D-pillar outer panel
+    explode: { dir: [-0.2, 1, 0.1], dist: 260 }
+    geometry: { gen: body-panel, x: [-3480, -3640], t: [1.0, 1.86] }
+
+  - id: tail-lamp
+    kind: part
+    sides: [left, right]
+    name: Rear lamp cluster
+    aliases: [tail light, rear light]
+    location: { zone: exterior-rear, text: "Rear corners, beside the tailgate, below the rear window line" }
+    access: { from: [luggage] }
+    explode: { dir: [-1, 0.5, 0], dist: 420 }
+    placement: { pos: [-3672, 735, 900], rot: [0, 0, 160] }
+    specs: [{ label: Tailgate aperture inserts, value: "1285.1 mm apart (across the aperture at lamp height)", source: { ref: vw-body, locator: p. 14 } }]
+    verification: { notes: "Galaxy-specific lamp; the height is the lamp band of the Sharan drawing (ssp-169 p. 8)." }
+    geometry: { gen: lamp, size: [80, 230, 200], lens: lens-red, reflectors: 3 }
+
+  # ---------------------------------------------------------------- top
+  - id: roof-side-rail
+    kind: part
+    sides: [left, right]
+    name: A-pillar and roof frame (outer)
+    explode: { dir: [0, 1, 0.6], dist: 260 }
+    specs: [{ label: A-pillars, value: "1508.3 mm apart (inside, lower)", source: { ref: vw-body, locator: p. 11 } }]
+    geometry: { gen: body-panel, x: [-6, -3640], t: [1.86, 2.0], gap: 0 }
+
+  - id: windscreen
+    kind: part
+    name: Windscreen (heated option)
+    aliases: [windshield, front screen]
+    summary: Strongly raked bonded windscreen running from the plenum, directly above the front axle, to the roof; a heated windscreen was an option.
+    material: glass
+    location: { zone: exterior-front, text: "Between the A-pillars" }
+    explode: { dir: [0.6, 0, 1], dist: 320 }
+    fitment: Heating wires only with the heated-windscreen option (its own relay and switch-off after 4 minutes)
+    ewd: [Z2]
+    specs:
+      - { label: Aperture, value: "Plenum chamber flange to roof flange 960.1 mm; diagonal across the aperture 1588.1 mm", source: { ref: vw-body, locator: pp. 9–10 } }
+    verification: { placement: referenced, sources: [{ ref: vw-body, locator: pp. 9–10 }, { ref: vw-wd-1997, locator: "No. 7/4", says: "Z2 heated windscreen; J410 heated windscreen relay" }, { ref: ssp-169, locator: p. 60 }] }
+    geometry: { gen: body-panel, x: [-6, -880], t: [2, 4], inset: 4 }
+
+  - id: roof
+    kind: part
+    name: Roof panel
+    location: { zone: roof, text: "Roof" }
+    explode: { dir: [0, 0, 1], dist: 420 }
+    geometry: { gen: body-panel, x: [-880, -3202], t: [2, 4] }
+
+  - id: roof-rail
+    kind: part
+    sides: [left, right]
+    name: Roof rail
+    material: trim-satin
+    explode: { dir: [0, 0.3, 1], dist: 520 }
+    verification: { notes: "The overall height of 1730 mm is to the top of the roof rails (the VW drawing shows them dashed, as equipment)." }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 14, points: [[-1000, 560, 1662], [-1080, 560, 1702], [-2100, 560, 1716], [-3020, 560, 1704], [-3110, 560, 1648]] }
+
+  - id: tailgate
+    kind: assembly
+    name: Tailgate
+    aliases: [boot lid, liftgate, trunk lid]
+    location: { zone: exterior-rear, text: "Rear of the vehicle, top-hinged" }
+    explode: { dir: [-1, 0, 0.25], dist: 520 }
+    specs:
+      - { label: Aperture, value: "Cross-panel flange to roof flange 1121.2 mm (centre); 1285.1 mm between the lower inserts", source: { ref: vw-body, locator: p. 14 } }
+      - { label: Gas struts, value: "Body securing points 1400.1 mm apart", source: { ref: vw-body, locator: p. 15 } }
+    verification: { placement: referenced, sources: [{ ref: vw-body, locator: pp. 14–15 }] }
+  - id: tailgate-skin
+    parent: tailgate
+    kind: part
+    name: Tailgate outer panel
+    geometry: { gen: body-panel, x: [-3202, -3725], t: [1.62, 4.38], gap: 5 }
+  - id: rear-screen
+    parent: tailgate
+    kind: part
+    name: Tailgate window (heated)
+    aliases: [rear window, back glass, heated rear window]
+    summary: The heating element is printed on the glass and fed through the tailgate harness.
+    material: glass
+    ewd: [Z1]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 7/2", says: "Z1 Heated rear window" }] }
+    geometry: { gen: body-panel, x: [-3232, -3640], t: [2.14, 3.86], inset: -3, gap: 0 }
+
+  - id: rear-bumper
+    kind: part
+    name: Rear bumper cover
+    location: { zone: exterior-rear, text: "Rear of vehicle, below the tailgate" }
+    explode: { dir: [-1, 0, -0.1], dist: 480 }
+    verification: { notes: "Galaxy-specific styling; outline estimated." }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: body-panel, x: [-3380, -3747], t: [0, 'z:663'] }
+        - { gen: body-panel, x: [-3380, -3747], t: ['zr:663', 6] }
+        - { gen: body-cap, end: rear, z: [411, 663] }
+
+  # ---------------------------------------------------------------- arches
+  - id: arch-liner-front
+    kind: part
+    sides: [left, right]
+    name: Front wheel housing liner
+    aliases: [splash shield, inner wing liner]
+    material: trim-black
+    location: { zone: wheel-arch-front-left, text: "Inside the front wheel arch" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    geometry: { gen: arch-liner, arch: 0, y: [668, 900] }
+
+  - id: arch-liner-rear
+    kind: part
+    sides: [left, right]
+    name: Rear wheel housing liner
+    material: trim-black
+    location: { zone: wheel-arch-rear-left, text: "Inside the rear wheel arch" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    geometry: { gen: arch-liner, arch: 1, y: [668, 900] }

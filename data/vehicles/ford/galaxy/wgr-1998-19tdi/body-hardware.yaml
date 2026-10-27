@@ -1,0 +1,158 @@
+# Body hardware: hinges, locks, strikers, gas struts, wiper linkage and arms, fuel filler flap. Positions are
+# estimated around the body; the documents in hand give the tailgate gas strut points (vw-body p. 15) and the
+# door apertures, not the hinge positions.
+system: body
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-body, locator: "pp. 10–15" }]
+
+nodes:
+  # ---------------------------------------------------------------- bonnet
+  - id: bonnet-hinge
+    kind: part
+    sides: [left, right]
+    name: Bonnet hinge
+    aliases: [hood hinge]
+    explode: { dir: [0, 0.5, 1], dist: 200 }
+    material: steel-black
+    specs: [{ label: Hinge spacing, value: "Bonnet hinge mounting points 559.2 mm apart fore-aft; 1450.2 mm across", source: { ref: vw-body, locator: p. 7 } }]
+    verification: { sources: [{ ref: vw-body, locator: p. 7 }] }
+    geometry: { gen: box, size: [110, 16, 60], r: 4, pos: [-60, 725, 1040] }
+  - id: bonnet-lock
+    kind: part
+    name: Bonnet lock with safety catch
+    aliases: [hood latch, bonnet catch]
+    location: { zone: front-end, text: "Centre of the lock carrier top" }
+    explode: { dir: [1, 0, 1], dist: 200 }
+    material: steel-zinc
+    contacts: [lock-carrier]
+    geometry: { gen: box, size: [50, 90, 70], r: 6, pos: [700, 0, 915] }
+  - id: bonnet-release-cable
+    kind: harness
+    name: Bonnet release cable
+    summary: From the release lever in the driver's footwell along the left of the engine compartment to the bonnet lock.
+    material: harness-black
+    explode: { dir: [0, 0, 1], dist: 160 }
+    geometry: { gen: tube, r: 3, points: [[-700, 700, 640], [-480, 690, 760], [-200, 690, 820], [300, 680, 800], [650, 400, 880], [690, 60, 900]] }
+
+  # ---------------------------------------------------------------- doors (children of the door assemblies)
+  - id: front-door-hinges
+    parent: front-door
+    kind: part
+    name: Front door hinges and check strap
+    material: steel-black
+    explode: { dir: [1, 0.5, 0], dist: 140 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [60, 50, 70], r: 6, pos: [-470, 830, 560] }
+        - { gen: box, size: [60, 50, 70], r: 6, pos: [-500, 830, 920] }
+        - { gen: box, size: [150, 20, 24], r: 4, pos: [-560, 800, 740] }
+  - id: front-door-striker
+    kind: part
+    sides: [left, right]
+    name: Front door lock striker
+    material: steel-zinc
+    explode: { dir: [0, 1, 0], dist: 100 }
+    contacts: [b-pillar, front-door-lock]
+    geometry: { gen: box, size: [30, 30, 50], r: 4, pos: [-1490, 790, 760] }
+  - id: rear-door-hinges
+    parent: rear-door
+    kind: part
+    name: Rear door hinges and check strap
+    material: steel-black
+    explode: { dir: [1, 0.5, 0], dist: 140 }
+    contacts: [b-pillar]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [60, 50, 70], r: 6, pos: [-1560, 830, 560] }
+        - { gen: box, size: [60, 50, 70], r: 6, pos: [-1580, 830, 920] }
+  - id: rear-door-striker
+    kind: part
+    sides: [left, right]
+    name: Rear door lock striker
+    material: steel-zinc
+    explode: { dir: [0, 1, 0], dist: 100 }
+    contacts: [c-pillar, rear-door-lock]
+    geometry: { gen: box, size: [30, 30, 50], r: 4, pos: [-2545, 805, 810] }
+
+  # ---------------------------------------------------------------- tailgate
+  - id: tailgate-hinges
+    kind: part
+    sides: [left, right]
+    name: Tailgate hinge
+    material: steel-black
+    explode: { dir: [-1, 0, 1], dist: 160 }
+    contacts: [roof-bows, tailgate]
+    geometry: { gen: box, size: [80, 60, 40], r: 6, pos: [-3250, 450, 1620] }
+  - id: tailgate-gas-strut
+    kind: part
+    sides: [left, right]
+    name: Tailgate gas strut
+    aliases: [tailgate damper, gas spring, boot strut]
+    summary: One strut each side between the D-pillar and the tailgate; the body securing points are 1400.1 mm apart.
+    explode: { dir: [-0.5, 1, 0], dist: 140 }
+    contacts: [tailgate, d-pillar-inner]
+    specs: [{ label: Body securing points, value: "1400.1 mm apart", source: { ref: vw-body, locator: p. 15 } }]
+    verification: { placement: referenced, sources: [{ ref: vw-body, locator: p. 15, says: "Gas strut securing points" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 11, points: [[-3290, 700, 1560], [-3420, 700, 1360]], mat: steel-black }
+        - { gen: tube, r: 5, points: [[-3420, 700, 1360], [-3540, 700, 1170]], mat: chrome }
+  - id: tailgate-striker
+    kind: part
+    name: Tailgate lock striker
+    material: steel-zinc
+    explode: { dir: [-1, 0, 0], dist: 100 }
+    contacts: [rear-cross-panel, tailgate]
+    verification: { sources: [{ ref: vw-body, locator: p. 14 }] }
+    geometry: { gen: box, size: [30, 60, 30], r: 4, pos: [-3690, 0, 545] }
+
+  # ---------------------------------------------------------------- wipers and filler flap
+  - id: wiper-linkage
+    kind: part
+    name: Windscreen wiper linkage and spindles
+    aliases: [wiper frame, wiper linkage]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    material: steel-zinc
+    contacts: [windscreen-wiper-motor, plenum-panel, bulkhead, alarm-horn]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 8, points: [[-30, 180, 1060], [-45, 300, 1075], [-60, 380, 1100]] }
+        - { gen: tube, r: 8, points: [[-30, 180, 1060], [-45, -60, 1075], [-60, -180, 1100]] }
+        - { gen: cyl, r: 14, h: 60, axis: z, pos: [-60, 380, 1110] }
+        - { gen: cyl, r: 14, h: 60, axis: z, pos: [-60, -180, 1110] }
+  - id: wiper-arms
+    kind: part
+    name: Windscreen wiper arms and blades
+    aliases: [wipers, wiper blades]
+    explode: { dir: [0.3, 0, 1], dist: 240 }
+    material: steel-black
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 7, points: [[-60, 380, 1150], [-130, 120, 1188], [-190, -220, 1220]] }
+        - { gen: tube, r: 7, points: [[-60, -180, 1150], [-120, -450, 1184], [-160, -700, 1204]] }
+  - id: rear-wiper-arm
+    parent: tailgate
+    kind: part
+    name: Rear wiper arm and blade
+    material: steel-black
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    geometry: { gen: tube, r: 6, points: [[-3665, 0, 1070], [-3560, 220, 1260], [-3470, 420, 1420]] }
+  - id: fuel-filler-flap
+    kind: part
+    name: Fuel filler flap
+    aliases: [fuel door, petrol cap flap]
+    summary: On the right rear side panel; locked by the central locking actuator behind it.
+    location: { zone: exterior-side, text: "Right rear side panel, behind the rear door" }
+    explode: { dir: [0, -1, 0], dist: 160 }
+    material: paint
+    verification: { sources: [{ ref: ssp-169, locator: p. 41, says: "Tankeinfüllstutzen" }, { ref: vw-wd-1997, locator: "No. 37/8", says: "F219 Fuel tank filler flap central locking actuator" }] }
+    geometry: { gen: cyl, r: 80, h: 6, axis: y, pos: [-3360, -905, 860] }

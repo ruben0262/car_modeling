@@ -62,7 +62,7 @@ export function buildIndex(data: EwdData, manifest: Manifest): WiringIndex {
   const wiresByEnd = new Map<string, EwdWire[]>();
   for (const w of data.wires)
     for (const e of w.ends) {
-      const key = endKind(e) === 'ground' ? e.replace(/-\d+$/, '') : e;
+      const key = endKind(e, data) === 'ground' ? e.replace(/-\d+$/, '') : e;
       if (!wiresByEnd.has(key)) wiresByEnd.set(key, []);
       wiresByEnd.get(key)!.push(w);
     }
@@ -97,11 +97,15 @@ export interface EndInfo {
 }
 
 export function describeEnd(ix: WiringIndex, end: string): EndInfo {
-  const kind = endKind(end);
-  if (kind === 'splice') return { raw: end, kind, label: `Splice ${end}` };
+  const kind = endKind(end, ix.data);
+  if (kind === 'splice') {
+    const name = ix.data.splices[end]?.name;
+    return { raw: end, kind, label: name ? `Splice ${end} (${name})` : `Splice ${end}` };
+  }
   if (kind === 'ground') {
-    const g = end.replace(/-\d+$/, '');
-    return { raw: end, kind, label: `Ground ${g}`, node: ix.data.layout?.grounds[g]?.node };
+    const g = ix.data.grounds[end] ? end : end.replace(/-\d+$/, '');
+    const name = ix.data.grounds[g]?.name;
+    return { raw: end, kind, label: name ? `Ground ${g} (${name})` : `Ground ${g}`, node: ix.data.layout?.grounds[g]?.node };
   }
   const { connector, pin } = splitPin(end);
   const c = ix.data.connectors[connector];
@@ -263,9 +267,9 @@ export interface WireRoute {
 function endPoint(ix: WiringIndex, end: string): { v: number; p: [number, number, number] } | null {
   const L = ix.data.layout;
   if (!L) return null;
-  const kind = endKind(end);
+  const kind = endKind(end, ix.data);
   if (kind === 'splice') return L.splices[end] ?? null;
-  if (kind === 'ground') return L.grounds[end.replace(/-\d+$/, '')] ?? null;
+  if (kind === 'ground') return L.grounds[end] ?? L.grounds[end.replace(/-\d+$/, '')] ?? null;
   return L.connectors[splitPin(end).connector] ?? null;
 }
 
@@ -325,15 +329,15 @@ export function electricalNeighbours(ix: WiringIndex, n: RuntimeNode): Electrica
   };
   for (const w of wiresOfNode(ix, n))
     for (const end of w.ends) {
-      const kind = endKind(end);
+      const kind = endKind(end, ix.data);
       if (kind === 'pin' && own.has(splitPin(end).connector)) continue;
       if (kind === 'ground') {
-        add(ix.data.layout?.grounds[end.replace(/-\d+$/, '')]?.node, w.id, 'ground');
+        add((ix.data.layout?.grounds[end] ?? ix.data.layout?.grounds[end.replace(/-\d+$/, '')])?.node, w.id, 'ground');
         continue;
       }
       if (kind === 'splice') {
         for (const sw of ix.wiresByEnd.get(end) ?? [])
-          if (sw.id !== w.id) for (const e2 of sw.ends) if (e2 !== end && endKind(e2) === 'pin' && !own.has(splitPin(e2).connector)) add(nodeOfPin(e2), w.id, 'splice');
+          if (sw.id !== w.id) for (const e2 of sw.ends) if (e2 !== end && endKind(e2, ix.data) === 'pin' && !own.has(splitPin(e2).connector)) add(nodeOfPin(e2), w.id, 'splice');
         continue;
       }
       const { connector, pin } = splitPin(end);
@@ -342,7 +346,7 @@ export function electricalNeighbours(ix: WiringIndex, n: RuntimeNode): Electrica
         // in-line connector: continue on the same pin of the mating half
         const mateEnd = `${c.mates}-${pin}`;
         for (const mw of ix.wiresByEnd.get(mateEnd) ?? [])
-          for (const e2 of mw.ends) if (e2 !== mateEnd && endKind(e2) === 'pin' && !own.has(splitPin(e2).connector)) add(nodeOfPin(e2), w.id, 'in-line connector');
+          for (const e2 of mw.ends) if (e2 !== mateEnd && endKind(e2, ix.data) === 'pin' && !own.has(splitPin(e2).connector)) add(nodeOfPin(e2), w.id, 'in-line connector');
         continue;
       }
       add(nodeOfPin(end), w.id, 'direct');

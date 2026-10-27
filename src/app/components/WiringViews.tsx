@@ -1,7 +1,7 @@
 import { CircuitBoard, Eye, EyeOff, Plug } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import type { Manifest, PublicationChanges, RuntimeNode } from '../../shared/manifest';
-import { describeColour, WIRE_COLOURS, type EwdWire } from '../../shared/wiring';
+import { colourParts, describeColour, WIRE_COLOURS, type EwdWire } from '../../shared/wiring';
 import { useViewer } from '../store';
 import { circuitNodes, describeEnd, loadWiring, pinsOf, publicationOf, routeWires, wiresOfCircuit, wiresOfNode, type WiringIndex } from '../wiring';
 
@@ -23,7 +23,7 @@ function useWiring(manifest: Manifest): { ix: WiringIndex | null; error: string 
 }
 
 export function WireSwatch({ colour }: { colour: string }) {
-  const [main, tracer] = colour.split('-');
+  const [main, tracer] = colourParts(colour);
   const a = WIRE_COLOURS[main] ?? '#888';
   const b = tracer ? (WIRE_COLOURS[tracer] ?? '#888') : a;
   return (

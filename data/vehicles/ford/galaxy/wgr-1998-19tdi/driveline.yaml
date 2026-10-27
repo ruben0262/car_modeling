@@ -1,0 +1,254 @@
+# Clutch, 5-speed manual gearbox 006 and driveshafts. The 006 is a Ford gearbox adapted to the VW engines for
+# the Sharan/Galaxy joint project (ssp-170 p. 2); gear data from ssp-170, clutch hydraulics and driveshaft
+# torques from the workshop book (ru-manual, shar_clutch_cv_rus.pdf).
+#
+# Gearbox children use the engine-local frame (the gearbox shares the crank axis: +X towards the timing end,
+# +Y towards the radiator side, +Z up); everything else is in the vehicle frame. The differential sits behind
+# and below the input shaft; the left driveshaft plugs into the gearbox and the right one into an
+# intermediate shaft that runs to a bearing on the engine, so both driveshafts have the same length.
+system: driveline
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: ssp-170 }]
+
+nodes:
+  - id: gearbox
+    kind: assembly
+    name: Manual gearbox 006, 5-speed
+    aliases: [gearbox, transmission, manual gearbox, transaxle, "006", MTX-75]
+    summary: Two-piece aluminium case (clutch housing and gearbox housing) with an input shaft, one output shaft and the differential; all gears including reverse are synchronised, 1st to 3rd with double synchronisers. Gears are selected through two cables, and the clutch is released hydraulically.
+    location: { zone: engine-bay-left, text: "Left of the engine, under the battery console" }
+    placement: { pos: [160, 85, 520], rot: [0, 0, -90] }
+    explode: { dir: [0, 1, 0], dist: 260 }
+    specs:
+      - { label: Type, value: "006, code letters DBU, DBV or DBW; 5 forward gears + reverse, all synchronised", source: { ref: ssp-170, locator: p. 5 } }
+      - { label: Ratios (1.9 TDI), value: "1st 3.58, 2nd 2.05, 3rd 1.35, 4th 0.92, 5th 0.67, reverse 3.46 : 1", source: { ref: ssp-170, locator: "pp. 14–15" } }
+      - { label: Final drive (1.9 TDI), value: "4.24 : 1", source: { ref: ssp-170, locator: p. 13 } }
+      - { label: Oil, value: "VW ATF", source: { ref: ssp-170, locator: p. 5 } }
+      - { label: Dimensions, value: "Length 393 mm, 47 kg dry; maximum input torque 250 Nm", source: { ref: ssp-170, locator: p. 5 } }
+    manufacturing:
+      - { label: Origin, value: "A Ford gearbox adapted to the VW engines for the Sharan/Galaxy joint project", source: { ref: ssp-170, locator: p. 2 } }
+    verification:
+      sources: [{ ref: ssp-170, locator: "pp. 2–5", says: "Das Schaltgetriebe 006 ist ein Getriebe von der Firma Ford, das im Rahmen des Gemeinschaftsprojektes VW Sharan/Ford Galaxy für den VW Sharan an die VW-Motoren angepaßt wurde" }]
+  - id: gearbox-case
+    parent: gearbox
+    kind: part
+    name: Clutch housing and gearbox housing
+    summary: The oil filler screw is on the side of the gearbox housing, the drain screw low on the clutch housing below the differential; a magnetic disc in the case collects wear particles.
+    access: { from: [underside, bonnet] }
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    verification: { sources: [{ ref: ssp-170, locator: "pp. 5, 26–27", says: "Öleinfüllschraube, Ölablaßschraube, Magnetscheibe" }] }
+    geometry: { gen: transaxle, len: 393, bellR: 180, diff: { y: -110, z: -200, r: 95 }, caseY: [-130, 110], caseZ: [-40, 115] }
+  - id: gearbox-mount
+    parent: gearbox
+    kind: part
+    name: Gearbox mount (hydraulic) on the battery console
+    aliases: [gearbox mount, transmission mount, left engine mount]
+    explode: { dir: [0, 0, 1], dist: 200 }
+    placement: { pos: [-330, -10, 80] }
+    contacts: [battery-console]
+    verification: { sources: [{ ref: ssp-169, locator: p. 20, says: "... und einem Hydrolager an der Getriebeseite aufgenommen ... Das Getriebelager ist an der Batteriekonsole verschraubt" }] }
+    geometry: { gen: mount, size: [90, 100, 90] }
+  - id: shift-mechanism
+    parent: gearbox
+    kind: part
+    name: Flange housing with shift shaft, cable bracket and additional mass
+    aliases: [shift tower, selector mechanism, gearbox shift lever]
+    summary: The flange housing on the gearbox carries the shift shaft with the inner shift mechanism. Both cables are held in a bracket on the gearbox housing by abutment sleeves and joined to the shift shaft by end pieces with ball heads; an additional mass sits on the shift shaft (a damper weight is fitted only with the 2.0-litre engine).
+    explode: { dir: [0, 1, 1], dist: 200 }
+    verification: { sources: [{ ref: ssp-170, locator: p. 16, says: "Der äußere Schaltmechanismus besteht im wesentlichen aus dem Schalt-Wählhebelgehäuse mit Schalt-Wählhebel, dem Flanschgehäuse, das die Schaltwelle mit dem inneren Schaltmechanismus aufnimmt, und zwei Seilzügen" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [90, 80, 80], r: 10, pos: [-200, -20, 150], mat: aluminium-cast }
+        - { gen: box, size: [60, 50, 40], r: 8, pos: [-200, -20, 210], mat: steel-black }
+        - { gen: box, size: [16, 90, 70], r: 4, pos: [-150, 40, 140], mat: steel-zinc }
+  - id: speedometer-sender
+    parent: gearbox
+    kind: part
+    name: Speedometer sender (Hall sender on the gearbox)
+    aliases: [vehicle speed sensor, VSS, G22]
+    summary: Driven from the gear on the differential housing; its signal also goes to the engine control unit.
+    explode: { dir: [0, -1, 0.5], dist: 160 }
+    ewd: [G22]
+    verification: { sources: [{ ref: ssp-170, locator: p. 13, says: "Antriebsrad für Geschwindigkeitsmesser" }, { ref: vw-diesel, locator: "p. 47, item 14" }, { ref: vw-wd-1997, locator: "No. 3/2", says: "G22 Speedometer sender (Hall sender on gearbox)" }] }
+    geometry: { gen: cyl, r: 14, h: 50, axis: z, pos: [-120, -190, -80], mat: plastic-black }
+  - id: reversing-light-switch
+    parent: gearbox
+    kind: part
+    name: Reversing light switch
+    aliases: [reverse switch, F4]
+    explode: { dir: [0, 1, 0], dist: 160 }
+    ewd: [F4]
+    verification: { notes: "Position on the gearbox estimated.", sources: [{ ref: vw-wd-1997, locator: "No. 4/9", says: "F4 Reversing light switch" }] }
+    geometry: { gen: cyl, r: 11, h: 34, axis: y, pos: [-280, 125, 40], mat: plastic-black }
+
+  - id: clutch
+    parent: gearbox
+    kind: assembly
+    detail: true
+    name: Clutch and flywheel
+    aliases: [clutch kit, flywheel]
+    summary: Single dry plate clutch with a diaphragm-spring pressure plate, released hydraulically by a slave cylinder with an integral release bearing inside the clutch housing. Turbocharged cars have a modified clutch on a dual-mass flywheel.
+    access: { from: [underside], notes: "The gearbox must come off to reach the clutch. Pressure plate bolts: 12-point bolts 25 Nm, or hex-socket bolts 13 Nm on the dual-mass flywheel, undone and tightened crosswise in steps. Lateral run-out of the driven plate 0.8 mm maximum.", sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 1–3" }] }
+    explode: { dir: [1, 0, 0], dist: 0 }
+    contacts: [gearbox-case, engine-internals, cylinder-block]
+    verification:
+      facts: secondary
+      sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 1–2", says: "Models with a turbocharger, and with the 6-speed gearbox, have a clutch of modified design and a dual-mass flywheel" }]
+  - id: dual-mass-flywheel
+    parent: clutch
+    kind: part
+    name: Flywheel (dual-mass)
+    aliases: [DMF, flywheel]
+    summary: The TDC mark on the flywheel, seen in the clutch housing, aligns with a casting mark for timing work.
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    verification: { sources: [{ ref: vw-diesel, locator: p. 64, says: "The TDC marking on the flywheel and the casting on the clutch bell housing must align" }, { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 140, h: 22, axis: x, chamfer: 3, pos: [-14, 0, 0], mat: steel-black }
+        - { gen: cyl, r: 130, h: 16, axis: x, chamfer: 2, pos: [-34, 0, 0], mat: steel-zinc }
+  - id: clutch-cover-plate
+    parent: clutch
+    kind: part
+    name: Clutch pressure plate and driven plate
+    aliases: [pressure plate, clutch plate, friction disc]
+    summary: Fit the driven plate with its spring cage towards the pressure plate; clean the input-shaft splines and coat them thinly with MoS2 grease.
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    verification: { sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 1, fig. 1.1a" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 112, h: 9, axis: x, pos: [-48, 0, 0], mat: plastic-grey }
+        - { gen: lathe, axis: x, profile: [[40, -56], [118, -56], [120, -70], [92, -86], [40, -86]], mat: steel-zinc }
+  - id: clutch-slave-cylinder
+    parent: clutch
+    kind: part
+    name: Clutch slave cylinder with release bearing
+    aliases: [slave cylinder, release bearing, concentric slave cylinder, CSC]
+    summary: Sits on the input shaft inside the clutch housing; its bleed valve is reached from outside. Renew the O-ring; fit with VW sealant AMV 188 200 03. The gearbox must come off to change it.
+    explode: { dir: [-1, 0, 0], dist: 320 }
+    specs: [{ label: Bolts, value: "Collar bolts 10 Nm; pipe union nut 20 Nm", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b items 23–28" } }]
+    verification: { sources: [{ ref: ssp-170, locator: p. 4, says: "Nehmerzylinder mit Ausrücklager" }, { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b" }] }
+    geometry: { gen: lathe, axis: x, profile: [[24, -94], [58, -94], [58, -124], [40, -128], [24, -128]], mat: plastic-black }
+
+  # ---------------------------------------------------------------- shafts (vehicle frame)
+  - id: driveshaft-front-left
+    kind: part
+    name: Driveshaft, left
+    aliases: [half shaft, CV shaft, drive shaft]
+    summary: Constant-velocity ball joints at both ends with a vibration damper on the shaft; the inner joint's splines plug into the gearbox (gearbox oil runs out when it is pulled).
+    location: { zone: wheel-arch-front-left, text: "From the gearbox to the left front hub" }
+    access:
+      from: [wheel-arch-front-left, underside]
+      removeFirst: [wheel-front-l]
+      notes: "Loosen the hub bolt only with the car on its wheels, and never let the car stand on its wheels or roll with the bolt loose (bearing damage) — if needed fit the outer joint and tighten the bolt to 50 Nm. Undo the 2 ball-joint bolts (55 Nm on refitting), push the shaft out of the hub, catch the gearbox oil and pull the inner joint out of the gearbox. Hub bolt 150 Nm + 90° with the car on its wheels."
+      sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–5" }]
+    contacts: [gearbox, front-hub-l, front-knuckle-l]
+    explode: { dir: [0, 1, -0.3], dist: 260 }
+    specs:
+      - { label: Hub bolt, value: "150 Nm + 90° (renew)", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 6, fig. 5.0 item 5" } }
+      - { label: Joint grease (G 6.3), value: "Outer joint about 80 g (40 g into the shaft side); inner joint about 60 g", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 6" } }
+      - { label: Vibration damper, value: "7.6–9.6 mm from the edge of the outer boot", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 7, fig. 5.9" } }
+    verification:
+      facts: secondary
+      sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–7" }]
+    geometry: { gen: driveshaft, from: [50, 362, 320], to: [0, 722, 317.25] }
+
+  - id: driveshaft-intermediate
+    kind: part
+    name: Intermediate shaft with bearing on the engine
+    aliases: [jackshaft, intermediate driveshaft, Zwischenwelle]
+    summary: Driven by the differential, it runs under the rear of the engine to a bearing bolted to the crankcase; the right driveshaft plugs into its outer end.
+    location: { zone: underbody-front, text: "Behind the oil sump, from the gearbox to the right" }
+    access: { from: [underside] }
+    contacts: [gearbox, cylinder-block, oil-sump]
+    explode: { dir: [0, -1, -0.4], dist: 200 }
+    verification:
+      sources: [{ ref: ssp-170, locator: p. 13, says: "Über die Ausgleichkegelräder werden die Antriebswelle und die Zwischenwelle angetrieben" }, { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 4", says: "the right driveshaft is driven through an intermediate shaft running in a bearing fixed to the engine crankcase, so the left and right driveshafts have the same length" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 15, h: 470, axis: y, pos: [50, -115, 320], mat: steel-black }
+        - { gen: box, size: [60, 36, 120], r: 6, pos: [55, -320, 370], mat: aluminium-cast }
+        - { gen: cyl, r: 34, h: 30, axis: y, pos: [50, -330, 320], mat: steel-zinc }
+
+  - id: driveshaft-front-right
+    kind: part
+    name: Driveshaft, right
+    aliases: [half shaft, CV shaft, drive shaft]
+    summary: Same length as the left shaft; its inner joint plugs into the intermediate shaft.
+    location: { zone: wheel-arch-front-right, text: "From the intermediate shaft to the right front hub" }
+    access: { from: [wheel-arch-front-right, underside], removeFirst: [wheel-front-r], notes: "As the left shaft; the inner joint is levered off the intermediate shaft.", sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–5" }] }
+    contacts: [driveshaft-intermediate, front-hub-r, front-knuckle-r]
+    explode: { dir: [0, -1, -0.3], dist: 260 }
+    verification: { facts: secondary, sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 4–7" }] }
+    geometry: { gen: driveshaft, from: [50, -362, 320], to: [0, -722, 317.25] }
+
+  # ---------------------------------------------------------------- controls (vehicle frame, LHD)
+  - id: gearshift-cables
+    kind: assembly
+    name: Gearshift cables (shift and selector)
+    summary: Two cables from the gear lever housing to the shift shaft on the gearbox; at the lever end their abutment sleeves sit in clamping grooves and the end pieces lock into a holder.
+    access: { from: [bonnet, cabin-front] }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification: { sources: [{ ref: ssp-170, locator: p. 16 }] }
+  - { id: gearshift-cable-shift, parent: gearshift-cables, kind: harness, name: Shift cable, material: harness-black, geometry: { gen: tube, r: 5, points: [[-850, 15, 640], [-700, 80, 620], [-470, 200, 640], [-250, 250, 690], [0, 280, 720], [130, 300, 720], [160, 315, 700]] } }
+  - { id: gearshift-cable-select, parent: gearshift-cables, kind: harness, name: Selector cable, material: harness-black, geometry: { gen: tube, r: 5, points: [[-850, -15, 640], [-700, 60, 610], [-470, 180, 625], [-250, 230, 675], [0, 262, 705], [130, 282, 700], [160, 296, 680]] } }
+  - id: gear-lever
+    kind: part
+    name: Gear lever and lever housing
+    aliases: [gear stick, shifter, gearshift lever]
+    summary: The gear lever housing on the centre console takes both cables.
+    location: { zone: cabin-centre-console, text: "Centre console, below the dash panel" }
+    access: { from: [cabin-front] }
+    handed: true
+    explode: { dir: [0, 0, 1], dist: 240 }
+    verification: { sources: [{ ref: ssp-170, locator: p. 16 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [140, 110, 70], r: 10, pos: [-880, 0, 640], mat: plastic-black }
+        - { gen: tube, r: 8, points: [[-880, 0, 670], [-960, 0, 770], [-1025, 0, 830]], mat: steel-black }
+        - { gen: sphere, r: 26, pos: [-1032, 0, 850], mat: interior-dark }
+
+  - id: clutch-hydraulics
+    kind: assembly
+    name: Hydraulic clutch release (LHD)
+    summary: Master cylinder on the clutch pedal, fed from the brake fluid reservoir; a pipe with brackets on the ABS bracket and on the gearbox leads to the slave cylinder. Pedal free play adjusts itself.
+    handed: true
+    explode: { dir: [0, 0.4, 1], dist: 220 }
+    contacts: [bulkhead, brake-fluid-reservoir]
+    access:
+      from: [bonnet, underside]
+      notes: "Bleeding (VW-engined cars, from the workshop book): join the bleed valve of the slave cylinder to the bleed valve of the front left caliper with a hose filled with brake fluid, open both and let an assistant press the brake pedal so that fluid is pushed back up through the slave cylinder to the reservoir until no bubbles appear (do not let the reservoir overflow); close the valves, then press the clutch pedal at least 10 times. The book describes a different method for the Ford DOHC petrol engines."
+      sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 4, section 3" }]
+    verification:
+      facts: secondary
+      sources: [{ ref: ssp-170, locator: p. 28, says: "Das Kupplungspedalspiel ist selbstnachstellend" }, { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b" }]
+  - id: clutch-master-cylinder
+    parent: clutch-hydraulics
+    kind: part
+    name: Clutch master cylinder
+    aliases: [clutch pump]
+    location: { zone: engine-bay-rear, text: "On the pedal bracket at the bulkhead, driver's side" }
+    access: { from: [cabin-front, bonnet], notes: "Fixing bolts 20 Nm.", sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf pp. 1–2" }] }
+    specs: [{ label: To pedal bracket, value: "20 Nm", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 1" } }]
+    geometry: { gen: cyl, r: 16, h: 110, axis: x, chamfer: 2, pos: [-420, 545, 640], mat: aluminium-cast }
+  - id: clutch-pipe
+    parent: clutch-hydraulics
+    kind: pipe
+    name: Clutch pressure pipe and hose
+    material: brake-line
+    specs: [{ label: Bracket bolts and nuts, value: "20 Nm", source: { ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b items 13–17" } }]
+    geometry: { gen: tube, r: 3, points: [[-365, 545, 640], [-300, 520, 620], [-150, 470, 600], [0, 420, 590], [120, 330, 560], [160, 210, 530]] }
+  - id: clutch-reservoir-hose
+    parent: clutch-hydraulics
+    kind: hose
+    name: Feed hose from the brake fluid reservoir
+    material: rubber
+    geometry: { gen: tube, r: 5, points: [[-240, 420, 860], [-330, 500, 790], [-410, 545, 690]] }

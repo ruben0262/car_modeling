@@ -1,0 +1,470 @@
+# Brakes. Shared with the VW Sharan: diagonally split dual-circuit system with a 10" servo, ventilated
+# front discs and solid rear discs with single-piston floating calipers, the parking brake built into the
+# rear calipers (self-adjusting, cable-operated), and the ITT Teves ABS 04 GI with an integrated control
+# unit (ssp-169 pp. 32–38). ABS was standard on the Galaxy 1.9 TDI (adac-galaxy-19tdi), so the
+# deceleration-dependent brake pressure regulator of the non-ABS cars (ssp-169 p. 34) is not fitted.
+#
+# Corner assemblies use the wheel-centre frame (+Y outboard); the hub mounting face is at +55 mm (wheel
+# offset ET 55). Servo, master cylinder and ABS unit are authored for left-hand drive. Torques and limits
+# are from the workshop book (ru-manual, shar_brake_rus.pdf), which covers 1995–2000 cars: the values
+# below are those for the Teves/ATE front brakes fitted up to 05.2000 and for 15" wheels.
+system: brakes
+defaults:
+  verification:
+    geometry: schematic
+    placement: referenced
+    facts: oem
+    sources: [{ ref: ssp-169, locator: "pp. 32–38" }]
+
+nodes:
+  # ---------------------------------------------------------------- front corners
+  - id: front-brake
+    kind: assembly
+    sides: [left, right]
+    name: Front brake
+    location: { zone: wheel-arch-front-left, text: "Inside the front wheel" }
+    access: { from: [wheel-arch-front-left], removeFirst: [wheel-front] }
+    placement: { pos: [0, 765, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 440 }
+    verification: { sources: [{ ref: ssp-169, locator: p. 33 }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d" }] }
+
+  - id: front-brake-disc
+    parent: front-brake
+    kind: part
+    name: Front brake disc (ventilated, 288 mm)
+    aliases: [brake rotor, disc, front disc]
+    summary: Internally ventilated disc held to the hub by one hex-socket screw (10 Nm) and the wheel bolts. Renew both discs of an axle together.
+    access:
+      from: [wheel-arch-front-left]
+      removeFirst: [wheel-front, front-caliper]
+      notes: "Mark the wheel's position on the hub first. Undo the 2 carrier bolts and hang the caliper on wire (not on the hose), remove the screw and the disc; free a seized disc with rust remover, never by hammering on it. On refitting: new discs cleaned of their protective coating, screw 10 Nm, carrier bolts 200 Nm."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf pp. 8–9, section 6" }]
+    contacts: [wheel-front]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    specs:
+      - { label: Size, value: "288 mm × 25 mm, internally ventilated", source: { ref: ssp-169, locator: p. 33 } }
+      - { label: Wear limit, value: "21.0 mm minimum thickness (Teves/ATE brakes up to 05.2000)", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1" } }
+      - { label: Run-out, value: "0.05 mm maximum; thickness variation 0.01 mm maximum (workshop check)", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 9, step 11" } }
+      - { label: Retaining screw, value: "Hex socket, 10 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d item 1" } }
+    verification:
+      geometry: representative
+      notes: "Diameter and thickness match the specification; the vane pattern and hat depth are approximations."
+      sources: [{ ref: ssp-169, locator: p. 33, says: "An der Vorderradbremse kommen innenbelüftete Bremsscheiben zum Einsatz. Scheibendurchmesser 288 mm, Scheibendicke 25 mm" }]
+    geometry: { gen: brake-disc, d: 288, t: 25, y: 12.5, vented: true, hatDepth: 30, hatR: 76, ring: 55, pcd: 112 }
+
+  - id: front-dust-shield
+    parent: front-brake
+    kind: part
+    name: Front brake splash plate
+    aliases: [dust shield, backing plate]
+    explode: { dir: [0, -1, 0], dist: 90 }
+    contacts: [front-caliper, front-wheel-speed-sensor]
+    material: steel-zinc
+    verification: { sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d items 5–6" }] }
+    geometry: { gen: lathe, axis: y, profile: [[64, -34], [146, -34], [150, -28], [146, -26], [64, -30]] }
+
+  - id: front-caliper
+    parent: front-brake
+    kind: assembly
+    detail: true
+    name: Front brake caliper (Teves/ATE, single piston, floating)
+    aliases: [caliper, brake caliper, FN3]
+    summary: Floating caliper sliding on two guide pins in the carrier, which is bolted to the wheel bearing housing with 2 bolts; one piston. The inner pad clips into the piston with its spreader spring, the outer pad sits in the carrier, and a retaining spring is fitted into both holes of the caliper.
+    access:
+      from: [wheel-arch-front-left]
+      removeFirst: [wheel-front]
+      tools: [Torx/hex key for the guide pins, piston resetting tool]
+      notes: "Pads: pull the caliper outwards to push the piston back a little, prise off the upper and lower caps, lever out the retaining spring, unplug the pad wear sensor if fitted, unscrew both guide pins and hang the caliper on wire. Pushing the piston back sends fluid to the reservoir, so watch the level. Guide pins 25 Nm; outer pads carry an adhesive film to peel off. Renew all pads of an axle together and pump the pedal hard several times before driving."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf pp. 5–6, section 2" }]
+    contacts: [front-brake-disc]
+    explode: { dir: [-1, 0.6, 0], dist: 160 }
+    specs:
+      - { label: Carrier to wheel bearing housing, value: "2 bolts, 200 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 3, fig. 1.0d item 17" } }
+      - { label: Guide pins (caliper to carrier), value: "25 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 3, fig. 1.0d item 12" } }
+      - { label: Pads, value: "19.0 mm new including backing plate; renew at 2.0 mm lining", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1" } }
+    verification:
+      placement: estimated
+      notes: "The caliper sits behind the wheel centre (ssp-169 fig. 169/36); its exact clock position is estimated."
+      sources: [{ ref: ssp-169, locator: p. 33, says: "Einkolben-Bremssättel" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d" }]
+  - { id: front-caliper-housing, parent: front-caliper, kind: part, name: Floating caliper housing, explode: { dir: [-1, -0.3, 0], dist: 90 }, geometry: { gen: caliper, part: housing, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-caliper-carrier, parent: front-caliper, kind: part, name: Brake carrier, aliases: [caliper bracket, anchor], explode: { dir: [-1, -1, 0], dist: 60 }, geometry: { gen: caliper, part: carrier, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-pad-inner, parent: front-caliper, kind: part, name: Inner brake pad with spreader spring, aliases: [brake pad], explode: { dir: [0, -1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-inner, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-pad-outer, parent: front-caliper, kind: part, name: Outer brake pad, aliases: [brake pad], explode: { dir: [0, 1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-outer, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-caliper-piston, parent: front-caliper, kind: part, name: Caliper piston and seal, explode: { dir: [0, -1, 0], dist: 150 }, geometry: { gen: caliper, part: piston, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-bleed-nipple, parent: front-caliper, kind: part, name: Bleed valve, aliases: [bleed nipple, bleeder, bleed screw], explode: { dir: [-0.3, 0, 1], dist: 90 }, geometry: { gen: caliper, part: bleed-nipple, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+  - { id: front-slide-pins, parent: front-caliper, kind: part, name: Guide pins with sleeves and caps, aliases: [slide pins, caliper pins, guide bushes], explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: caliper, part: slide-pins, d: 288, t: 25, y: 12.5, at: 150, span: 60, piston: 54, reach: 17 } }
+
+  - id: front-brake-hose
+    parent: front-brake
+    kind: hose
+    name: Front flexible brake hose
+    summary: Joins the rigid pipe to the caliper; it must hang without twist and must not touch anything over full lock and suspension travel.
+    material: rubber
+    explode: { dir: [-1, 0, 1], dist: 120 }
+    specs:
+      - { label: Hose to caliper, value: "25 Nm in the book's torque table; 15 Nm at both ends in its hose-renewal procedure", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 10, section 10 step 5" } }
+    verification:
+      placement: estimated
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 10, section 10" }]
+    geometry: { gen: tube, r: 5, points: [[-112, -70, 62], [-120, -110, 160], [-95, -130, 260], [-80, -125, 300]] }
+
+  - id: front-wheel-speed-sensor
+    parent: front-brake
+    kind: part
+    name: Front ABS wheel speed sensor
+    aliases: [ABS sensor, wheel speed sensor, speed sensor, Drehzahlfühler]
+    function: Inductive sensor facing the toothed rotor on the outer constant-velocity joint; its alternating-voltage signal gives the wheel speed for ABS, EDS and the electronic brake-force distribution.
+    summary: Fitted in a bore in the wheel bearing housing and held by a hex-socket bolt (10 Nm). The gap to the rotor is fixed by the fitting position, so there is nothing to adjust.
+    access:
+      from: [wheel-arch-front-left]
+      removeFirst: [wheel-front]
+      notes: "Before fitting, clean the bore and coat it with grease (VW G 000 650). Bolt 10 Nm."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, fig. 1.0d items 7–9" }]
+    placement: { pos: [-10, -80, 76], rot: [90, 0, 0] }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [G47:l, G45:r]
+    faults:
+      - { symptom: "ABS warning lamp K47 on; fault 00283 (front left sensor G47) or 00285 (front right sensor G45)", cause: "Open circuit, damaged sensor or too large a gap to the rotor (dirt or rust under the sensor, damaged rotor)." }
+    verification:
+      sources:
+        - { ref: ssp-169, locator: p. 37, says: "Die Drehzahlfühler sind jeweils in den vorderen Radlagergehäusen bzw. hinteren Achslenkern eingebaut. Der Abstand zum Impulsrad ist durch die Einbaulage der Sensoren vorgegeben" }
+        - { ref: vw-wd-1997, locator: "No. 20/3" }
+        - { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1, fault codes" }
+    geometry: { gen: wheel-speed-sensor, len: 44 }
+  - id: front-wss-cable
+    parent: front-brake
+    kind: harness
+    name: Front wheel speed sensor cable
+    material: harness-black
+    harness: { connects: [front-wheel-speed-sensor, front-wss-connector] }
+    explode: { dir: [0.5, 0, 1], dist: 100 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 3, points: [[-10, -80, 102], [-40, -108, 180], [-70, -110, 255], [-86, -104, 290]] }
+  - id: front-wss-connector
+    parent: front-brake
+    kind: connector
+    name: Front wheel speed sensor connector
+    summary: Two-pin connector joining the sensor lead to the body harness at the suspension strut.
+    connector: { pins: 2 }
+    placement: { pos: [-90, -102, 300], rot: [0, 0, 90] }
+    explode: { dir: [0, 0, 1], dist: 120 }
+    verification:
+      placement: estimated
+      notes: "The diagram legend places the 2-pin connectors T2 and T2a at the left and right suspension strut, but its drawing joins T2 to the front right sensor G45 and T2a to the front left sensor G47; the side is open."
+      sources: [{ ref: vw-wd-1997, locator: "No. 20/3", says: "T2 2-pin connector, rear suspension strut, left; T2a 2-pin connector, rear suspension strut, right" }]
+    geometry: { gen: connector, size: [30, 22, 18], mat: connector-black, wireR: 3 }
+
+  # ---------------------------------------------------------------- rear corners
+  - id: rear-brake
+    kind: assembly
+    sides: [left, right]
+    name: Rear brake and parking brake
+    location: { zone: wheel-arch-rear-left, text: "Inside the rear wheel" }
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear] }
+    placement: { pos: [-2835, 762, 317.25] }
+    explode: { dir: [0, 1, 0], dist: 440 }
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 33–34" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e" }] }
+
+  - id: rear-brake-disc
+    parent: rear-brake
+    kind: part
+    name: Rear brake disc (solid, 268 mm)
+    aliases: [rear rotor, rear disc]
+    summary: Solid disc held by one hex-socket screw (10 Nm) and the wheel bolts. Renew both discs of an axle together.
+    access:
+      from: [wheel-arch-rear-left]
+      removeFirst: [wheel-rear, rear-caliper]
+      notes: "Unhook the parking brake cable, undo the 2 carrier bolts (110 Nm on refitting) and hang the caliper on wire; remove the screw and the disc. Afterwards adjust the parking brake."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf pp. 8–9, section 6" }]
+    contacts: [wheel-rear]
+    explode: { dir: [0, 1, 0], dist: 120 }
+    specs:
+      - { label: Size, value: "268 mm × 10 mm, solid (15\" wheels)", source: { ref: ssp-169, locator: p. 33 } }
+      - { label: Wear limit, value: "8.0 mm minimum thickness", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1" } }
+      - { label: Retaining screw, value: "Hex socket, 10 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 2" } }
+    verification:
+      geometry: representative
+      notes: "Diameter and thickness match the specification; the hat depth is approximate."
+      sources: [{ ref: ssp-169, locator: p. 33, says: "An der Hinterradbremse kommen Massivscheiben zum Einsatz. Scheibendurchmesser 268 mm, Scheibendicke 10 mm" }]
+    geometry: { gen: brake-disc, d: 268, t: 10, y: 16, vented: false, hatDepth: 34, hatR: 72, ring: 45, pcd: 112 }
+
+  - id: rear-dust-shield
+    parent: rear-brake
+    kind: part
+    name: Rear brake splash plate
+    explode: { dir: [0, -1, 0], dist: 90 }
+    contacts: [rear-caliper, rear-wheel-speed-sensor]
+    material: steel-zinc
+    specs: [{ label: Bolts, value: "10 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e items 9–10" } }]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e" }] }
+    geometry: { gen: lathe, axis: y, profile: [[60, -16], [136, -16], [140, -10], [136, -8], [60, -12]] }
+
+  - id: rear-caliper
+    parent: rear-brake
+    kind: assembly
+    detail: true
+    name: Rear brake caliper with integrated parking brake
+    aliases: [rear caliper, handbrake caliper]
+    summary: Single-piston floating caliper on two guide pins, carrier bolted to the trailing arm. The parking brake is built into the caliper and adjusts itself; the cable pulls a lever on the back of the caliper.
+    access:
+      from: [wheel-arch-rear-left]
+      removeFirst: [wheel-rear]
+      tools: [Piston resetting tool VW 3272 or Ford 12-006, 13 mm open-ended spanner]
+      notes: "Pads: release the parking brake and unhook the cable from the caliper, undo the 2 caliper bolts while holding the guide pins, hang the caliper on wire. The piston must be screwed back clockwise with the resetting tool (turned on its 13 mm flats); never press it back, or the automatic adjuster is ruined. Fit new self-locking caliper bolts (35 Nm), then adjust the parking brake."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf pp. 6–7, section 3" }]
+    contacts: [rear-brake-disc]
+    explode: { dir: [-1, 0.6, 0], dist: 160 }
+    specs:
+      - { label: Carrier to trailing arm, value: "2 bolts, 110 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 4, fig. 1.0e item 15" } }
+      - { label: Caliper bolts, value: "35 Nm, self-locking: renew (4 are in the pad repair kit); hold the guide pin while turning", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e item 16; p. 7, step 11" } }
+      - { label: Pads, value: "17.0 mm new including backing plate; renew at 2.0 mm lining", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1" } }
+    verification:
+      placement: estimated
+      notes: "The caliper sits ahead of the wheel centre, above it (ssp-169 fig. 169/37); its exact clock position is estimated."
+      sources: [{ ref: ssp-169, locator: p. 33, says: "Im Bremssattel integrierte Feststellbremse mit automatischer Nachstellung" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e" }]
+  - { id: rear-caliper-housing, parent: rear-caliper, kind: part, name: Floating caliper housing with handbrake mechanism, explode: { dir: [-1, -0.3, 0], dist: 90 }, geometry: { gen: caliper, part: housing, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-caliper-carrier, parent: rear-caliper, kind: part, name: Brake carrier, explode: { dir: [-1, -1, 0], dist: 60 }, geometry: { gen: caliper, part: carrier, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-pad-inner, parent: rear-caliper, kind: part, name: Inner brake pad, aliases: [brake pad], explode: { dir: [0, -1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-inner, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-pad-outer, parent: rear-caliper, kind: part, name: Outer brake pad, aliases: [brake pad], explode: { dir: [0, 1, 0], dist: 70 }, geometry: { gen: caliper, part: pad-outer, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-caliper-piston, parent: rear-caliper, kind: part, name: Caliper piston with automatic adjuster, explode: { dir: [0, -1, 0], dist: 140 }, geometry: { gen: caliper, part: piston, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-bleed-nipple, parent: rear-caliper, kind: part, name: Bleed valve, aliases: [bleed nipple, bleed screw], explode: { dir: [-0.3, 0, 1], dist: 90 }, geometry: { gen: caliper, part: bleed-nipple, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - { id: rear-slide-pins, parent: rear-caliper, kind: part, name: Guide pins and protective caps, aliases: [slide pins, guide pins], explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: caliper, part: slide-pins, d: 268, t: 10, y: 16, at: 40, span: 56, piston: 38, reach: 26 } }
+  - id: rear-handbrake-lever
+    parent: rear-caliper
+    kind: part
+    name: Parking brake lever on the caliper
+    aliases: [caliper handbrake lever]
+    summary: The cable end hooks into this lever. Correctly adjusted, the lever lifts off its stop by no more than 1 mm.
+    explode: { dir: [0, -1, 0.4], dist: 110 }
+    material: steel-zinc
+    verification: { sources: [{ ref: ssp-169, locator: p. 33, says: "Hebel – Feststellbremse" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 9, fig. 7.4" }] }
+    geometry: { gen: box, size: [66, 10, 20], r: 3, pos: [100, -72, 52], rot: [0, -40, 0] }
+
+  - id: rear-brake-hose
+    parent: rear-brake
+    kind: hose
+    name: Rear flexible brake hose
+    material: rubber
+    explode: { dir: [-1, 0, 1], dist: 120 }
+    specs: [{ label: Hose to caliper, value: "25 Nm in the torque table; 15 Nm at both ends in the hose-renewal procedure", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2; p. 10, section 10 step 5" } }]
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 5, points: [[120, -50, 70], [170, -110, 110], [230, -170, 120], [280, -200, 110]] }
+
+  - id: rear-wheel-speed-sensor
+    parent: rear-brake
+    kind: part
+    name: Rear ABS wheel speed sensor
+    aliases: [ABS sensor, wheel speed sensor, speed sensor]
+    summary: Fitted in the trailing arm facing the toothed rotor (thrust washer with toothed ring) behind the hub; hex-socket bolt 10 Nm.
+    access: { from: [wheel-arch-rear-left], removeFirst: [wheel-rear], sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, fig. 1.0e items 11, 12, 14" }] }
+    placement: { pos: [-40, -62, 64], rot: [90, 0, 0] }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    ewd: [G46:l, G44:r]
+    faults:
+      - { symptom: "ABS warning lamp K47 on; fault 00290 (rear left sensor G46) or 00287 (rear right sensor G44)", cause: "Open circuit, damaged sensor or too large a gap to the rotor." }
+    verification:
+      sources:
+        - { ref: ssp-169, locator: p. 37 }
+        - { ref: vw-wd-1997, locator: "No. 20/3" }
+        - { ref: ru-manual, locator: "shar_brake_rus.pdf p. 1, fault codes" }
+    geometry: { gen: wheel-speed-sensor, len: 44 }
+  - id: rear-wss-cable
+    parent: rear-brake
+    kind: harness
+    name: Rear wheel speed sensor cable
+    material: harness-black
+    harness: { connects: [rear-wheel-speed-sensor, rear-wss-connector] }
+    explode: { dir: [0.5, 0, 1], dist: 100 }
+    verification: { placement: estimated }
+    geometry: { gen: tube, r: 3, points: [[-40, -62, 90], [40, -120, 110], [180, -220, 90], [285, -292, 64]] }
+  - id: rear-wss-connector
+    parent: rear-brake
+    kind: connector
+    name: Rear wheel speed sensor connector
+    summary: Two-pin connector on the cross member (the diagram places the rear right one near the silencer and the rear left one near the fuel tank).
+    connector: { pins: 2 }
+    placement: { pos: [300, -300, 60], rot: [0, 0, 90] }
+    explode: { dir: [0, 0, 1], dist: 120 }
+    verification:
+      placement: estimated
+      sources: [{ ref: vw-wd-1997, locator: "No. 20/3", says: "T2b 2-pin connector, on cross member near silencer (G44); T2c 2-pin connector, on cross member near fuel tank (G46)" }]
+    geometry: { gen: connector, size: [30, 22, 18], mat: connector-black, wireR: 3 }
+
+  # ---------------------------------------------------------------- parking brake actuation
+  - id: parking-brake-cables
+    kind: assembly
+    name: Parking brake cables and equaliser
+    summary: One cable from the lever to an equaliser bar under the floor, then one cable to the lever on each rear caliper; the rear cables run back beside the tunnel, inboard of the fuel tank, and turn out behind it. The travel is adjusted with the nut at the equaliser.
+    location: { zone: underbody-centre, text: "Under the floor below the handbrake lever, then back to the rear wheels" }
+    access:
+      from: [underside]
+      notes: "Adjust only after renewing cables, calipers, pads or discs: raise the rear, release the handbrake, tighten the adjusting nut at the equaliser until both caliper levers just lift off their stops (no more than 1 mm), apply and release the handbrake, and check both wheels turn freely."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 9, section 7" }]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    verification:
+      placement: estimated
+      sources: [{ ref: ssp-169, locator: p. 34, says: "Der Handbremshebelweg kann am Ausgleichbügel des Handbremsseils eingestellt bzw. korrigiert werden" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 8, fig. 7.0" }]
+  - { id: parking-brake-cable-front, parent: parking-brake-cables, kind: harness, name: Parking brake front cable (lever to equaliser), material: steel-zinc, geometry: { gen: tube, r: 3, points: [[-1290, 0, 470], [-1320, 0, 330], [-1380, 0, 282]] } }
+  - id: parking-brake-equaliser
+    parent: parking-brake-cables
+    kind: part
+    name: Parking brake equaliser and adjusting nut
+    aliases: [handbrake compensator, Ausgleichbügel]
+    material: steel-zinc
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [24, 120, 14], r: 3, pos: [-1420, 0, 278] }
+        - { gen: cyl, r: 8, h: 40, axis: x, pos: [-1392, 0, 278], mat: steel-black }
+  - id: parking-brake-cable-rear
+    parent: parking-brake-cables
+    kind: harness
+    sides: [left, right]
+    name: Parking brake rear cable
+    material: harness-black
+    geometry: { gen: tube, r: 4, points: [[-1430, 52, 278], [-1700, 48, 270], [-2050, 48, 266], [-2380, 190, 268], [-2560, 520, 290], [-2660, 670, 345], [-2735, 690, 375]] }
+
+  # ---------------------------------------------------------------- hydraulics (LHD)
+  - id: brake-servo
+    kind: part
+    name: Brake servo (10 in)
+    aliases: [brake booster, servo, vacuum booster, Bremskraftverstärker]
+    summary: Vacuum servo on the bulkhead, driver's side, with the tandem master cylinder bolted to its front. On the diesel the vacuum comes from the engine's vacuum pump.
+    location: { zone: engine-bay-rear, text: "On the bulkhead, driver's side (left on LHD)" }
+    access:
+      from: [bonnet]
+      notes: "Check: with the engine off press the pedal at least 5 times, hold it and start the engine; the pedal must sink noticeably. If not, check the vacuum hose and, on the diesel, pull the hose off the vacuum pump and check for suction at its connection."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf pp. 10–11, section 11" }]
+    handed: true
+    explode: { dir: [0.4, 0, 1], dist: 220 }
+    material: steel-black
+    contacts: [bulkhead]
+    specs: [{ label: Size, value: "10 in", source: { ref: ssp-169, locator: p. 32 } }]
+    verification:
+      placement: estimated
+      sources: [{ ref: ssp-169, locator: "pp. 32, 35", says: "Diagonal geteiltes Zweikreis-Bremssystem mit einem 10\"-Bremskraftverstärker" }]
+    geometry: { gen: cyl, r: 127, h: 150, axis: x, chamfer: 22, pos: [-390, 380, 800] }
+
+  - id: master-cylinder
+    kind: part
+    name: Brake master cylinder (tandem)
+    location: { zone: engine-bay-rear, text: "Bolted to the front of the brake servo" }
+    access: { from: [bonnet] }
+    handed: true
+    explode: { dir: [1, 0, 1], dist: 240 }
+    material: aluminium-cast
+    contacts: [brake-servo]
+    summary: Tandem master cylinder for the two diagonal circuits (front right + rear left, front left + rear right); its two outlets feed the ABS hydraulic unit.
+    verification:
+      placement: estimated
+      sources: [{ ref: ssp-169, locator: "pp. 32, 35" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 2, section 1; p. 3, fig. 1.0b" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 22, h: 170, axis: x, chamfer: 3, pos: [-228, 380, 800] }
+        - { gen: box, size: [20, 100, 70], r: 6, pos: [-305, 380, 800] }
+
+  - id: brake-fluid-reservoir
+    kind: part
+    name: Brake fluid reservoir with level warning contact
+    aliases: [brake fluid tank, compensating reservoir]
+    summary: Translucent reservoir on the master cylinder. The level warning contact in it lights the brake warning lamp K118 when the level is low (the same lamp shows the applied handbrake).
+    location: { zone: engine-bay-rear, text: "On top of the master cylinder" }
+    access:
+      from: [bonnet]
+      notes: "Fluid DOT 4 (FMVSS 116; Ford spec SAM 6C9103A), about 2.0 L in the system; renew every 2 years. Fluid is poisonous and attacks paint. Bleeding order: rear right, rear left, front right, front left; with ABS a filler unit must not exceed 1 bar, and a system whose reservoir ran dry must be bled in a workshop with the diagnostic tester."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 1; pp. 9–10, sections 8–9" }]
+    handed: true
+    explode: { dir: [0, 0, 1], dist: 300 }
+    contacts: [master-cylinder]
+    ewd: [F34]
+    verification:
+      placement: estimated
+      sources: [{ ref: ssp-169, locator: p. 32, says: "Kontrollampe für Bremsanlage K118 (für angezogene Handbremse und zu niedrigen Bremsflüssigkeitsstand)" }, { ref: vw-wd-1997, locator: "F34 Brake fluid level warning contact" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [120, 90, 66], r: 10, pos: [-218, 380, 866], mat: plastic-white }
+        - { gen: cyl, r: 26, h: 18, axis: z, chamfer: 3, pos: [-195, 380, 908], mat: plastic-black }
+
+  - id: brake-vacuum-hose
+    kind: hose
+    name: Brake servo vacuum hose and non-return valve
+    summary: From the vacuum pump on the cylinder block (the diesel has no throttle vacuum) to the servo.
+    material: plastic-black
+    explode: { dir: [0, 0, 1], dist: 200 }
+    verification:
+      placement: estimated
+      sources: [{ ref: vw-engine-mech, locator: "p. 26, Part III items 4–6", says: "Vacuum pump; clamp; 20 Nm" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 11, step 5" }]
+    geometry: { gen: tube, r: 6, points: [[350, -165, 560], [430, -100, 700], [440, 150, 880], [220, 300, 975], [-100, 360, 950], [-315, 380, 880]] }
+
+  - id: abs-unit
+    kind: assembly
+    name: ABS unit (ITT Teves 04 GI)
+    aliases: [ABS pump, ABS modulator, hydraulic unit, ABS module]
+    summary: "Compact unit of hydraulic pump, valve block and control unit J104. Four control channels with diagonal split: one valve pair (inlet and outlet) for each front wheel, and two valve pairs controlling both rear wheels together (select-low). The software also does the electronic brake-force distribution that replaces the rear pressure regulator; with EDS the valve block has two more valves and is slightly larger."
+    location: { zone: engine-bay-left, text: "Left of the master cylinder, on brackets to the longitudinal member and the battery console" }
+    access:
+      from: [bonnet]
+      notes: "Before welding, unplug the control unit (ignition off). For paint drying the unit may see 95 °C briefly or 85 °C for up to 2 hours."
+      sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 4, ABS notes" }]
+    placement: { pos: [-250, 590, 760] }
+    explode: { dir: [0.4, 0.5, 1], dist: 300 }
+    verification:
+      placement: estimated
+      sources:
+        - { ref: ssp-169, locator: "pp. 35–38", says: "Die kompakte ABS-Einheit ist beim Links- und Rechtslenker links neben dem Hauptbremszylinder mit Haltern am Längsträger und an der Batteriekonsole montiert" }
+        - { ref: vw-wd-1997, locator: "No. 20/2–20/4", says: "J104 ABS/ABS with EDL control unit, in engine compartment, left" }
+  - id: abs-valve-block
+    parent: abs-unit
+    kind: part
+    name: ABS hydraulic unit (valve block)
+    summary: Eight solenoid valves (4 inlet, 4 outlet) and the brake pipe connections.
+    explode: { dir: [1, 0, 0], dist: 80 }
+    material: aluminium-cast
+    ewd: [N99, N100, N101, N102, N133, N134, N135, N136]
+    verification: { sources: [{ ref: ssp-169, locator: p. 38, says: "Die Hydraulikeinheit beinhaltet 8 Magnetventile (4 Einlaß- und 4 Auslaßventile)" }, { ref: vw-wd-1997, locator: "No. 20/2–20/3" }] }
+    geometry: { gen: box, size: [100, 110, 80], r: 6 }
+  - id: abs-pump
+    parent: abs-unit
+    kind: part
+    name: ABS hydraulic pump
+    aliases: [ABS pump motor, V64]
+    explode: { dir: [0, -1, 0.4], dist: 100 }
+    material: steel-black
+    ewd: [V64]
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 35, 38" }, { ref: vw-wd-1997, locator: "No. 20/4", says: "V64 ABS hydraulic pump, on ABS/ABS with EDL control unit" }] }
+    geometry: { gen: cyl, r: 38, h: 90, axis: y, chamfer: 4, pos: [0, -95, 10] }
+  - id: abs-control-unit
+    parent: abs-unit
+    kind: part
+    name: ABS control unit
+    aliases: [ABS ECU, ABS module, J104]
+    summary: Fixed to the hydraulic unit; 25-pin connector. Fault memory read through the diagnosis connection.
+    explode: { dir: [0, 0, -1], dist: 100 }
+    placement: { pos: [0, 0, -64] }
+    ewd: [J104]
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 35, 38" }, { ref: vw-wd-1997, locator: "No. 20/2–20/4" }] }
+    geometry: { gen: enclosure, size: [110, 118, 44], lid: false, sockets: 0 }
+  - id: abs-connector
+    parent: abs-unit
+    kind: connector
+    name: ABS control unit connector (25-pin)
+    connector: { pins: 25 }
+    explode: { dir: [1, 0, -0.5], dist: 140 }
+    placement: { pos: [70, 0, -64] }
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 20/2–20/4", says: "T25 25-pin connector" }] }
+    geometry: { gen: connector, size: [30, 80, 34], mat: connector-black }
+
+  - id: brake-pipes
+    kind: assembly
+    name: Brake pipes
+    aliases: [brake lines, hard lines]
+    summary: Rigid pipes from the master cylinder to the ABS unit and from there to each wheel; diagonal circuits (front right + rear left, front left + rear right). Routes are schematic.
+    explode: { dir: [0, 0, 1], dist: 60 }
+    verification: { placement: estimated, sources: [{ ref: ssp-169, locator: "pp. 32, 35", says: "Bremsleitung vorn links, hinten rechts, hinten links, vorn rechts" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 3, figs. 1.0b–1.0c" }] }
+  - { id: brake-pipe-mc-abs, parent: brake-pipes, kind: pipe, name: "Master cylinder → ABS unit pipes (primary and secondary circuit)", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-160, 400, 800], [-180, 460, 790], [-200, 530, 785], [-250, 535, 790]] } }
+  - { id: brake-pipe-fl, parent: brake-pipes, kind: pipe, name: "ABS unit → front left pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-200, 600, 740], [-170, 640, 700], [-130, 650, 640], [-80, 640, 617]] } }
+  - { id: brake-pipe-fr, parent: brake-pipes, kind: pipe, name: "ABS unit → front right pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-210, 560, 730], [-300, 450, 640], [-440, 200, 600], [-440, -400, 600], [-200, -620, 620], [-80, -640, 617]] } }
+  - { id: brake-pipe-rl, parent: brake-pipes, kind: pipe, name: "ABS unit → rear left pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-300, 620, 720], [-420, 640, 560], [-520, 640, 330], [-1200, 640, 285], [-2200, 620, 285], [-2450, 600, 330], [-2555, 562, 427]] } }
+  - { id: brake-pipe-rr, parent: brake-pipes, kind: pipe, name: "ABS unit → rear right pipe", material: brake-line, geometry: { gen: tube, r: 2.4, points: [[-300, 600, 720], [-420, 625, 560], [-520, 625, 330], [-1200, 625, 280], [-2200, 605, 280], [-2350, 300, 280], [-2400, -300, 290], [-2450, -600, 330], [-2555, -562, 427]] } }

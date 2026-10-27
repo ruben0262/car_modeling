@@ -104,6 +104,14 @@ Confirm with `npm run data`: wheels, dimensions, envelope, no intersections, no 
    ```
 
    The importer reads service issues (`303-14 …` sheet headers) and engineering issues (`… CIRCUIT 9G92-…`, `System Page 01 of 05`). It also reads wires printed without an id (`RD,25.0`), which it names from their ends.
+
+   **VW / Audi / SEAT / Ford-AutoEuropa current flow diagrams** use a different importer that reads the vector drawing itself (`pdftocairo -svg` plus word positions):
+
+   ```
+   npx tsx tools/ewd/import-vw.ts "<diagrams>.pdf" data/vehicles/…/wiring/<id>.json --diagrams 1,2,14,20 --title "…" --market LHD [--debug <dir>]
+   ```
+
+   VW draws one diagram per engine or item of equipment and dates each ("From January 1998"), so a set is chosen by listing the diagram numbers that apply to the car's build date, engine, gearbox and equipment. Connector codes (`T2`, `T2a`) are per diagram: where two diagrams use one code for different connectors the importer adds the diagram number (`T2.20`). `--debug` writes every sheet's traced branches and the unresolved page-edge continuations.
    - If the stats show almost no sheets, the header format is new: extend `tools/ewd/import.ts`.
    - If they show almost no wires, the wire label format is new: extend the importer the same way.
    - After changing the importer, re-import an existing issue and compare, to catch regressions.
@@ -193,6 +201,15 @@ They go to the vehicle's `media/` folder: a painted and an x-ray hero from one c
 - **YAML:** commas inside `{ … }` and `: ` inside plain text must be quoted.
 - **Trims and seals overlap the structure they cover.** Move them inboard, or declare a real contact.
 - **The printed wire lengths show where modelled harness routes are wrong.** On the Freelander the body harness reaches the rear down the left side. Treat the length list as a review list, not an error, until harness layout drawings are available.
+
+## Lessons learned on the Galaxy
+
+- **A sister model's official documents are the best source for shared parts.** The Galaxy was built alongside the VW Sharan and SEAT Alhambra; VW's Sharan manuals, wiring diagrams and self-study programmes cover the engine, gearbox, running gear and electrics. Ford-styled parts are not in them and stay estimated.
+- **Check which car a manual was written for.** VW's 1.9 TDI engine manual is the Golf/Vento edition: engine-internal facts are valid, installation facts (engine removal, oil capacity, belt layout) are not.
+- **VW connector codes repeat between diagrams.** "T2" in the ABS diagram is a different connector from "T2" in the engine diagram; merging them joined unrelated wires. Scope them per diagram.
+- **Symbols are drawn with wire-like lines.** A sensor's coil inside its grey body and a control unit's internal valves looked like wires and shorted the sensor in the netlist. Lines inside component bodies are now ignored; check a few components end to end after every importer change.
+- **Two-line legend entries print the code between the lines.** Read them as one entry, or the second line lands on the previous component's name.
+- **Parallel agents did not speed this up.** Five agents, each owning one system file and coordinating on a shared board, used up the account's usage limit within minutes, twice, before writing any data; one session authoring the systems in order (structure → chassis → engine → driveline → cooling → fuel → electrics → interior) was faster. If agents are used, index the scanned documents once and share the index, and give each agent its own files.
 
 ## Definition of done for a vehicle
 

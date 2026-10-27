@@ -2,7 +2,10 @@
 
 An interactive 3D anatomy atlas for real vehicles, built for mechanics and students. You can take a car apart system by system, down to individual parts, connectors and harnesses. Each part shows where it sits and how to reach it, and **how well each fact has been verified**.
 
-First vehicle: **Land Rover Freelander 2 (L359), 2010 model year, 2.2 TD4 diesel, 6-speed manual, left-hand drive (EU)**, built from the official workshop manual and wiring diagrams.
+Vehicles so far:
+
+- **Land Rover Freelander 2 (L359), 2010 model year, 2.2 TD4 diesel, 6-speed manual, left-hand drive (EU)**, built from the official workshop manual and wiring diagrams.
+- **Ford Galaxy Mk1 (WGR), 1998, 1.9 TDI 66 kW (VW engine AHU), 5-speed manual, left-hand drive (EU)**, built from Volkswagen's official documents for its sister car, the VW Sharan (workshop manuals, current flow diagrams, fitting locations, self-study programmes); the Ford-styled parts are marked estimated.
 
 For any part you can see:
 
@@ -25,6 +28,7 @@ npm run dev          # builds the vehicle data, then serves http://localhost:517
 | `npm run verify` | Strict data build, type-check and unit tests — run before every commit |
 | `npm run build` | Verify, type-check and produce the production site in `dist/` |
 | `npm run e2e` | Browser tests against the production build (`E2E_GPU=1` adds the frame-rate check) |
+| `npx tsx tools/ewd/import-vw.ts <pdf> <out.json> --diagrams 1,2,14 --title …` | Import VW-format current flow diagrams (the Galaxy's wiring) |
 | `node tools/render-images.mjs <vehicle-id> --gpu` | Re-render a vehicle's landing-page images from its 3D model (with `npm run dev` running) |
 | `docker compose up -d --build` | Build and serve the site in a container — see [Deploy](#deploy-with-docker) |
 
@@ -68,6 +72,17 @@ That split is what keeps loading fast as detail grows: the first view is paid fo
 | Geometry | 550k triangles, 4.3 MB for the whole car (≈1.7 MB gzipped); 8 on-demand detail chunks |
 | Rendering | 60 fps orbiting and exploding; renders only when something changes; no interaction (selecting a part with a hundred wires, section cut, explode) stalls a frame by more than 50 ms |
 | Data build | ≈4 s including exact triangle-level interference checks |
+
+## Current numbers (Ford Galaxy 1998 1.9 TDI, same GPU)
+
+| | |
+| --- | --- |
+| Components | 721 nodes · 430 parts · 160 harnesses, hoses, pipes and cables; every wiring-diagram component that applies to this car placed in 3D (329 of 329; 9 more are for other engines, the automatic gearbox, Climatronic or EDS) |
+| Wiring | five VW wiring sets by build date (1997 model year to cars built from November 1998), switchable in the viewer; one harness network with 101 generated branches and 44 in-line connector pairs; 886 of the 946 wires between fitted parts drawable in 3D. The VW diagrams print no wire lengths, so splice and connector positions are estimated |
+| Links | 115 documented joints (type, torque, source page) plus 56 hose, pipe and cable ends linked from the model |
+| Descriptions | every part: 381 written for this car, 329 general descriptions from the shared library |
+| Geometry | 464k triangles, 3.7 MB for the whole car (≈1.5 MB gzipped); 8 on-demand detail chunks |
+| Rendering | 60 fps orbiting and exploding (p95 frame 16.8 ms); ready in ≈1.2 s |
 
 ## Deploy with Docker
 

@@ -24,6 +24,7 @@ export const MATERIALS = {
   chrome: { color: '#e4e8ec', metalness: 1, roughness: 0.12 },
   'aluminium-cast': { color: '#a9aeb4', metalness: 0.75, roughness: 0.42 },
   'aluminium-machined': { color: '#c8ccd1', metalness: 0.9, roughness: 0.25 },
+  'wheel-steel': { color: '#a4a8ad', metalness: 0.55, roughness: 0.42 },
   'iron-cast': { color: '#5d6166', metalness: 0.55, roughness: 0.62 },
   'steel-black': { color: '#25282c', metalness: 0.45, roughness: 0.5 },
   'steel-zinc': { color: '#9ea3a6', metalness: 0.8, roughness: 0.38 },

@@ -1,0 +1,140 @@
+# Fuel tank, fuel lines and filter; exhaust from the turbocharger to the tailpipe. Tank facts from ssp-169 p. 41,
+# filter from the Sharan diesel manual. The exhaust layout of the Sharan/Galaxy is not drawn in the documents in
+# hand (the VW engine manual shows the Golf's), so its pipes and silencers are placed by estimate between the
+# tunnel, the fuel tank, the rear axle and the spare wheel.
+system: fuel-exhaust
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: ssp-169, locator: p. 41 }]
+
+nodes:
+  # ---------------------------------------------------------------- fuel
+  - id: fuel-tank
+    kind: assembly
+    name: Fuel tank (70 l, plastic)
+    aliases: [tank, diesel tank]
+    summary: "Plastic tank under the floor ahead of the rear axle on the right. On the diesel it holds only the fuel gauge sender (no in-tank pump: the injection pump draws the fuel); the sender is reached from inside the car through an opening in the floor under the second seat row."
+    location: { zone: underbody-centre, text: "Under the floor, ahead of the rear axle, right" }
+    access: { from: [underside, cabin-rear], notes: "Sender: lift the second-row floor covering and open the cover in the floor panel.", sources: [{ ref: ssp-169, locator: p. 41 }] }
+    explode: { dir: [0, 0, -1], dist: 320 }
+    specs:
+      - { label: Capacity, value: "70 l (net, without the expansion volume)", source: { ref: ssp-169, locator: p. 41 } }
+      - { label: Material, value: "Plastic", source: { ref: ssp-169, locator: p. 41 } }
+    verification:
+      placement: referenced
+      notes: "Ahead of the rear axle on the right, per ssp-169; the tank's exact outline is estimated."
+      sources: [{ ref: ssp-169, locator: p. 41, says: "Kraftstoffbehälter aus Kunststoff mit 70 Litern Tankinhalt; Einbaulage unter der Bodengruppe, vor der Hinterachse rechts; nur Geber - Kraftstoffvorratsanzeige (ohne Intank-Pumpe) beim Dieselmotor" }, { ref: adac-galaxy-19tdi }]
+  - { id: fuel-tank-shell, parent: fuel-tank, kind: part, name: Fuel tank shell, material: plastic-black, explode: { dir: [0, 0, -1], dist: 80 }, geometry: { gen: box, size: [860, 640, 150], r: 40, pos: [-1890, -390, 216] } }
+  - id: fuel-gauge-sender
+    parent: fuel-tank
+    kind: part
+    name: Fuel gauge sender with supply and return connections
+    aliases: [fuel level sender, G, tank sender]
+    summary: In the top of the tank under the floor opening, with the fuel supply and return lines and the tank breather connected to its flange.
+    explode: { dir: [0, 0, 1], dist: 160 }
+    contacts: [floor-front-r]
+    ewd: [G]
+    verification: { sources: [{ ref: ssp-169, locator: p. 41, says: "Kraftstoffvorlauf, Kraftstoffrücklauf, Tankentlüftung" }, { ref: vw-wd-1997, locator: "No. 3/2", says: "G Fuel gauge sender" }] }
+    geometry: { gen: cyl, r: 60, h: 20, axis: z, pos: [-2150, -300, 292], mat: plastic-grey }
+  - id: fuel-filler-pipe
+    parent: fuel-tank
+    kind: hose
+    name: Filler pipe with roll-over (gravity) valve
+    aliases: [filler neck]
+    summary: From the right rear of the tank up to the filler neck behind the right rear wheel; a gravity valve in the breather closes if the car rolls over.
+    material: plastic-black
+    explode: { dir: [0, -1, 0.3], dist: 160 }
+    verification: { sources: [{ ref: ssp-169, locator: p. 41, says: "Tankeinfüllstutzen; Schwerkraftventil" }] }
+    geometry: { gen: tube, r: 22, points: [[-2300, -640, 250], [-2450, -650, 330], [-2900, -640, 470], [-3280, -690, 680], [-3360, -820, 830]] }
+  - id: fuel-lines
+    kind: pipe
+    name: Fuel supply and return lines
+    summary: From the sender along the right of the tunnel to the fuel filter in the engine compartment and on to the injection pump; the return comes back from the pump through the filter's control valve.
+    material: fuel-line
+    explode: { dir: [0, 0, -1], dist: 200 }
+    verification: { sources: [{ ref: ssp-169, locator: p. 41 }, { ref: vw-diesel, locator: "pp. 53–55" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 5, points: [[-2150, -260, 300], [-2000, -180, 280], [-1400, -175, 285], [-600, -180, 290], [-480, -250, 420], [-200, -480, 600], [300, -600, 700], [560, -600, 740]] }
+        - { gen: tube, r: 4, points: [[-2150, -240, 300], [-2000, -200, 276], [-1400, -195, 280], [-600, -200, 285], [-480, -270, 420], [-200, -500, 600], [300, -620, 700], [590, -600, 740]] }
+        - { gen: tube, r: 5, points: [[560, -600, 790], [520, -400, 820], [470, -260, 760], [420, -230, 700], [375, -235, 700]] }
+  - id: fuel-filter
+    kind: assembly
+    name: Fuel filter with preheating control valve and water drain
+    aliases: [diesel filter, fuel filter]
+    summary: Diesel filter in the engine compartment. The control valve on top sends warm return fuel from the injection pump back through the filter below +15 °C and to the tank above +31 °C; its arrow points to the tank. A water drain screw is at the bottom.
+    location: { zone: engine-bay-right, text: "Engine compartment, front right (position estimated)" }
+    access:
+      from: [bonnet]
+      notes: "To change the filter, pull out the securing clip and lift the control valve off with its pipes still attached. Fill the new filter with diesel before fitting; observe the flow arrow and do not swap the connections. To drain water, take the control valve off and loosen the drain screw, letting about 100 cm³ run out."
+      sources: [{ ref: vw-diesel, locator: "pp. 53–55" }]
+    explode: { dir: [0.3, -0.5, 1], dist: 260 }
+    verification:
+      notes: "In the engine compartment per ssp-169 p. 41; the place is estimated."
+      sources: [{ ref: vw-diesel, locator: "pp. 53–55", says: "Control valve: installation position arrow points towards fuel tank; below +15 °C passageway to filter open; over +31 °C passageway to filter closed" }, { ref: ssp-169, locator: p. 41, says: "Kraftstofffilter für Dieselmotoren im Motorraum" }]
+  - { id: fuel-filter-cartridge, parent: fuel-filter, kind: part, name: Fuel filter cartridge, material: steel-zinc, explode: { dir: [0, 0, -1], dist: 120 }, geometry: { gen: cyl, r: 44, h: 150, axis: z, chamfer: 4, pos: [575, -600, 680] } }
+  - { id: fuel-filter-control-valve, parent: fuel-filter, kind: part, name: Fuel preheating control valve, material: plastic-white, explode: { dir: [0, 0, 1], dist: 120 }, geometry: { gen: box, size: [50, 70, 34], r: 6, pos: [575, -600, 772] } }
+
+  # ---------------------------------------------------------------- exhaust
+  - id: exhaust-system
+    kind: assembly
+    name: Exhaust system
+    summary: Front pipe from the turbocharger down behind the engine into the tunnel, oxidation catalyst, centre silencer, then past the left of the fuel tank, over the rear axle to the rear silencer at the left rear.
+    location: { zone: underbody-centre, text: "Under the car, from the engine to the left rear" }
+    access: { from: [underside] }
+    explode: { dir: [0, 0, -1], dist: 300 }
+    verification:
+      notes: "The engine data list an oxidation catalyst for the AHU; the Galaxy's exhaust routing and silencer positions are estimated."
+      sources: [{ ref: vw-engine-mech, locator: p. 8, says: "Catalyst: x (AHU)" }]
+  - id: exhaust-front-pipe
+    parent: exhaust-system
+    kind: pipe
+    name: Exhaust front pipe (turbocharger to catalyst)
+    aliases: [downpipe]
+    material: exhaust-steel
+    explode: { dir: [-0.4, 0, -1], dist: 160 }
+    geometry: { gen: tube, r: 28, points: [[-110, -265, 680], [-150, -290, 560], [-210, -250, 430], [-260, -120, 300], [-380, 30, 300], [-520, 40, 335], [-640, 40, 345]] }
+  - id: catalytic-converter
+    parent: exhaust-system
+    kind: part
+    name: Oxidation catalytic converter
+    aliases: [catalyst, cat]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    placement: { pos: [-820, 40, 345], rot: [0, 0, 0] }
+    verification: { sources: [{ ref: vw-engine-mech, locator: p. 8, says: "Catalyst: x" }, { ref: ssp-153 }] }
+    geometry: { gen: canister, len: 300, r: 58, cones: 40, stubR: 28, stubLen: 30, shield: true }
+  - id: exhaust-centre-section
+    parent: exhaust-system
+    kind: pipe
+    name: Exhaust centre pipe
+    material: exhaust-steel
+    explode: { dir: [0, 0, -1], dist: 160 }
+    geometry: { gen: tube, r: 25, points: [[-1000, 40, 345], [-1450, 40, 350], [-1560, 40, 350]] }
+  - id: centre-silencer
+    parent: exhaust-system
+    kind: part
+    name: Centre silencer
+    aliases: [middle silencer, centre box]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    placement: { pos: [-1760, 40, 350] }
+    geometry: { gen: canister, len: 360, r: 62, cones: 30, stubR: 25, stubLen: 30, shield: false }
+  - id: exhaust-rear-pipe
+    parent: exhaust-system
+    kind: pipe
+    name: Exhaust rear pipe (over the rear axle)
+    material: exhaust-steel
+    explode: { dir: [0, 0, -1], dist: 160 }
+    geometry: { gen: tube, r: 25, points: [[-1970, 40, 350], [-2150, 120, 320], [-2380, 280, 380], [-2600, 330, 450], [-2950, 380, 440], [-3120, 430, 330], [-3160, 450, 320]] }
+  - id: rear-silencer
+    parent: exhaust-system
+    kind: part
+    name: Rear silencer with tailpipe
+    aliases: [back box, rear box, muffler]
+    explode: { dir: [-1, 0, -0.5], dist: 200 }
+    placement: { pos: [-3380, 470, 315], rot: [0, 0, 0] }
+    geometry: { gen: canister, len: 420, r: 70, cones: 30, stubR: 25, stubLen: 40, shield: false }
+  - { id: exhaust-tailpipe, parent: exhaust-system, kind: pipe, name: Tailpipe, material: exhaust-steel, explode: { dir: [-1, 0, 0], dist: 160 }, geometry: { gen: tube, r: 25, points: [[-3600, 470, 315], [-3700, 470, 300], [-3745, 470, 295]] } }

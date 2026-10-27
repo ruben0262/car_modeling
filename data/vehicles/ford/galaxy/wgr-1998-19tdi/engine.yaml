@@ -1,0 +1,728 @@
+# 1.9 TDI, VW engine code AHU (66 kW): the VW EA827-family four-cylinder diesel with direct injection,
+# an electronically controlled distributor injection pump, turbocharger and charge-air cooler. The engine
+# itself is the same in the Golf, Passat and Sharan, so engine-internal facts come from the VW engine
+# manuals (vw-engine-mech is written for the Golf/Vento installation, vw-engine-b5 for the Passat); the
+# injection system, its senders and the Sharan engine mounting come from the Sharan diesel manual
+# (vw-diesel), and the engine mounting layout from ssp-169 p. 20. Torques of the Sharan engine and gearbox
+# mountings are not in the documents in hand.
+#
+# Engine-local frame (every node under engine-assembly):
+#   origin on the crankshaft axis at the flywheel face,
+#   +X along the crank towards the timing-belt end, +Y towards the intake side, +Z along the cylinders.
+# Installed transverse with the timing belt on the vehicle's right and the gearbox on the left; VW numbers
+# the cylinders from the timing-belt end (No. 1 at x≈342, No. 4 at x≈78). The intake side faces the
+# radiator and the exhaust side the bulkhead → rot [0, 0, -90]. The crank position (160 mm ahead of the
+# front axle, 520 mm high, flywheel face 85 mm left of the centre line) and every external fitting position are estimated around the subframe, the
+# longitudinal members and the bonnet line.
+system: engine
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources:
+      - { ref: vw-engine-mech, locator: "pp. 7–8, 16–29" }
+
+nodes:
+  - id: engine-assembly
+    kind: assembly
+    name: Engine — 1.9 TDI 66 kW (VW AHU)
+    aliases: [engine, motor, AHU, TDI, 1.9 TDI, diesel engine, EA827]
+    summary: Transverse 1.9-litre four-cylinder turbodiesel with direct injection, one overhead camshaft and two valves per cylinder, an intermediate shaft driving the oil and vacuum pumps, and an electronically controlled distributor injection pump.
+    function: Converts diesel fuel into torque at the crankshaft, delivered through the clutch and the 5-speed gearbox to the front wheels.
+    location: { zone: engine-bay, text: "Transverse; timing belt at the right, gearbox at the left, intake side towards the radiator" }
+    placement: { pos: [160, 85, 520], rot: [0, 0, -90] }
+    explode: { dir: [0, 0, 1], dist: 0 }
+    specs:
+      - { label: Engine code, value: "AHU, built from 08.96 (replacing the 1Z, same output)", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Capacity, value: "1.9 l (1896 cm³); bore 79.5 mm × stroke 95.5 mm", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Output / torque, value: "66 kW (90 PS) at 4000 rpm; 202 Nm at 1900 rpm", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Compression ratio, value: "19.5 : 1", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Firing order, value: "1-3-4-2 (No. 1 at the timing-belt end)", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Idling speed, value: "861–945 rpm (engine warm, coolant at least 80 °C)", source: { ref: vw-diesel, locator: p. 25 } }
+      - { label: Fuel, value: "Diesel, cetane number at least 49", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Engine oil, value: "VW standard 505 00 (turbo diesel)", source: { ref: vw-engine-mech, locator: p. 88 } }
+      - { label: Engine number, value: "On the cylinder block between the injection pump and the vacuum pump; also on a sticker on the toothed belt guard and on the vehicle data plate", source: { ref: vw-engine-mech, locator: p. 7 } }
+    manufacturing:
+      - { label: Systems, value: "Turbocharger with charge-air cooling, exhaust gas recirculation, oxidation catalyst", source: { ref: vw-engine-mech, locator: p. 8 } }
+      - { label: Engine management, value: "Electronic Diesel Control (EDC): control unit J248 behind the dash panel insert", source: { ref: vw-diesel, locator: p. 46 } }
+    verification:
+      notes: "Engine data, numbering and the timing-end layout are from the manuals; the installed position is estimated."
+      sources: [{ ref: vw-engine-mech, locator: "pp. 7–8" }, { ref: ssp-169, locator: p. 19, says: "1,9l-TDI-Motor: 1896 cm³, Bohrung 79,5 mm, Hub 95,5 mm, Verdichtung 19,5:1, 66 kW (90 PS) bei 4000 1/min, 202 Nm bei 1900 1/min, EDC" }]
+
+  # ---------------------------------------------------------------- castings
+  - id: cylinder-block
+    parent: engine-assembly
+    kind: part
+    name: Cylinder block with intermediate shaft
+    aliases: [block, crankcase]
+    summary: Cast-iron block; the intermediate shaft along its intake side is driven by the toothed belt and drives the oil pump and the vacuum pump. Oil spray jets cool the pistons.
+    explode: { dir: [0, 0, -1], dist: 40 }
+    specs:
+      - { label: Piston cooling jets, value: "10 Nm, fitted with AMV 188 100 02", source: { ref: vw-engine-mech, locator: p. 93 } }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 21, 26, 93" }] }
+    geometry: { gen: engine-block, len: 420, y: [-135, 150], z: [-90, 235], bores: [78, 166, 254, 342], boreR: 40 }
+
+  - id: oil-sump
+    parent: engine-assembly
+    kind: part
+    name: Oil sump
+    aliases: [sump, oil pan]
+    summary: Pressed-steel sump with a gasket (flanges coated with "D2"), baffle plate and oil pump suction pipe inside.
+    access: { from: [underside], tools: [Drain-plug socket, Oil drain tray], notes: "Drain plug 30 Nm; sump bolts 20 Nm (the two rear bolts at the gearbox end need jointed spanner 3185).", sources: [{ ref: vw-engine-mech, locator: "pp. 92–93" }] }
+    explode: { dir: [0, 0, -1], dist: 260 }
+    specs:
+      - { label: Drain plug, value: "30 Nm", source: { ref: vw-engine-mech, locator: p. 92 } }
+      - { label: Sump bolts, value: "20 Nm", source: { ref: vw-engine-mech, locator: p. 92 } }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 92–93" }] }
+    geometry: { gen: oil-sump, x: [20, 400], y: [-120, 135], z: [-235, -90], ladder: 14, plug: [120, -60] }
+
+  - id: cylinder-head
+    parent: engine-assembly
+    kind: part
+    name: Cylinder head
+    aliases: [head]
+    summary: Aluminium cross-flow head with one camshaft and hydraulic bucket tappets; injectors and glow plugs sit in the head. Renew the head gasket (choose by marking) and all coolant whenever the head comes off.
+    explode: { dir: [0, 0, 1], dist: 140 }
+    specs:
+      - { label: Head bolts, value: "Renew; tighten and loosen in the set sequence", source: { ref: vw-engine-mech, locator: p. 24 } }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 23–25" }] }
+    geometry: { gen: cylinder-head, len: 420, y: [-125, 140], z: [235, 350], ports: [78, 166, 254, 342] }
+
+  - id: cam-cover
+    parent: engine-assembly
+    kind: part
+    name: Cylinder head cover with oil filler cap and breather valve
+    aliases: [rocker cover, valve cover, cam cover, oil filler]
+    summary: Cover over the camshaft with the oil filler cap and the pressure-regulating valve of the crankcase breather (to the intake hose).
+    access: { from: [bonnet], notes: "Cover nuts 10 Nm; renew the gasket if damaged.", sources: [{ ref: vw-engine-mech, locator: "pp. 23–24" }] }
+    explode: { dir: [0, 0, 1], dist: 250 }
+    verification:
+      notes: "The position of the oil filler cap on the cover is estimated (the owner's booklet notes it varies with the engine version)."
+      sources: [{ ref: vw-engine-mech, locator: "pp. 23–24" }, { ref: vw-owner-tips, locator: p. 32 }]
+    geometry: { gen: cam-cover, len: 410, y: [-95, 110], z: [350, 405], filler: 290 }
+
+  - id: crankcase-breather-heater
+    parent: engine-assembly
+    kind: part
+    name: Crankcase breather heater element
+    summary: Heater element in the crankcase breather line that stops it freezing.
+    explode: { dir: [0, 1, 1], dist: 200 }
+    ewd: [N79]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 14/3", says: "N79 Heater element (crankcase breather)" }] }
+    geometry: { gen: cyl, r: 16, h: 50, axis: x, pos: [200, 130, 425], mat: plastic-black }
+
+  # ---------------------------------------------------------------- timing drive
+  - id: timing-belt-cover
+    parent: engine-assembly
+    kind: part
+    name: Toothed belt guard (upper, lower and rear parts)
+    aliases: [timing belt cover, cam belt cover]
+    explode: { dir: [1, 0, 0], dist: 260 }
+    material: plastic-black
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 18–21, items 6, 16, 26" }] }
+    geometry:
+      gen: prism
+      plane: yz
+      thickness: 36
+      bevel: 4
+      pos: [446, 0, 0]
+      outline: [[-110, -70], [-110, 200], [-95, 430], [70, 460], [160, 360], [235, 250], [225, 130], [120, -40], [40, -105], [-60, -105]]
+
+  - id: timing-drive
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Camshaft and injection pump drive (toothed belt)
+    summary: One toothed belt from the crankshaft drives the intermediate shaft, the injection pump and the camshaft, with a semi-automatic tensioning roller and an idler. The ribbed belt drives the coolant pump.
+    explode: { dir: [1, 0, 0], dist: 140 }
+    contacts: [timing-belt-cover, crank-pulley, cylinder-block, cylinder-head, injection-pump]
+    access:
+      from: [bonnet, wheel-arch-front-right]
+      removeFirst: [accessory-belt]
+      tools: [Setting bar 2065 A (camshaft), Pin 2064 (injection pump sprocket), Pin wrench Matra V159 (tensioner)]
+      notes: "Take off the balance weight and the engine mounting bracket at the timing end first (refit: bolts -2- 20 Nm, then bolt -1- 55 Nm). Set TDC No. 1: the flywheel mark aligns with the casting on the bell housing, the setting bar fits the camshaft slot (centred with feeler gauges) and pin 2064 locks the pump sprocket. Release the camshaft sprocket from its taper through the hole in the rear guard. Turn the tensioner to the right until notch and raised mark align, lock nut 20 Nm; camshaft sprocket bolt 45 Nm."
+      sources: [{ ref: vw-diesel, locator: "pp. 59–65" }, { ref: vw-engine-mech, locator: "pp. 33–37" }]
+    verification:
+      notes: "Belt order follows the manual's parts list; the sprocket centres are estimated."
+      sources: [{ ref: vw-engine-mech, locator: "pp. 18–21, Part I" }]
+  - id: timing-belt
+    parent: timing-drive
+    kind: part
+    name: Toothed belt
+    aliases: [cam belt, cambelt, timing belt]
+    summary: Mark the direction of rotation before removing; check for wear; never kink it.
+    explode: { dir: [1, 0, 0], dist: 80 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 18, Part I item 7" }] }
+    geometry:
+      gen: serpentine
+      x: 470
+      width: 25
+      thickness: 4
+      pulleys:
+        - { y: 0, z: 0, r: 31 }
+        - { y: 105, z: 70, r: 40 }
+        - { y: 165, z: 215, r: 62 }
+        - { y: 0, z: 392, r: 62 }
+        - { y: -80, z: 270, r: 30, side: -1 }
+        - { y: -62, z: 110, r: 25, side: -1 }
+  - id: camshaft-sprocket
+    parent: timing-drive
+    kind: part
+    name: Camshaft sprocket
+    summary: Sits on a taper on the camshaft; bolt 45 Nm.
+    explode: { dir: [1, 0, 0.3], dist: 120 }
+    specs: [{ label: Bolt, value: "45 Nm", source: { ref: vw-engine-mech, locator: "p. 19, Part I items 11–12" } }]
+    geometry: { gen: pulley, r: 60, w: 26, ribs: 0, mat: steel-zinc, pos: [470, 0, 392] }
+  - id: injection-pump-sprocket
+    parent: timing-drive
+    kind: part
+    name: Injection pump sprocket (single part)
+    explode: { dir: [1, 0.4, 0], dist: 120 }
+    specs: [{ label: Securing nut, value: "55 Nm", source: { ref: vw-diesel, locator: "p. 49, item 1" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 20, Part I item 17" }, { ref: vw-diesel, locator: p. 49 }] }
+    geometry: { gen: pulley, r: 60, w: 26, ribs: 0, mat: steel-zinc, pos: [470, 165, 215] }
+  - id: intermediate-shaft-sprocket
+    parent: timing-drive
+    kind: part
+    name: Intermediate shaft sprocket
+    explode: { dir: [1, 0.4, -0.3], dist: 120 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 21, Part I items 22, 25" }] }
+    geometry: { gen: pulley, r: 38, w: 26, ribs: 0, mat: steel-zinc, pos: [470, 105, 70] }
+  - id: crankshaft-sprocket
+    parent: timing-drive
+    kind: part
+    name: Crankshaft toothed belt sprocket
+    summary: Its central bolt is renewed every time (threads and shoulder free of oil and grease) and tightened to 90 Nm + 90°, counter-held with tool 3099.
+    explode: { dir: [1, 0, -0.3], dist: 120 }
+    specs: [{ label: Central bolt, value: "90 Nm + 1/4 turn (90°), renew", source: { ref: vw-engine-mech, locator: "p. 21, Part I item 24" } }]
+    geometry: { gen: pulley, r: 29, w: 26, ribs: 0, mat: steel-zinc, pos: [470, 0, 0] }
+  - id: timing-belt-tensioner
+    parent: timing-drive
+    kind: part
+    name: Semi-automatic toothed belt tensioning roller
+    explode: { dir: [1, -0.5, 0], dist: 120 }
+    specs: [{ label: Lock nut, value: "20 Nm (after aligning notch and raised mark)", source: { ref: vw-diesel, locator: p. 60 } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 18–19, Part I items 8–10; p. 36" }] }
+    geometry: { gen: pulley, r: 28, w: 26, ribs: 0, mat: steel-zinc, pos: [470, -80, 270] }
+  - id: timing-belt-idler
+    parent: timing-drive
+    kind: part
+    name: Toothed belt idler wheel
+    explode: { dir: [1, -0.5, -0.3], dist: 120 }
+    specs: [{ label: Bolt, value: "25 Nm", source: { ref: vw-engine-mech, locator: "p. 19, Part I items 13–14" } }]
+    geometry: { gen: pulley, r: 23, w: 26, ribs: 0, mat: steel-zinc, pos: [470, -62, 110] }
+
+  # ---------------------------------------------------------------- accessory drive
+  - id: crank-pulley
+    parent: engine-assembly
+    kind: part
+    name: Belt pulley and vibration damper
+    aliases: [harmonic balancer, damper pulley, crankshaft pulley]
+    summary: Fits in one position only (offset holes).
+    explode: { dir: [1, 0, 0], dist: 300 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 22, Part I item 29" }] }
+    geometry: { gen: pulley, r: 76, w: 34, ribs: 6, pos: [505, 0, 0] }
+
+  - id: accessory-belt
+    parent: engine-assembly
+    kind: part
+    name: Ribbed belt
+    aliases: [auxiliary belt, serpentine belt, fan belt, poly-V belt]
+    summary: Drives the coolant pump, the alternator, the power steering pump and the air conditioning compressor from the crankshaft pulley. Mark the direction of rotation before taking it off.
+    access: { from: [bonnet, wheel-arch-front-right], notes: "Lift the tensioning roller with lever 3299 to slip the belt off.", sources: [{ ref: vw-engine-mech, locator: "pp. 30–33" }, { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1, section 9" }] }
+    explode: { dir: [1, 0, 0], dist: 360 }
+    verification:
+      notes: "Which units the belt drives is documented; the Sharan pulley layout is not in the documents in hand, so the routing is estimated."
+      sources: [{ ref: vw-engine-mech, locator: "p. 22, Part I items 27–28; p. 33" }, { ref: ru-manual, locator: "shar_steering_rus.pdf p. 1", says: "the pump is driven by the engine through a ribbed belt" }]
+    geometry:
+      gen: serpentine
+      x: 505
+      pulleys:
+        - { y: 0, z: 0, r: 76 }
+        - { y: 215, z: -45, r: 56 }
+        - { y: 130, z: 150, r: 52 }
+        - { y: 285, z: 330, r: 30 }
+        - { y: 60, z: 240, r: 34, side: -1 }
+        - { y: -170, z: 170, r: 60 }
+  - id: belt-tensioner
+    parent: engine-assembly
+    kind: part
+    name: Ribbed belt tensioning roller
+    explode: { dir: [1, 0.3, 0.2], dist: 320 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 28–29, Part III items 21–24; p. 32" }] }
+    geometry: { gen: pulley, r: 34, w: 26, ribs: 0, mat: steel-zinc, pos: [505, 60, 240] }
+  - id: coolant-pump
+    parent: engine-assembly
+    kind: part
+    name: Coolant pump
+    aliases: [water pump]
+    summary: In the block at the timing end, driven by the ribbed belt.
+    explode: { dir: [1, 0.6, 0], dist: 220 }
+    contacts: [timing-belt-cover, cylinder-block]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "p. 22, Part I item 27; p. 29, Part III item 25" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: pulley, r: 52, w: 26, ribs: 6, pos: [505, 130, 150] }
+        - { gen: cyl, r: 40, h: 10, axis: x, chamfer: 2, pos: [496, 130, 150], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- injection
+  - id: injection-pump
+    parent: engine-assembly
+    kind: assembly
+    name: Injection pump (electronically controlled distributor pump)
+    aliases: [diesel pump, distributor pump, fuel injection pump, VE pump]
+    summary: Belt-driven distributor pump on the intake side at the timing end. The control unit meters fuel with the quantity adjuster (N146), reads its position from the modulating piston movement sender (G149) and the fuel temperature sender, times injection with the commencement of injection valve (N108) and stops the engine with the fuel shut-off valve (N109).
+    location: { zone: engine-bay, text: "Front (radiator side) of the engine at the timing-belt end" }
+    access:
+      from: [bonnet]
+      removeFirst: [timing-belt]
+      notes: "Securing bolts 25 Nm; injector pipe unions 25 Nm (loosen and retighten after adjusting the timing). Fill a new pump with at least 180 ml of clean diesel through the return union. Commencement of injection is checked and set dynamically with the fault reader (function 04)."
+      sources: [{ ref: vw-diesel, locator: "pp. 49–52, 59–63" }]
+    explode: { dir: [0, 1, 0.2], dist: 260 }
+    contacts: [cylinder-block, timing-belt-cover, timing-drive, injector-pipes]
+    ewd: [N146, G149, G81]
+    specs:
+      - { label: Securing bolts, value: "25 Nm", source: { ref: vw-diesel, locator: p. 62 } }
+      - { label: Fuel shut-off valve, value: "40 Nm", source: { ref: vw-diesel, locator: "p. 50, item 9" } }
+      - { label: Delivery valve unions, value: "45 Nm", source: { ref: vw-diesel, locator: "p. 52, item 20" } }
+      - { label: Banjo bolt (supply), value: "25 Nm", source: { ref: vw-diesel, locator: "p. 49, item 5" } }
+    verification:
+      sources: [{ ref: vw-diesel, locator: "pp. 45–52", says: "Injection pump with quantity adjuster (N146), modulating piston movement sender (G149) and fuel temperature sender" }]
+  - id: injection-pump-body
+    parent: injection-pump
+    kind: part
+    name: Injection pump body with metering control
+    explode: { dir: [0, 1, 0], dist: 120 }
+    geometry: { gen: machine, kind: pump, r: 52, len: 180, mat: aluminium-cast }
+    placement: { pos: [318, 218, 172] }
+  - id: fuel-shut-off-valve
+    parent: injection-pump
+    kind: part
+    name: Fuel shut-off valve
+    aliases: [stop solenoid, N109]
+    explode: { dir: [0, 1, 1], dist: 140 }
+    ewd: [N109]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 48, item 20; p. 50, item 9" }] }
+    geometry: { gen: cyl, r: 14, h: 36, axis: y, pos: [250, 275, 190], mat: steel-zinc }
+  - id: injection-timing-valve
+    parent: injection-pump
+    kind: part
+    name: Commencement of injection valve
+    aliases: [timing solenoid, N108]
+    explode: { dir: [0, 1, -1], dist: 140 }
+    ewd: [N108]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 52, item 24" }] }
+    geometry: { gen: cyl, r: 12, h: 36, axis: y, pos: [330, 275, 140], mat: plastic-black }
+  - id: injection-pump-connector
+    parent: injection-pump
+    kind: connector
+    name: Injection pump connectors (metering control and 3-pin valve connector)
+    summary: A multi-pin connector for the fuel temperature sender, quantity adjuster and modulating piston movement sender; on the AHU a separate 3-pin connector for the fuel shut-off and commencement of injection valves.
+    connector: {}
+    explode: { dir: [0, 1, 0.6], dist: 180 }
+    placement: { pos: [200, 240, 150] }
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 46–47, items 12, 19" }] }
+    geometry: { gen: connector, size: [30, 40, 26], mat: connector-black }
+
+  - id: injector-pipes
+    parent: engine-assembly
+    kind: pipe
+    name: Injector pipes
+    summary: Removed and fitted as a complete set without altering their shape (ring spanner 3035); unions 25 Nm.
+    material: steel-zinc
+    explode: { dir: [0, 1, 1], dist: 200 }
+    specs: [{ label: Unions, value: "25 Nm", source: { ref: vw-engine-mech, locator: "p. 24, Part II item 17" } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 3, points: [[410, 230, 215], [420, 200, 360], [360, 150, 372], [342, 138, 366]] }
+        - { gen: tube, r: 3, points: [[410, 222, 205], [424, 190, 372], [280, 150, 378], [254, 138, 366]] }
+        - { gen: tube, r: 3, points: [[410, 214, 215], [428, 182, 384], [200, 152, 384], [166, 138, 366]] }
+        - { gen: tube, r: 3, points: [[410, 206, 205], [432, 174, 392], [120, 154, 390], [78, 138, 366]] }
+
+  - id: injectors
+    parent: engine-assembly
+    kind: assembly
+    name: Injectors (×4)
+    aliases: [injector, nozzle, two-spring injector]
+    summary: Two-spring injectors (injection in two stages) held in the head by a retainer; the injector of cylinder 3 carries the needle lift sender that tells the control unit the actual start of injection.
+    access:
+      from: [bonnet]
+      notes: "Opening pressure 190–200 bar new, 170 bar wear limit; must hold 150 bar for 10 s without dripping. Retainer nut 20 Nm, injector pipes 25 Nm. A faulty injector shows as knocking, smoke or poor power: with the engine at fast idle loosen each pipe union in turn — the one that makes no difference is the faulty injector."
+      sources: [{ ref: vw-diesel, locator: "pp. 65–67" }, { ref: vw-engine-mech, locator: p. 16 }]
+    explode: { dir: [0, 0, 1], dist: 320 }
+    contacts: [cylinder-head, cam-cover]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 51, item 14; pp. 66–67", says: "Injector for 3rd cylinder with needle lift sender; this engine is equipped with dual spring injectors" }] }
+  - { id: injector-1, parent: injectors, kind: part, name: Injector cylinder 1 (timing end), placement: { pos: [342, 105, 270], rot: [-20, 0, 0] }, geometry: { gen: injector, len: 105 } }
+  - { id: injector-2, parent: injectors, kind: part, name: Injector cylinder 2, placement: { pos: [254, 105, 270], rot: [-20, 0, 0] }, geometry: { gen: injector, len: 105 } }
+  - id: injector-3
+    parent: injectors
+    kind: part
+    name: Injector cylinder 3 with needle lift sender
+    ewd: [G80]
+    placement: { pos: [166, 105, 270], rot: [-20, 0, 0] }
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 47, item 16; p. 51, item 14" }] }
+    geometry: { gen: injector, len: 105 }
+  - { id: injector-4, parent: injectors, kind: part, name: Injector cylinder 4 (gearbox end), placement: { pos: [78, 105, 270], rot: [-20, 0, 0] }, geometry: { gen: injector, len: 105 } }
+
+  - id: glow-plugs
+    parent: engine-assembly
+    kind: assembly
+    name: Glow plugs (×4)
+    aliases: [heater plugs, glowplugs]
+    summary: One per cylinder in the head, fed through the glow plug relay and the glow plug strip fuse; the control unit sets the glow period from the coolant temperature.
+    access:
+      from: [bonnet]
+      tools: [Jointed spanner 3220, Diode test lamp V.A.G 1527]
+      notes: "15 Nm. Test: unplug, connect the diode test lamp from battery positive to each plug — if the diode lights, the plug is good."
+      sources: [{ ref: vw-diesel, locator: "pp. 113–114" }]
+    explode: { dir: [0, 1, -0.4], dist: 200 }
+    contacts: [cylinder-head]
+    ewd: [Q6]
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 113–114" }, { ref: vw-wd-1997, locator: "No. 14/8", says: "Q6 Glow plugs - (engine); J52 Glow plug relay" }] }
+  - { id: glow-plug-1, parent: glow-plugs, kind: part, name: Glow plug 1, placement: { pos: [342, 124, 240], rot: [-76, 0, 0] }, geometry: { gen: glow-plug, len: 80 } }
+  - { id: glow-plug-2, parent: glow-plugs, kind: part, name: Glow plug 2, placement: { pos: [254, 124, 240], rot: [-76, 0, 0] }, geometry: { gen: glow-plug, len: 80 } }
+  - { id: glow-plug-3, parent: glow-plugs, kind: part, name: Glow plug 3, placement: { pos: [166, 124, 240], rot: [-76, 0, 0] }, geometry: { gen: glow-plug, len: 80 } }
+  - { id: glow-plug-4, parent: glow-plugs, kind: part, name: Glow plug 4, placement: { pos: [78, 124, 240], rot: [-76, 0, 0] }, geometry: { gen: glow-plug, len: 80 } }
+
+  # ---------------------------------------------------------------- air and exhaust side
+  - id: intake-manifold
+    parent: engine-assembly
+    kind: part
+    name: Intake manifold with EGR valve
+    aliases: [inlet manifold]
+    summary: Cast manifold on the intake (radiator) side of the head, fed by the charge-air cooler. The mechanical EGR valve on it is opened by vacuum through the EGR solenoid N18; the intake manifold temperature sender G72 sits in the charge-air path.
+    explode: { dir: [0, 1, 0.2], dist: 260 }
+    material: aluminium-cast
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 45–47, items 4, 11; p. 99" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [320, 60, 70], r: 16, pos: [200, 215, 318] }
+        - { gen: box, size: [56, 46, 44], r: 10, pos: [78, 166, 305] }
+        - { gen: box, size: [56, 46, 44], r: 10, pos: [166, 166, 305] }
+        - { gen: box, size: [56, 46, 44], r: 10, pos: [254, 166, 305] }
+        - { gen: box, size: [56, 46, 44], r: 10, pos: [342, 166, 305] }
+        - { gen: cyl, r: 34, h: 60, axis: z, pos: [40, 222, 378], mat: aluminium-cast }
+  - id: egr-solenoid
+    parent: engine-assembly
+    kind: part
+    name: Exhaust gas recirculation valve (solenoid)
+    aliases: [EGR valve, EGR solenoid, N18]
+    summary: Electrically switched vacuum valve that opens the mechanical EGR valve; the air mass meter G70 shows how much exhaust gas is being recirculated.
+    explode: { dir: [-1, 0.6, 1], dist: 260 }
+    ewd: [N18]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 45, item 4; p. 99" }] }
+    geometry: { gen: box, size: [40, 34, 44], r: 6, pos: [-40, 150, 380], mat: plastic-black }
+  - id: intake-air-temperature-sender
+    parent: engine-assembly
+    kind: part
+    name: Intake manifold temperature sender
+    ewd: [G72]
+    explode: { dir: [0, 1, 1], dist: 220 }
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 46, item 11; p. 72" }] }
+    geometry: { gen: cyl, r: 9, h: 30, axis: z, pos: [80, 240, 345], mat: plastic-black }
+
+  - id: exhaust-manifold
+    parent: engine-assembly
+    kind: part
+    name: Exhaust manifold
+    summary: Cast manifold on the bulkhead side of the head carrying the turbocharger; the EGR pipe takes exhaust gas from it to the EGR valve.
+    explode: { dir: [0, -1, 0.1], dist: 200 }
+    material: iron-cast
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 126–137" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 18, points: [[78, -135, 300], [80, -170, 285], [140, -200, 255], [200, -212, 235]] }
+        - { gen: tube, r: 18, points: [[166, -135, 300], [168, -175, 280], [192, -205, 250], [205, -212, 235]] }
+        - { gen: tube, r: 18, points: [[254, -135, 300], [252, -175, 280], [228, -205, 250], [215, -212, 235]] }
+        - { gen: tube, r: 18, points: [[342, -135, 300], [340, -170, 285], [280, -200, 255], [220, -212, 235]] }
+        - { gen: box, size: [90, 30, 70], r: 6, pos: [210, -222, 222] }
+
+  - id: turbocharger
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Turbocharger with charge pressure control valve
+    aliases: [turbo, KKK turbocharger, Garrett turbocharger, wastegate]
+    summary: Exhaust-driven turbocharger (KKK or Garrett) on the exhaust manifold. Boost is limited by a charge pressure control valve (wastegate) whose pressure unit is worked by vacuum through the charge pressure control solenoid valve N75.
+    location: { zone: engine-bay-rear, text: "Bulkhead side of the engine, on the exhaust manifold" }
+    access: { from: [bonnet, underside], notes: "Oil supply line to the turbocharger: banjo bolt 25 Nm, renew the sealing rings.", sources: [{ ref: vw-engine-mech, locator: "p. 27, Part III items 8–11" }] }
+    placement: { pos: [200, -270, 160] }
+    explode: { dir: [0, -1, 0.15], dist: 300 }
+    contacts: [exhaust-manifold]
+    specs:
+      - { label: Charge pressure, value: "1720–1950 mbar absolute (fault reader display group 011 during a full-throttle test drive at about 3000 rpm)", source: { ref: vw-diesel, locator: p. 94 } }
+    faults:
+      - { symptom: "Lack of power, charge pressure too low", cause: "Check that the pressure unit rod moves 3–4 times when N75 is driven in the final control diagnosis; if not, check N75 and the vacuum hoses; if it moves freely and the pressure is still low, the turbocharger is faulty." }
+    verification: { sources: [{ ref: vw-engine-mech, locator: p. 139, says: "Engine codes 1Z, AHU, ALE: Turbocharger (KKK) / Turbocharger (Garrett) with charge pressure control valve" }, { ref: vw-diesel, locator: "pp. 93–96" }] }
+  - id: compressor-housing
+    parent: turbocharger
+    kind: part
+    name: Compressor housing
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    geometry: { gen: turbo, part: compressor-housing, outletAt: 0 }
+  - id: turbine-housing
+    parent: turbocharger
+    kind: part
+    name: Turbine housing
+    explode: { dir: [1, 0, 0], dist: 120 }
+    geometry: { gen: turbo, part: turbine-housing, inletAt: 180 }
+  - id: turbo-chra
+    parent: turbocharger
+    kind: part
+    name: Centre housing with shaft and bearings
+    aliases: [cartridge, core, CHRA]
+    explode: { dir: [0, 0, -1], dist: 110 }
+    geometry: { gen: turbo, part: chra }
+  - id: wastegate-actuator
+    parent: turbocharger
+    kind: part
+    name: Pressure unit for the charge pressure control valve
+    aliases: [wastegate actuator, boost control actuator]
+    explode: { dir: [0, 0.4, 1], dist: 140 }
+    geometry: { gen: turbo, part: actuator }
+  - id: charge-pressure-solenoid
+    parent: engine-assembly
+    kind: part
+    name: Charge pressure control solenoid valve
+    aliases: [N75, boost control solenoid]
+    explode: { dir: [-1, -0.6, 1], dist: 240 }
+    ewd: [N75]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 46, item 10; pp. 95–96" }] }
+    geometry: { gen: box, size: [40, 34, 44], r: 6, pos: [-40, -200, 380], mat: plastic-black }
+
+  # ---------------------------------------------------------------- lubrication and senders
+  - id: vacuum-pump
+    parent: engine-assembly
+    kind: part
+    name: Vacuum pump
+    aliases: [exhauster, brake vacuum pump]
+    summary: Driven by the intermediate shaft; supplies the brake servo and the vacuum-worked valves (EGR, charge pressure control).
+    explode: { dir: [0, 1, -0.4], dist: 240 }
+    placement: { pos: [250, 190, -10], rot: [0, 90, 0] }
+    specs: [{ label: Clamp bolt, value: "20 Nm", source: { ref: vw-engine-mech, locator: "p. 26, Part III items 4–6" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 7, 26" }] }
+    geometry: { gen: machine, kind: vacuum-pump, r: 40, len: 70 }
+
+  - id: oil-filter
+    parent: engine-assembly
+    kind: part
+    name: Oil filter, filter bracket and oil cooler
+    aliases: [oil filter, oil cooler]
+    summary: Filter bracket on the intake side of the block with the coolant-heated oil cooler between bracket and filter. Renew the oil cooler if metal particles are found in the oil.
+    access: { from: [bonnet, underside], tools: [Strap wrench], notes: "Loosen with a strap wrench, tighten by hand following the instructions on the filter.", sources: [{ ref: vw-engine-mech, locator: "pp. 27–28, 91" }] }
+    explode: { dir: [0, 1, -0.2], dist: 240 }
+    specs: [{ label: Filter bracket, value: "25 Nm", source: { ref: vw-engine-mech, locator: "p. 91, items 10–11" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 27–28, 88, 91" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 40, h: 110, axis: z, chamfer: 4, pos: [130, 200, -95], mat: plastic-white }
+        - { gen: cyl, r: 44, h: 30, axis: z, chamfer: 3, pos: [130, 200, -25], mat: aluminium-cast }
+        - { gen: box, size: [120, 40, 110], r: 8, pos: [130, 170, 30], mat: aluminium-cast }
+
+  - id: dipstick
+    parent: engine-assembly
+    kind: part
+    name: Oil level dipstick and guide tube
+    summary: Do not top up above the shaded zone; above the max mark the catalyst can be damaged.
+    explode: { dir: [0, 1, 0.6], dist: 200 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 88–89, items 3–4" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 5, points: [[200, 152, -40], [200, 178, 150], [195, 228, 320], [195, 232, 405]], mat: steel-black }
+        - { gen: box, size: [16, 36, 22], r: 5, pos: [195, 232, 418], mat: label-yellow }
+
+  - id: oil-pressure-switch-low
+    parent: engine-assembly
+    kind: part
+    name: Oil pressure switch 0.3 bar
+    aliases: [oil pressure switch, F22]
+    summary: In the cylinder head; brown insulation (0.3 bar) or blue (0.25 bar version). Opens between 0.15 and 0.45 bar as the pressure rises.
+    explode: { dir: [0, -1, 0.4], dist: 160 }
+    ewd: [F22]
+    specs: [{ label: Torque, value: "25 Nm", source: { ref: vw-engine-mech, locator: "p. 90, item 5" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 90, 95" }] }
+    geometry: { gen: cyl, r: 12, h: 34, axis: y, pos: [20, -140, 300], mat: steel-zinc }
+  - id: oil-pressure-switch-high
+    parent: engine-assembly
+    kind: part
+    name: Oil pressure switch 0.9 bar
+    aliases: [F1]
+    summary: On the oil filter bracket (grey insulation). Closes at 0.75–1.05 bar. With the oil at 80 °C the pressure must be at least 2.0 bar at 2000 rpm and never above 7.0 bar.
+    explode: { dir: [0, 1, 0], dist: 160 }
+    ewd: [F1]
+    specs: [{ label: Torque, value: "25 Nm", source: { ref: vw-engine-mech, locator: "p. 90, item 9" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 90, 95–96" }] }
+    geometry: { gen: cyl, r: 12, h: 34, axis: y, pos: [90, 205, 40], mat: steel-zinc }
+
+  - id: engine-speed-sender
+    parent: engine-assembly
+    kind: part
+    name: Engine speed sender
+    aliases: [crank sensor, CKP, G28, RPM sensor]
+    summary: Inductive sender on the cylinder block reading the crankshaft sender wheel; resistance between contacts 1 and 2 is 1.0–1.5 kΩ.
+    explode: { dir: [0, 1, -0.4], dist: 220 }
+    ewd: [G28]
+    specs: [{ label: Bolt, value: "10 Nm", source: { ref: vw-engine-mech, locator: "p. 28, Part III items 16–17" } }]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 47, items 17–18; p. 67" }] }
+    geometry: { gen: cyl, r: 11, h: 45, axis: y, pos: [40, 160, -50], mat: plastic-black }
+  - id: coolant-temperature-sender
+    parent: engine-assembly
+    kind: part
+    name: Coolant temperature sender (control unit and gauge)
+    aliases: [coolant temperature sensor, ECT, G62, G2]
+    summary: Dual sender in the coolant outlet at the gearbox end of the head; one element feeds the engine control unit (G62), the other the temperature gauge (G2). Unplugging it makes the control unit see a cold engine, which is used to test the glow plug system.
+    explode: { dir: [-1, 0.5, 0.4], dist: 200 }
+    ewd: [G62, G2]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 47, item 13; pp. 70, 113" }, { ref: vw-wd-1997, locator: "No. 14/9" }] }
+    geometry: { gen: cyl, r: 10, h: 34, axis: x, pos: [-28, 40, 275], mat: plastic-black }
+  - id: oil-temperature-sender
+    parent: engine-assembly
+    kind: part
+    name: Oil temperature sender (multi-function display)
+    aliases: [G8]
+    explode: { dir: [0, 1, -0.5], dist: 200 }
+    ewd: [G8]
+    verification: { notes: "Position estimated: on the oil filter bracket.", sources: [{ ref: vw-wd-1997, locator: "No. 3/2", says: "G8 Oil temperature sender" }] }
+    geometry: { gen: cyl, r: 9, h: 30, axis: y, pos: [170, 205, 40], mat: plastic-black }
+
+  # ---------------------------------------------------------------- mounting
+  - id: engine-mount-rh
+    parent: engine-assembly
+    kind: assembly
+    name: Engine mounting (timing end) with balance weight
+    aliases: [engine mount, right engine mount, hydro mount, RH mount]
+    summary: Combined hydraulic and rubber mount on a bracket on the right front longitudinal member, carrying the engine's weight at the timing end. The engine-side bracket must come off (after unbolting its balance weight) to change the toothed belt.
+    location: { zone: engine-bay-right, text: "On the right front longitudinal member, beside the timing belt" }
+    explode: { dir: [1, 0, 0.4], dist: 260 }
+    contacts: [front-longitudinal-r, timing-belt-cover, cylinder-head, timing-drive]
+    verification:
+      sources:
+        - { ref: ssp-169, locator: p. 20, says: "Das Gewicht der Aggregate wird durch ein kombiniertes Hydro-/Gummilager an der Motorseite ... aufgenommen. Das Motorlager ist mit einem Halter auf dem rechten vorderen Längsträger befestigt" }
+        - { ref: vw-diesel, locator: "pp. 59, 62", says: "Remove balance weight from engine mounting; attach engine mounting with bolts -1- and -2-: first bolts -2- to 20 Nm, then bolts -1- to 55 Nm" }
+  - id: engine-mount-insulator
+    parent: engine-mount-rh
+    kind: part
+    name: Hydraulic/rubber mount on the longitudinal member
+    explode: { dir: [0, 0, 1], dist: 120 }
+    placement: { pos: [605, -20, -20] }
+    geometry: { gen: mount, size: [100, 90, 100] }
+  - id: engine-mount-bracket
+    parent: engine-mount-rh
+    kind: part
+    name: Engine mounting bracket (engine side)
+    summary: "Bolts: first the two bolts -2- to 20 Nm, then bolt -1- to 55 Nm."
+    explode: { dir: [1, 0, 0.6], dist: 160 }
+    material: aluminium-cast
+    specs: [{ label: Bolts, value: "-2- 20 Nm, then -1- 55 Nm", source: { ref: vw-diesel, locator: p. 62 } }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [34, 90, 280], r: 8, pos: [582, -20, 125] }
+        - { gen: box, size: [170, 80, 40], r: 8, pos: [510, -20, 265] }
+  - id: engine-mount-weight
+    parent: engine-mount-rh
+    kind: part
+    name: Balance weight
+    explode: { dir: [1, 1, 0.5], dist: 140 }
+    material: steel-black
+    geometry: { gen: box, size: [50, 60, 70], r: 6, pos: [624, -20, 165] }
+
+  # ---------------------------------------------------------------- internals (on-demand breakdown)
+  - id: engine-internals
+    parent: engine-assembly
+    kind: assembly
+    detail: true
+    name: Engine internals (crankshaft, pistons, camshaft, intermediate shaft, oil pump)
+    summary: Normally hidden inside the block and head.
+    explode: { dir: [0, 0, 1], dist: 0 }
+    contacts: [cylinder-block, cylinder-head, oil-sump, cam-cover, crank-pulley, timing-drive, timing-belt-cover, vacuum-pump, injectors, glow-plugs, engine-speed-sender]
+    verification: { notes: "Internal positions follow the bore spacing; shapes are simplified." }
+  - id: crankshaft
+    parent: engine-internals
+    kind: part
+    name: Crankshaft
+    explode: { dir: [0, 0, -1], dist: 360 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 43–46" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 27, h: 440, axis: x, pos: [230, 0, 0], mat: steel-zinc }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [58, 0, -18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [98, 0, -18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [146, 0, 18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [186, 0, 18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [234, 0, 18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [274, 0, 18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [322, 0, -18], mat: steel-black }
+        - { gen: box, size: [20, 60, 140], r: 10, pos: [362, 0, -18], mat: steel-black }
+  - id: pistons-and-rods
+    parent: engine-internals
+    kind: part
+    name: Pistons and connecting rods (×4)
+    summary: The piston projection at TDC decides which head gasket thickness is fitted.
+    explode: { dir: [0, 0, 1], dist: 300 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 47–55" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 39, h: 60, axis: z, pos: [342, 0, 175], mat: aluminium-machined }
+        - { gen: cyl, r: 39, h: 60, axis: z, pos: [254, 0, 80], mat: aluminium-machined }
+        - { gen: cyl, r: 39, h: 60, axis: z, pos: [166, 0, 80], mat: aluminium-machined }
+        - { gen: cyl, r: 39, h: 60, axis: z, pos: [78, 0, 175], mat: aluminium-machined }
+        - { gen: box, size: [22, 32, 140], r: 6, pos: [342, 0, 95], mat: steel-black }
+        - { gen: box, size: [22, 32, 110], r: 6, pos: [254, 0, 40], mat: steel-black }
+        - { gen: box, size: [22, 32, 110], r: 6, pos: [166, 0, 40], mat: steel-black }
+        - { gen: box, size: [22, 32, 140], r: 6, pos: [78, 0, 95], mat: steel-black }
+  - id: camshaft
+    parent: engine-internals
+    kind: part
+    name: Camshaft with hydraulic bucket tappets
+    explode: { dir: [0, 0, 1], dist: 420 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 78–80" }] }
+    geometry: { gen: cyl, r: 15, h: 440, axis: x, pos: [230, 0, 330], mat: iron-cast }
+  - id: intermediate-shaft
+    parent: engine-internals
+    kind: part
+    name: Intermediate shaft
+    summary: Driven by the toothed belt; its gear drives the oil pump and the vacuum pump.
+    explode: { dir: [0, 1, 0], dist: 320 }
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 21, 26" }] }
+    geometry: { gen: cyl, r: 16, h: 420, axis: x, pos: [240, 105, 70], mat: steel-zinc }
+  - id: oil-pump
+    parent: engine-internals
+    kind: part
+    name: Oil pump (gear type) with pressure relief valve
+    summary: Gear pump in the sump with its suction pipe; the relief valve in the cover opens at 5.7–6.7 bar. Gear backlash 0.05 mm new, 0.20 mm wear limit; axial clearance wear limit 0.15 mm.
+    explode: { dir: [0, 0, -1], dist: 420 }
+    specs: [{ label: Cover bolts, value: "10 Nm", source: { ref: vw-engine-mech, locator: "p. 92, items 17–19" } }]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 92–95" }] }
+    geometry: { gen: cyl, r: 40, h: 60, axis: z, pos: [250, 80, -150], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- pendulum support (vehicle frame)
+  - id: pendulum-support
+    kind: part
+    name: Pendulum support (torque rod)
+    aliases: [torque rod, roll restrictor, dog bone, Pendelstütze]
+    summary: Rod between the gearbox and the subframe that takes the drive torque of the engine and gearbox, which hang on two hydraulic mounts and a rubber mount (pendulum mounting).
+    location: { zone: underbody-front, text: "Between the bottom of the gearbox and the subframe" }
+    access: { from: [underside] }
+    explode: { dir: [0, 0, -1], dist: 120 }
+    contacts: [front-subframe, gearbox]
+    verification:
+      notes: "Its end positions are estimated from the drawing ssp-169 fig. 169/25."
+      sources: [{ ref: ssp-169, locator: p. 20, says: "Die Pendellagerung besteht aus zwei Hydrolagern, einem Gummilager und einer Pendelstütze ... Die Pendelstütze befindet sich zwischen Getriebe und Aggregateträger" }]
+    geometry:
+      gen: link
+      w: 44
+      h: 30
+      points: [[240, 240, 440], [395, 150, 245]]
+      eyes:
+        - { at: [240, 240, 440], axis: [0, 1, 0], r: 30, len: 50 }
+        - { at: [395, 150, 245], axis: [0, 1, 0], r: 26, len: 44 }

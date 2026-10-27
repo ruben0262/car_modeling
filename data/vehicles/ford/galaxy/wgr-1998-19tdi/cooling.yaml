@@ -1,0 +1,407 @@
+# Engine cooling, charge-air cooling, air intake, air conditioning, heating and the TDI's auxiliary heaters.
+# Layout from ssp-169 (pp. 60–67), component names and locations from the VW current flow diagrams (diagrams
+# No. 14 engine AHU, No. 24 radiator fan, No. 74 air conditioner AHU from 01.1998, No. 80 2nd heat exchanger,
+# No. 55 auxiliary heater D3W). The cooling pack, ducts and hoses are placed by estimate: the Sharan documents
+# in hand give no installation drawing of them.
+system: cooling
+defaults:
+  verification:
+    geometry: schematic
+    placement: estimated
+    facts: oem
+    sources: [{ ref: ssp-169, locator: "pp. 60–67" }]
+
+nodes:
+  # ---------------------------------------------------------------- front cooling pack
+  - id: cooling-pack
+    kind: assembly
+    name: Front cooling pack
+    summary: Radiator behind the lock carrier with the air-conditioning condenser in front of it and the electric radiator fan behind it; the charge-air cooler sits low behind the bumper.
+    location: { zone: front-end, text: "Behind the front bumper and grille, on the lock carrier" }
+    access: { from: [front-end, bonnet], removeFirst: [front-bumper] }
+    explode: { dir: [1, 0, 0.1], dist: 220 }
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 24/2, No. 74/3–74/5" }] }
+
+  - id: radiator
+    parent: cooling-pack
+    kind: part
+    name: Radiator
+    aliases: [rad, coolant radiator]
+    summary: Cross-flow radiator with the radiator fan thermo-switch in its tank.
+    explode: { dir: [-1, 0, 0.3], dist: 160 }
+    placement: { pos: [612, 0, 560] }
+    contacts: [lock-carrier]
+    geometry:
+      gen: heat-exchanger
+      core: [34, 620, 400]
+      tank: 46
+      ports:
+        - { at: [-10, 340, 170], dir: [-1, 0, 0.2], r: 18, len: 34 }
+        - { at: [-10, -340, -165], dir: [-1, 0, -0.2], r: 18, len: 34 }
+  - id: radiator-fan-thermoswitch
+    parent: cooling-pack
+    kind: part
+    name: Radiator fan thermo-switch
+    aliases: [fan switch, F18]
+    summary: In the radiator tank; switches the radiator fan's first and second speeds from the coolant temperature.
+    explode: { dir: [-1, -0.5, 0], dist: 160 }
+    ewd: [F18]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 24/2, No. 74/4", says: "F18 Radiator fan thermo-switch" }] }
+    geometry: { gen: cyl, r: 13, h: 34, axis: x, pos: [586, -320, 470], mat: plastic-black }
+
+  - id: ac-condenser
+    parent: cooling-pack
+    kind: part
+    name: Air-conditioning condenser
+    aliases: [condenser, AC radiator]
+    summary: In front of the radiator; refrigerant R134a.
+    explode: { dir: [1, 0, 0.3], dist: 160 }
+    placement: { pos: [654, 0, 585] }
+    contacts: [radiator, lock-carrier]
+    verification: { sources: [{ ref: ssp-169, locator: p. 64, says: "Die weiteren bekannten Bauteile des Kältemittelkreislaufes, der mit FCKW-freiem Kältemittel Typ R134a befüllt ist" }] }
+    geometry: { gen: heat-exchanger, core: [16, 640, 300], tank: 26, tankMat: aluminium-cast }
+
+  - id: charge-air-cooler
+    parent: cooling-pack
+    kind: part
+    name: Charge-air cooler (intercooler)
+    aliases: [intercooler, CAC]
+    summary: Cools the compressed air from the turbocharger before it enters the intake manifold; the intake manifold temperature sender reads the result.
+    explode: { dir: [1, 0, -0.4], dist: 200 }
+    placement: { pos: [760, 0, 352] }
+    verification:
+      notes: "The engine data list charge-air cooling for the AHU; where the cooler sits in the Sharan/Galaxy front end is estimated."
+      sources: [{ ref: vw-engine-mech, locator: p. 8, says: "Charge air cooling: x (AHU)" }]
+    geometry:
+      gen: heat-exchanger
+      core: [36, 560, 80]
+      tank: 46
+      tankMat: plastic-black
+      ports:
+        - { at: [-10, 320, 0], dir: [-1, 0.2, 0], r: 26, len: 34 }
+        - { at: [-10, -320, 0], dir: [-1, -0.2, 0], r: 26, len: 34 }
+
+  - id: radiator-fan
+    parent: cooling-pack
+    kind: part
+    name: Radiator fan (3-speed with the air conditioner)
+    aliases: [cooling fan, electric fan, V7]
+    summary: Electric fan behind the radiator; with the air conditioner it runs in three speeds, switched by the radiator fan control unit from the thermo-switches and the A/C pressure switch.
+    access: { from: [bonnet, front-end] }
+    explode: { dir: [-1, 0, 0.2], dist: 280 }
+    placement: { pos: [550, 0, 560] }
+    contacts: [radiator]
+    ewd: [V7]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/3–74/5", says: "V7 Radiator fan; F165 Radiator fan thermo-switch, third speed" }] }
+    geometry: { gen: fan, size: [600, 400], r: 185, blades: 7, depth: 56 }
+  - id: radiator-fan-control-unit
+    parent: cooling-pack
+    kind: part
+    name: Radiator fan control unit
+    aliases: [fan control module, fan relay box, J293]
+    summary: Switches the radiator fan's speeds and the A/C compressor's magnetic coupling; the radiator fan fuses (40 A) sit on the lower relay plate behind the multi-function unit.
+    location: { zone: front-end, text: "In the engine compartment, front left, on the lock carrier" }
+    explode: { dir: [0.5, 0.5, 0.3], dist: 200 }
+    ewd: [J293]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/3", says: "J293 Radiator fan control unit, in engine compartment, front left" }, { ref: vw-fitting-locations-1997, locator: "000566860203-005…-007, No. 3/5–3/7" }] }
+    geometry: { gen: enclosure, size: [60, 110, 80], lid: false, sockets: 2, socketFace: x- }
+    placement: { pos: [650, 500, 620] }
+  - id: third-speed-thermoswitch
+    parent: cooling-pack
+    kind: part
+    name: Radiator fan thermo-switch, third speed, and A/C shut-off thermo-switch
+    aliases: [F165, F163]
+    summary: Two switches in the coolant circuit at the centre of the engine compartment; one adds the fan's third speed, the other switches the A/C compressor off when the coolant gets too hot.
+    explode: { dir: [0, 0, 1], dist: 180 }
+    ewd: [F165, F163]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/3", says: "F163 Air conditioner shut-off thermo-switch, centre in engine compartment; F165 Radiator fan thermo-switch, third speed, centre in engine compartment" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 12, h: 30, axis: z, pos: [470, 95, 780], mat: plastic-black }
+        - { gen: cyl, r: 12, h: 30, axis: z, pos: [470, 135, 780], mat: plastic-black }
+  - id: ambient-temperature-switch
+    parent: cooling-pack
+    kind: part
+    name: Ambient temperature switch (A/C)
+    aliases: [F38]
+    summary: Keeps the A/C compressor off at low outside temperatures.
+    explode: { dir: [1, 0.3, 0], dist: 160 }
+    ewd: [F38]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/3", says: "F38 Ambient temperature switch, in engine compartment, front left" }] }
+    geometry: { gen: cyl, r: 11, h: 30, axis: x, pos: [745, 380, 560], mat: plastic-black }
+
+  # ---------------------------------------------------------------- coolant circuit
+  - id: coolant-expansion-tank
+    kind: part
+    name: Coolant expansion tank with coolant shortage indicator sender
+    aliases: [header tank, coolant reservoir, expansion bottle]
+    summary: Pressurised expansion tank in the engine compartment; its level sender lights the coolant temperature/shortage warning lamp in the instrument cluster.
+    location: { zone: engine-bay-right, text: "Right rear of the engine compartment, beside the strut tower" }
+    access: { from: [bonnet], notes: "Open the cap only when the engine is cold: the system is under pressure when warm.", sources: [{ ref: vw-engine-mech, locator: p. 97 }, { ref: vw-owner-tips, locator: p. 30 }] }
+    explode: { dir: [0, -0.5, 1], dist: 300 }
+    ewd: [G32]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 3/5", says: "G32 Coolant shortage indicator sender" }, { ref: vw-owner-tips, locator: p. 30, says: "3 - Coolant expansion tank" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [150, 120, 120], r: 16, pos: [-240, -560, 870], mat: plastic-white }
+        - { gen: cyl, r: 28, h: 22, axis: z, chamfer: 4, pos: [-210, -560, 940], mat: plastic-black }
+  - id: thermostat
+    kind: part
+    name: Coolant thermostat
+    summary: Wax-element thermostat in the coolant pump housing on the engine, controlling flow to the radiator.
+    explode: { dir: [1, 0, 0.3], dist: 160 }
+    contacts: [cylinder-block]
+    verification: { sources: [{ ref: vw-engine-mech, locator: "pp. 97–101" }] }
+    geometry: { gen: cyl, r: 32, h: 40, axis: x, pos: [300, -280, 580], mat: plastic-black }
+  - id: coolant-heating-elements
+    parent: engine-assembly
+    kind: part
+    name: Coolant heating elements (electric auxiliary heating)
+    aliases: [Q7, coolant heater elements, electric booster heater]
+    summary: Glow-plug-like heating elements in the coolant at the engine; two relays switch low and high output, so the diesel warms the cabin faster in cold weather.
+    fitment: Cold-climate option on the 1.9 TDI
+    explode: { dir: [-1, 0.5, 0.5], dist: 200 }
+    ewd: [Q7]
+    verification:
+      notes: "Position estimated: next to the coolant outlet at the gearbox end of the head."
+      sources: [{ ref: vw-wd-1997, locator: "No. 14/12", says: "Q7 Coolant heating elements; J359 Low heat output relay; J360 High heat output relay" }, { ref: vw-fitting-locations-1997, locator: "000566860204-008, No. 4/8", says: "4 – Coolant heater elements, high heater output (AHU) 50 A" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: glow-plug, len: 70, pos: [-40, 70, 255], rot: [0, 90, 0] }
+        - { gen: glow-plug, len: 70, pos: [-40, 105, 255], rot: [0, 90, 0] }
+        - { gen: glow-plug, len: 70, pos: [-40, 140, 255], rot: [0, 90, 0] }
+  - id: radiator-top-hose
+    kind: hose
+    name: Radiator top hose
+    material: coolant-hose
+    explode: { dir: [0.5, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 18, points: [[200, 125, 800], [330, 220, 790], [480, 300, 760], [590, 335, 735]] }
+  - id: radiator-bottom-hose
+    kind: hose
+    name: Radiator bottom hose
+    material: coolant-hose
+    explode: { dir: [0.5, 0, -1], dist: 200 }
+    geometry: { gen: tube, r: 18, points: [[590, -335, 395], [480, -360, 420], [380, -330, 520], [300, -280, 560]] }
+  - id: heater-hoses
+    kind: hose
+    name: Heater hoses (engine to heater core and back)
+    material: coolant-hose
+    explode: { dir: [-0.5, 0, 1], dist: 200 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 9, points: [[195, 140, 790], [40, 140, 850], [-250, 120, 900], [-470, 60, 880]] }
+        - { gen: tube, r: 9, points: [[240, 120, 760], [40, 115, 830], [-250, 95, 880], [-470, 30, 860]] }
+  - id: expansion-tank-hoses
+    kind: hose
+    name: Expansion tank hoses
+    material: coolant-hose
+    explode: { dir: [0, -0.5, 1], dist: 200 }
+    geometry: { gen: tube, r: 7, points: [[-240, -560, 810], [-150, -420, 820], [80, -250, 820], [200, 100, 805]] }
+
+  # ---------------------------------------------------------------- air intake and charge air
+  - id: air-cleaner
+    kind: assembly
+    name: Air cleaner
+    aliases: [air box, air filter housing]
+    location: { zone: engine-bay-right, text: "Right of the engine compartment, ahead of the strut tower" }
+    access: { from: [bonnet], notes: "The air cleaner comes off first for timing-belt and injection-pump work.", sources: [{ ref: vw-diesel, locator: "pp. 59, 64" }] }
+    explode: { dir: [0, -0.5, 1], dist: 280 }
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 45, 59", says: "Remove air cleaner" }] }
+  - { id: air-cleaner-housing, parent: air-cleaner, kind: part, name: Air cleaner housing, material: plastic-black, explode: { dir: [0, 0, 1], dist: 100 }, geometry: { gen: box, size: [290, 200, 230], r: 20, pos: [380, -560, 730] } }
+  - { id: air-filter-element, parent: air-cleaner, kind: part, name: Air filter element, aliases: [air filter], material: plastic-grey, explode: { dir: [0, 0, 1], dist: 220 }, geometry: { gen: box, size: [250, 170, 40], r: 4, pos: [380, -560, 760] } }
+  - id: air-mass-meter
+    kind: part
+    name: Air mass meter
+    aliases: [MAF sensor, mass air flow sensor, G70]
+    summary: Between the air cleaner and the turbocharger; the control unit uses its signal for injected quantity and to regulate exhaust gas recirculation.
+    explode: { dir: [0, -0.5, 1], dist: 220 }
+    contacts: [air-cleaner, engine-mount-rh]
+    ewd: [G70]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 45, item 1; p. 99", says: "Air mass meter (G70)" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 42, h: 110, axis: x, pos: [195, -560, 785], mat: plastic-black }
+        - { gen: box, size: [40, 30, 34], r: 4, pos: [195, -560, 837], mat: plastic-black }
+  - id: intake-duct
+    kind: hose
+    name: Intake duct (air mass meter to turbocharger)
+    material: coolant-hose
+    explode: { dir: [0, 0, 1], dist: 200 }
+    geometry: { gen: tube, r: 30, points: [[140, -560, 785], [20, -520, 800], [-120, -360, 790], [-170, -150, 730], [-140, -60, 700]] }
+  - id: charge-air-pipes
+    kind: hose
+    name: Charge-air hoses and pipes (turbocharger → charge-air cooler → intake manifold)
+    aliases: [boost hoses, intercooler hoses]
+    material: coolant-hose
+    explode: { dir: [0.5, 0, -0.5], dist: 220 }
+    verification: { notes: "Routes are estimated." }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 26, points: [[-120, -10, 640], [-160, -280, 520], [200, -460, 330], [600, -400, 330], [740, -330, 368]] }
+        - { gen: tube, r: 26, points: [[740, 330, 368], [620, 300, 420], [520, 160, 700], [420, 45, 880], [382, 45, 895]] }
+
+  # ---------------------------------------------------------------- air conditioning
+  - id: ac-compressor
+    parent: engine-assembly
+    kind: part
+    name: Air-conditioning compressor with magnetic coupling
+    aliases: [A/C compressor, AC pump, N25]
+    summary: Belt-driven compressor low on the radiator side of the engine; its magnetic coupling is switched through the A/C switch, the pressure and thermo-switches and the radiator fan control unit.
+    explode: { dir: [0, 1, -0.5], dist: 280 }
+    placement: { pos: [408, 215, -45] }
+    ewd: [N25]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/5", says: "N25 Air conditioning system magnetic coupling" }, { ref: ssp-169, locator: p. 64 }] }
+    geometry: { gen: machine, kind: ac-compressor, r: 60, len: 150, pulleyR: 56 }
+  - id: ac-pressure-switch
+    kind: part
+    name: Air-conditioning pressure switch
+    aliases: [A/C pressure switch, F129, high pressure switch]
+    summary: On the refrigerant high-pressure line; switches the compressor off at too high or too low pressure and asks for a higher fan speed.
+    explode: { dir: [0, -1, 0.5], dist: 160 }
+    ewd: [F129]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/4", says: "F129 Air conditioner pressure switch, in engine compartment, right" }] }
+    geometry: { gen: cyl, r: 13, h: 34, axis: z, pos: [560, -430, 560], mat: plastic-black }
+  - id: ac-lines
+    kind: pipe
+    name: Refrigerant lines (R134a)
+    material: aluminium-machined
+    explode: { dir: [0, 0, 1], dist: 220 }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 8, points: [[400, -290, 560], [520, -430, 560], [600, -520, 600], [650, -330, 640]] }
+        - { gen: tube, r: 6, points: [[650, -330, 520], [600, -480, 540], [560, -430, 560], [300, -640, 860], [-200, -620, 880], [-470, -250, 820]] }
+        - { gen: tube, r: 9, points: [[-470, -200, 800], [-250, -600, 860], [100, -600, 780], [380, -360, 560], [400, -310, 540]] }
+  - id: receiver-drier
+    kind: part
+    name: Receiver/drier
+    explode: { dir: [1, -0.4, 0.3], dist: 220 }
+    geometry: { gen: cyl, r: 30, h: 200, axis: z, chamfer: 6, pos: [640, -560, 560], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- heating and ventilation (front)
+  - id: heater-assembly
+    kind: assembly
+    name: Heater and air-conditioning unit (front)
+    aliases: [heater box, HVAC unit, climate unit]
+    summary: Behind the centre of the dash panel. Air from the plenum passes the pollen filter and the 4-speed blower, then the evaporator (air conditioner) and the heat exchanger; the temperature flap and three distribution flaps are worked by Bowden cables from the controls, and the air ducts are moulded into the dash panel.
+    location: { zone: cabin-dashboard, text: "Behind the centre of the dash panel, against the bulkhead" }
+    access: { from: [cabin-front] }
+    explode: { dir: [-1, 0, 0.3], dist: 260 }
+    verification:
+      sources: [{ ref: ssp-169, locator: "pp. 60–64", says: "4stufiges Gebläse, Pollenfilter und Umluftschaltung; Luftführungskanäle in der Schalttafel integriert; Temperaturklappe mittels Bowdenzug; zusätzlicher Verdampfer vor dem Wärmetauscher" }]
+  - { id: heater-casing, parent: heater-assembly, kind: part, name: Heater and evaporator casing with flaps, material: plastic-grey, explode: { dir: [-1, 0, 0.3], dist: 120 }, geometry: { gen: box, size: [230, 420, 380], r: 20, pos: [-600, -40, 690] } }
+  - { id: heater-core, parent: heater-assembly, kind: part, name: Heat exchanger (heater core), aliases: [heater matrix], explode: { dir: [0, 0, 1], dist: 220 }, placement: { pos: [-640, 40, 640] }, geometry: { gen: heat-exchanger, core: [40, 220, 180], tank: 24 } }
+  - { id: evaporator, parent: heater-assembly, kind: part, name: Evaporator (air conditioner), aliases: [A/C evaporator], explode: { dir: [0, -1, 0.3], dist: 220 }, placement: { pos: [-560, -120, 700] }, geometry: { gen: heat-exchanger, core: [50, 240, 200], tank: 24 } }
+  - id: fresh-air-blower
+    parent: heater-assembly
+    kind: part
+    name: Fresh air blower with series resistor
+    aliases: [blower motor, heater fan, V2, N24]
+    summary: Four speeds through the series resistor with overheating fuse; pressing the blower switch selects recirculation.
+    explode: { dir: [0, -1, 0], dist: 200 }
+    ewd: [V2, N24]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 74/2", says: "V2 Fresh air blower; N24 Fresh air blower with overheating fuse series resistor" }, { ref: ssp-169, locator: p. 61 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 90, h: 120, axis: z, pos: [-600, -330, 640], mat: plastic-grey }
+        - { gen: box, size: [50, 40, 30], r: 4, pos: [-540, -330, 560], mat: plastic-black }
+  - id: pollen-filter
+    kind: part
+    name: Dust and pollen filter
+    aliases: [cabin filter, pollen filter]
+    summary: In the fresh-air inlet in the plenum chamber, under the plenum panel.
+    location: { zone: plenum, text: "In the plenum chamber below the windscreen" }
+    access: { from: [bonnet], removeFirst: [plenum-panel] }
+    explode: { dir: [0, 0, 1], dist: 220 }
+    material: plastic-grey
+    verification: { sources: [{ ref: vw-heating, locator: "p. 21, item 5", says: "Dust and pollen filter; fitting location: in plenum chamber" }, { ref: ssp-169, locator: p. 60 }] }
+    geometry: { gen: box, size: [170, 260, 36], r: 4, pos: [-300, -330, 1010] }
+  - id: coolant-cut-off-valve
+    kind: part
+    name: Coolant cut-off valve (two-way valve)
+    aliases: [N147, heater valve solenoid]
+    summary: Vacuum two-way valve in the plenum chamber that shuts off the coolant to the heater (used with the heated windscreen and the rear heating).
+    location: { zone: plenum, text: "In the plenum chamber, left" }
+    explode: { dir: [0, 0, 1], dist: 180 }
+    ewd: [N147]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 80/3", says: "N147 Coolant cut-off valve two-way valve, in plenum chamber, left" }] }
+    geometry: { gen: box, size: [40, 34, 40], r: 5, pos: [-300, 420, 1000], mat: plastic-black }
+
+  # ---------------------------------------------------------------- rear heating (2nd heat exchanger)
+  - id: rear-heater
+    kind: assembly
+    name: Rear heater (2nd heat exchanger)
+    aliases: [rear heating, rear climate unit]
+    summary: A second heat exchanger with its own warm-air blower behind the left trim at the rear, fed by coolant pipes along the underbody; it cannot run while the heated windscreen is on (limited to 4 minutes) because of the electrical load.
+    location: { zone: luggage, text: "Behind the left rear side trim" }
+    fitment: Second heat exchanger (equipment option)
+    explode: { dir: [0, 1, 0.3], dist: 240 }
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 60, 65", says: "Kühlmittelrohre (Vor- und Rücklauf) für hinteren Wärmetauscher; hinteres Heizungssystem" }, { ref: vw-wd-1997, locator: "No. 80/2–80/3" }] }
+  - { id: rear-heater-casing, parent: rear-heater, kind: part, name: Rear heat exchanger casing, material: plastic-grey, explode: { dir: [0, 1, 0], dist: 120 }, geometry: { gen: box, size: [260, 120, 220], r: 14, pos: [-3330, 610, 700] } }
+  - id: rear-heater-blower
+    parent: rear-heater
+    kind: part
+    name: Rear warm air blower with series resistor and temperature flap motor
+    aliases: [V47, N206, V137]
+    explode: { dir: [0, 1, 0.3], dist: 200 }
+    ewd: [V47, N206, V137]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 80/2", says: "V47 Rear warm air blower; N206 Warm air blower series resistor with overheating valve; V137 Rear temperature flap control motor" }] }
+    geometry: { gen: cyl, r: 60, h: 90, axis: y, pos: [-3330, 600, 860], mat: plastic-grey }
+  - id: rear-heater-pipes
+    kind: pipe
+    name: Coolant pipes to the rear heat exchanger
+    material: steel-black
+    explode: { dir: [0, 0, -1], dist: 200 }
+    verification: { sources: [{ ref: ssp-169, locator: p. 60 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 7, points: [[-470, 80, 840], [-560, 300, 700], [-700, 560, 320], [-2300, 580, 260], [-2700, 620, 420], [-3300, 600, 600]] }
+        - { gen: tube, r: 7, points: [[-470, 50, 820], [-570, 280, 680], [-700, 540, 310], [-2300, 560, 252], [-2700, 600, 410], [-3300, 580, 590]] }
+
+  # ---------------------------------------------------------------- auxiliary heater D3W (1.9 TDI)
+  - id: auxiliary-heater
+    kind: assembly
+    name: Auxiliary heater (fuel-fired, D3W)
+    aliases: [Zuheizer, supplementary heater, diesel heater, Eberspächer]
+    summary: Fuel-fired heater in the small coolant circuit, under the floor on the left. It starts by itself (no control for the driver) when it is below 5 °C outside, the coolant is below 75 °C at the heater and the coolant pump runs (alternator terminal D+), and switches off at about 85 °C. 3000/1500 W in two stages, 0.38/0.19 l/h of diesel from the vehicle tank through its own metering pump.
+    location: { zone: underbody-centre, text: "Under the floor on the left, below the rear door" }
+    fitment: 1.9 TDI, cold-climate equipment
+    access: { from: [underside] }
+    explode: { dir: [0, 0, -1], dist: 240 }
+    specs:
+      - { label: Heat output, value: "3000 W / 1500 W (two stages)", source: { ref: ssp-169, locator: p. 65 } }
+      - { label: Fuel consumption, value: "0.38 / 0.19 l/h", source: { ref: ssp-169, locator: p. 65 } }
+      - { label: Switches on, value: "Outside below 5 °C, coolant below 75 °C (at the heater), engine running; off at about 85 °C", source: { ref: ssp-169, locator: p. 65 } }
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 65, says: "Zuheizer (nur 1,9 TDI-Motor) ... über eine separate Dosierpumpe mit Dieselkraftstoff aus dem Fahrzeugtank versorgt" }, { ref: vw-aux-heating }, { ref: vw-wd-1997, locator: "No. 55/2–55/3" }]
+  - id: auxiliary-heater-unit
+    parent: auxiliary-heater
+    kind: part
+    name: Heater unit with control unit, combustion air blower, glow plug and sensors
+    aliases: [J162, V6, Q9, G64, G18, G189]
+    explode: { dir: [0, 0, -1], dist: 120 }
+    ewd: [J162, V6, Q9, G64, G18, G189]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 55/2–55/3", says: "J162 Heater control unit D3W, in additional heater unit; V6 combustion air blower; Q9 glow plug for heater; G64 flame monitor; G18 temperature sensor; G189 overheating sensor" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: cyl, r: 55, h: 300, axis: x, pos: [-2050, 560, 215], mat: aluminium-cast }
+        - { gen: box, size: [80, 90, 70], r: 8, pos: [-1880, 560, 215], mat: plastic-black }
+        - { gen: tube, r: 12, points: [[-2200, 560, 200], [-2300, 560, 180], [-2340, 520, 170]], mat: exhaust-steel }
+  - id: auxiliary-heater-metering-pump
+    parent: auxiliary-heater
+    kind: part
+    name: Metering pump (auxiliary heater fuel)
+    aliases: [V54, dosing pump, fuel metering pump]
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [V54]
+    verification: { sources: [{ ref: ssp-169, locator: p. 65, says: "Dosierpumpe" }, { ref: vw-wd-1997, locator: "No. 55/3", says: "V54 Metering pump" }] }
+    geometry: { gen: cyl, r: 18, h: 70, axis: x, pos: [-1700, 450, 225], mat: steel-black }

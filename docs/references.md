@@ -1,6 +1,6 @@
 # References
 
-Every document and web page that turned out to be useful for the Freelander 2 (L359), what it is good for, and how to get it. Parts cite these through `sources.yaml` (by id); this page is the reading list behind them.
+Every document and web page that turned out to be useful, per vehicle, what it is good for, and how to get it. Parts cite these through each vehicle's `sources.yaml` (by id); this page is the reading list behind them. The Freelander 2 (L359) comes first; the Ford Galaxy 1998 1.9 TDI is [further down](#ford-galaxy-wgr-1998-19-tdi).
 
 Reliability grades follow [verification.md](verification.md): **A** OEM document, **B** faithful copy or reputable specialist, **C** aggregator or retailer, **D** forum.
 
@@ -57,3 +57,57 @@ npx tsx tools/ewd/import.ts "<file>.pdf" data/vehicles/…/wiring/<id>.json --ti
 
 - Fuse-box sites (<https://fuse-box.info/land-rover/land-rover-freelander-2-lr2-l359-2006-2014-fuses>, <https://fusecheck.com/land-rover/land-rover-freelander-l359-2006-2015-fuse-diagram>): fuse numbers disagree between sites and model years; the handbook and wiring diagrams are used instead.
 - Retailer listings (lrparts.net, e.g. <https://www.lrparts.net/ywl500050pvj-passenger-airbag-deactivation-switch-for-discovery-3-4-range-rover-sport-06-13-and-freelander-2.html>): useful for finding a part, but part numbers are only recorded from the JLR catalogue.
+
+---
+
+## Ford Galaxy (WGR) 1998 1.9 TDI
+
+The Galaxy Mk1 was built by AutoEuropa alongside the VW Sharan (7M) and SEAT Alhambra and shares their platform, body structure, running gear, VW engines, the 006 gearbox and most of the electrics. Volkswagen's official Sharan documents are therefore the primary sources for the shared parts; Ford-styled parts (bumpers, grille, lamps, bonnet, wings, fascia, radio, badges) are not in them and are marked estimated.
+
+### Official documents in hand (local copies)
+
+All PDFs were downloaded by the owner from vwts.ru (index page <https://vwts.ru/vw_sharan_7m.html>) into `~/Downloads/vw_ford_parts_manuals/`; the binder scans into `~/Downloads/sharan_ffp/Sharan/`. Grade A.
+
+| Document (id) | Link | Good for |
+| --- | --- | --- |
+| Current Flow Diagrams from 09.1997 with Fitting Locations, 745 pp. (`vw-wd-1997`) | <https://vwts.ru/vw/sharan/vw-sharan-1997-wd-eng.pdf> | 103 dated diagrams (one per engine / item of equipment, editions 09.1997–05.1999); fitting locations pp. 691–746. Imported with `tools/ewd/import-vw.ts` as four build-date sets |
+| Current Flow Diagrams from 06.1995, 336 pp. (`vw-wd-1995`) | <https://vwts.ru/vw/sharan/vw-sharan-1995-wd-eng.pdf> | 53 diagrams for model years 1996–1997, incl. the 1Z/AHU engine (No. 10); imported as the 1997 model-year set |
+| Current Flow Diagrams from 05.2000, 1,334 pp. (`vw-wd-2000`) | <https://vwts.ru/vw/sharan/vw-sharan-2000-wd-eng.pdf> | Facelift cars (no AHU); kept for the later Galaxy |
+| Fitting-locations binder, 211 scans (`vw-fitting-locations-1997`) | <https://vwts.ru/vw_doc2/sharan_ffp.zip> | Relay plate / multi-function unit positions, fuses, connector locations. Stems `00056620…` are the pre-09.97 relay-plate book, `00056686…` the multi-function-unit book a 1998 car has |
+| Body Repairs 1996 ➤, 120 pp. (`vw-body`) | <https://vwts.ru/vw/sharan/vw-sharan-1997-body-repairs-eng.pdf> | Body dimensions with hole-to-hole spacings (pp. 6–17), panel gaps, VIN location; the straightening-jig figures (pp. 21–27) are blank in this copy |
+| Diesel direct injection and glow plug system (AFN, AHU, 1Z, AVG), 114 pp. (`vw-diesel`) | <https://vwts.ru/vw/sharan/vw-sharan-1996-diesel-direct-injection-eng.pdf> | Sharan installation of the injection system: fitting locations (pp. 45–48), pump, injectors, fuel filter, accelerator, senders, charge pressure and EGR checks, glow plugs, engine mounting at the timing end |
+| Heating, air conditioning (`vw-heating`) | <https://vwts.ru/vw/sharan/vw-sharan-1996-heating-air-conditioning-eng.pdf> | Heater and A/C components and locations |
+| Supplementary heating (`vw-aux-heating`) | <https://vwts.ru/vw/sharan/vw-sharan-1996-supplementary-heating-eng.pdf> | The TDI's fuel-fired auxiliary heater |
+| 1.9 l diesel mechanics, Golf/Vento (`vw-engine-mech`) | <https://vwts.ru/engine/engine-aaz-aey-afn-1y-1z-ahu-ale-avg-mechanical-eng.pdf> | AHU engine data and engine-internal facts and torques only (written for the Golf installation) |
+| AFN/AHH/AHU/AVG repair manual, Passat (`vw-engine-b5`) | <https://vwts.ru/engine/engine-afn-ahh-ahu-avg-repair-manual-eng.pdf> | Cross-check of engine-internal facts |
+| Owner's manual booklet 3.2 (`vw-owner-tips`) | <https://vwts.ru/vw_doc2/vw_sharan.pdf> | A later Sharan's booklet: spare wheel, jack, wheel bolts — only what the first generation shares |
+| Self-Study Programme 169 "Der VW Sharan" (`ssp-169`) | <https://www.volkspage.net/technik/ssp/ssp/SSP_169.PDF> | The best single overview: dimensions drawing (p. 8), engines, engine mounting (p. 20), running gear (pp. 24–31), brakes and ABS (pp. 32–38), fuel (p. 41), control units (p. 42), electrics (pp. 44–59), heating, A/C and the TDI auxiliary heater (pp. 60–67) |
+| Self-Study Programme 170 "Schaltgetriebe 006" (`ssp-170`) | <https://www.volkspage.net/technik/ssp/ssp/SSP_170.PDF> | The 006 gearbox (a Ford gearbox adapted to the VW engines): ratios, final drive, cable shift, hydraulic clutch |
+| Self-Study Programme 153 "1,9 l-TDI-Motor" (`ssp-153`) | <https://www.volkspage.net/technik/ssp/ssp/SSP_153.PDF> | The 1Z TDI with EDC (the AHU's predecessor) |
+
+SSP index pages: <https://www.volkspage.net/technik/ssp/>. More VW diesel and gearbox manuals: <https://vwts.ru/diesel-engine-vw-audi-skoda-repair-manual.html>, <https://vwts.ru/transmission-vw-audi.html>.
+
+### Secondary sources
+
+| Source | Link | Used for |
+| --- | --- | --- |
+| Russian workshop book, chapters 8 (clutch, driveshafts), 9 (brakes), 10 (suspension, steering), 12 (body electrics) — `ru-manual`, B | From the vwts.ru Sharan page (local `shar_*_rus.pdf`) | Torques, wear limits and procedures for all three sister models; facts that rest on it alone are marked `secondary` |
+| ADAC Autokatalog, Galaxy 1.9 TDI GLX and Ghia — `adac-galaxy-19tdi`, C | <https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/ford/galaxy/i/984954/>, <https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/ford/galaxy/i/984955/> | Galaxy-specific dimensions, weights, tyres and standard equipment |
+| Wikipedia, Ford Galaxy — `wikipedia-galaxy`, D | <https://en.wikipedia.org/wiki/Ford_Galaxy> | Only what Ford changed on the shared platform (Ford fascia) |
+| L'argus fiche technique, Galaxy I 1998 — C | <https://www.largus.fr/fiche-technique/Ford/Galaxy/I/1998/Monospace> | Looked at as a cross-check of the published dimensions; not cited |
+| Parkers, Galaxy 1.9 TDI GLX — C | <https://www.parkers.co.uk/ford/galaxy/estate-1995/19-tdi-glx-> | UK trim levels; not cited |
+
+### Would settle open questions (not in hand)
+
+| Document | Where | Settles |
+| --- | --- | --- |
+| VW body dimension sheets `vw48a.tif`, `vw48y.tif` | <https://vwts.ru/body/size/vw48a.tif>, <https://vwts.ru/body/size/vw48y.tif> (download page with a countdown — to be fetched by hand) | Underbody measuring points, so the longitudinal members, subframe and axle mounts can be calculated instead of estimated |
+| Haynes manual Ford Galaxy 1995–Aug 2000 (No. 3984) | Bookshops (e.g. <https://www.tmbbooks.com/en/autom_Fordrep27.html>) | Ford-specific parts: bumpers, lamps, fascia, radio, Ford torques and capacities |
+| Ford Galaxy owner's handbook (1995–2000) | Ford / second-hand | Capacities, fuse chart and bulb table for the Ford version |
+| Ford parts catalogue (Microcat / ETIS) | Ford dealer | Ford part numbers and equipment by VIN |
+
+### Checked and not used
+
+- Sites offering "free PDF" Galaxy, Sharan or Haynes manuals on unrelated domains (e.g. `ahecdata.utah.edu`, `db1.greenfirefarms.com`, `portal.goodeyes.com`, `tech.contify.com`, `autodiscover.bps.go.id`): not official and probably not genuine; not used.
+- Fuse-box sites (<https://fuseandrelay.com/ford/galaxy.html>, <https://www.bolidenforum.de/portal/fuse-box/ford/galaxy/2004/>): later models or unsourced; the VW fitting locations are used instead.
+- Retailer listings (manomano, mall.hr and similar): only confirm that parts are shared between Sharan, Alhambra and Galaxy; no part numbers are taken from them.

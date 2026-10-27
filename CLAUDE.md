@@ -4,6 +4,8 @@ An interactive 3D anatomy atlas of real vehicles for mechanics: every part, wher
 
 ## Adding or extending a vehicle
 
+Vehicles so far: Land Rover Freelander 2 (L359) 2010 2.2 TD4 and Ford Galaxy Mk1 (WGR) 1998 1.9 TDI (VW AHU), whose shared parts are built from the VW Sharan documents.
+
 Follow [docs/adding-a-vehicle.md](docs/adding-a-vehicle.md) step by step. It covers finding and grading sources, extracting the manual, authoring, wiring by model year, joints, descriptions and calculated positions, and it has a definition-of-done checklist.
 
 Related docs:
@@ -23,6 +25,7 @@ E2E_GPU=1 npm run e2e            # browser tests incl. the 60 fps check
 node tools/render-images.mjs <vehicle-id> --gpu   # re-render the landing-page images from the model (dev server running)
 docker compose up -d --build     # build and serve the site in a container (README: Deploy)
 npx tsx tools/ewd/import.ts <pdf> <out.json> --title … --vin … --market LHD
+npx tsx tools/ewd/import-vw.ts <pdf> <out.json> --diagrams 1,2,14 --title … --market LHD   # VW-format current flow diagrams
 npx tsx tools/research/ewd-missing.ts data/vehicles/<make>/<model>/<variant>
 ```
 

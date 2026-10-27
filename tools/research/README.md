@@ -13,8 +13,9 @@ folder per download, and run Python with `-I`.
 | `ewd-hosts.py` | For wiring codes without a connector, the components drawn next to them (their host) |
 | `ewd-missing.ts` | Wiring-diagram components that apply to the vehicle but have no 3D part yet |
 | `wire-lengths.py` | One component's wires: printed length vs modelled route (after `npm run data`) |
+| `where.py` | Built parts' bounding boxes in the vehicle frame, by system, id or region — for fitting new parts around existing ones |
 | `snap.mjs` | Screenshots of the running viewer, with scripted steps (`window.__store`, `window.__viewer`); `--mobile` shoots a phone |
 | `perf.mjs` | Frame rate while orbiting and exploding, on a real GPU |
 
-The wiring importer itself is `tools/ewd/import.ts`. The whole process is in
+The wiring importers are `tools/ewd/import.ts` (Land Rover) and `tools/ewd/import-vw.ts` (VW-group current flow diagrams). The whole process is in
 [docs/adding-a-vehicle.md](../../docs/adding-a-vehicle.md).

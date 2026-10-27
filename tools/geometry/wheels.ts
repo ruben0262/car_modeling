@@ -55,6 +55,10 @@ export const rim = def(
       twin: z.boolean().default(true),
       studs: z.number().int().default(5),
       pcd: z.number().default(108),
+      /** Depth of the drop centre below the bead seat, mm (steel wheels are shallower). */
+      well: z.number().default(24),
+      /** Cast alloy wheel with spokes, or pressed steel wheel with vent holes. */
+      style: z.enum(['alloy', 'steel']).default('alloy'),
     })
     .strict(),
   (p) => {
@@ -65,8 +69,8 @@ export const rim = def(
       [Rb + 17, -W / 2 - 6],
       [Rb + 2, -W / 2],
       [Rb, -W / 2 + 18],
-      [Rb - 24, -W / 2 + 42],
-      [Rb - 24, W / 2 - 75],
+      [Rb - p.well, -W / 2 + 42],
+      [Rb - p.well, W / 2 - 75],
       [Rb, W / 2 - 42],
       [Rb, W / 2 - 16],
       [Rb + 2, W / 2],
@@ -79,6 +83,44 @@ export const rim = def(
 
     const face = p.offset; // mounting face position (outboard of rim centreline)
     const parts: THREE.BufferGeometry[] = [barrel];
+    if (p.style === 'steel') {
+      // pressed disc welded into the barrel: flat hub face, a raised ring, vent holes in the dish
+      parts.push(
+        alignY(
+          lathe(
+            [
+              [32, face - 3],
+              [74, face - 3],
+              [80, face + 3],
+              [118, face + 9],
+              [150, face + 9],
+              [Rb - 6, face + 1],
+              [Rb - 6, face + 4],
+              [150, face + 12],
+              [118, face + 12],
+              [80, face + 6],
+              [74, face],
+              [32, face],
+            ],
+            64,
+          ),
+          'y',
+        ),
+      );
+      const holes: THREE.BufferGeometry[] = [];
+      for (let i = 0; i < p.spokes; i++) {
+        const a = (i / p.spokes) * Math.PI * 2;
+        holes.push(roundedBox([30, 2, 20], 6).translate(134, face + 12.4, 0).applyMatrix4(new THREE.Matrix4().makeRotationY(a)));
+      }
+      const subs: Sub[] = [sub(merge(parts), 'wheel-steel'), sub(merge(holes), 'trim-black')];
+      const bolts: THREE.BufferGeometry[] = [];
+      for (let i = 0; i < p.studs; i++) {
+        const a = (i / p.studs) * Math.PI * 2 + Math.PI / p.studs;
+        bolts.push(alignY(cylinder(10.5, 16, 6, 1.5), 'y').translate(Math.cos(a) * (p.pcd / 2), face + 8, Math.sin(a) * (p.pcd / 2)));
+      }
+      subs.push(sub(merge(bolts), 'steel-zinc'));
+      return subs;
+    }
     // centre disc
     parts.push(
       alignY(
@@ -203,6 +245,8 @@ const zCaliper = z
     at: z.number().default(180),
     span: z.number().default(62),
     piston: z.number().default(54),
+    /** How far the caliper bridge reaches beyond the disc edge, mm (small wheels leave little room). */
+    reach: z.number().default(29),
     part: z.enum(['assembly', 'housing', 'carrier', 'piston', 'pad-inner', 'pad-outer', 'bleed-nipple', 'slide-pins']).default('assembly'),
   })
   .strict();
@@ -222,7 +266,7 @@ export const caliper = def(zCaliper, (p) => {
   const housing = (): Sub[] => {
     const g: THREE.BufferGeometry[] = [];
     g.push(arcBox(R - 60, R + 5, a0, a1, inFace - bodyDepth, inFace, 4));
-    g.push(arcBox(R + 9, R + 29, a0 + 5, a1 - 5, inFace - bodyDepth, outFace + 15, 4));
+    g.push(arcBox(R + 9, R + p.reach, a0 + 5, a1 - 5, inFace - bodyDepth, outFace + 15, 4));
     g.push(arcBox(R - 46, R + 5, a0 + 8, a1 - 8, outFace, outFace + 15, 3));
     const boss = alignY(cylinder(p.piston / 2 + 9, 22, 40, 3), 'y');
     const c = at(pcR, p.at, inFace - bodyDepth - 6);
@@ -317,7 +361,7 @@ export const hub = def(
       const a = (i / p.studs) * Math.PI * 2 + Math.PI / p.studs;
       studs.push(alignY(cylinder(6, 34, 8), 'y').translate(Math.cos(a) * (p.pcd / 2), p.face + 8, Math.sin(a) * (p.pcd / 2)));
     }
-    return [sub(merge([flange, shaft]), 'steel-zinc'), sub(merge(studs), 'steel-zinc')];
+    return studs.length ? [sub(merge([flange, shaft]), 'steel-zinc'), sub(merge(studs), 'steel-zinc')] : [sub(merge([flange, shaft]), 'steel-zinc')];
   },
 );
 

@@ -66,7 +66,8 @@ Next:
 
 ## Level 4: many vehicles
 
-- Shared component library: one definition of the DW12 engine, used by every vehicle that has it, placed per vehicle.
+- Second vehicle in progress: **Ford Galaxy Mk1 (WGR) 1998 1.9 TDI**, built from the VW Sharan sister-model documents with a VW-format wiring importer (`tools/ewd/import-vw.ts`) and wiring sets by build date. Open: VIN and trim of the actual car, Ford-specific parts (fascia, lamps, bumpers, radio), underbody measuring points.
+- Shared component library: one definition of an engine (the DW12, the VW 1.9 TDI), used by every vehicle that has it, placed per vehicle. The Galaxy's sister cars (VW Sharan, SEAT Alhambra) would reuse almost all of its data.
 - Catalogue search by make, model, year, engine, platform and market; per-variant differences (LHD/RHD, manual/automatic).
 - Backend (database plus object storage/CDN) once the catalogue outgrows static files.
 

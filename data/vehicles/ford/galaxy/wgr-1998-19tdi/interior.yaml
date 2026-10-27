@@ -1,0 +1,439 @@
+# Interior, controls and restraints, authored for LEFT-hand drive (EU). Parts marked `handed: true` are
+# reflected automatically for a right-hand-drive variant.
+#
+# The Galaxy has a Ford-designed fascia (wikipedia-galaxy) that is not in the VW documents, so the dashboard,
+# its switch positions and the radio are estimated; the components behind it and their codes come from the VW
+# current flow diagrams. Switches and warning lamps without a connector of their own are mapped to the part
+# they are built into (instrument cluster, switch panel, steering column).
+system: interior
+defaults:
+  verification:
+    geometry: placeholder
+    placement: estimated
+    facts: oem
+    sources: [{ ref: vw-wd-1997, locator: "No. 3/1–3/7" }]
+    notes: Interior trim is blocked out for orientation only.
+
+nodes:
+  - id: dashboard
+    kind: part
+    name: Dash panel (Ford fascia)
+    aliases: [dash, fascia, instrument panel, dashboard]
+    summary: Ford-designed fascia with the instrument cluster in front of the driver, the centre stack with heater controls and radio, and the glove box; the air ducts are moulded into it.
+    location: { zone: cabin-dashboard, text: "Across the front of the cabin" }
+    explode: { dir: [0.4, 0, 1], dist: 260 }
+    material: interior-dark
+    contacts: [engine-control-unit, immobilizer-control-unit, plenum-panel]
+    verification:
+      notes: "Ford styling; the outline is estimated around the windscreen and the dash cross member."
+      sources: [{ ref: wikipedia-galaxy, says: "Ford-designed fascia" }, { ref: ssp-169, locator: p. 60, says: "Die Luftführungskanäle zwischen Heizungsgerät und Ausströmer sind in der Schalttafel integriert" }]
+    geometry:
+      gen: prism
+      plane: xz
+      thickness: 1300
+      bevel: 18
+      outline: [[-140, 1110], [-170, 1160], [-500, 1235], [-800, 1245], [-965, 1190], [-1010, 1090], [-975, 1000], [-900, 960], [-840, 1015], [-780, 1060], [-500, 1075], [-300, 1065], [-170, 1050]]
+
+  - id: instrument-cluster
+    kind: part
+    name: Dash panel insert (instrument cluster)
+    aliases: [dials, speedometer, clocks, instrument cluster, J285]
+    summary: Electronic dash panel insert with its control unit on the circuit board; diagnosed only through the self-diagnosis connector. It carries the speedometer, rev counter, coolant temperature and fuel gauges, the odometer display, the multi-function display, the warning lamps and the oil pressure buzzer.
+    location: { zone: cabin-dashboard, text: "Behind the steering wheel (left on LHD)" }
+    access: { from: [cabin-front], notes: "The engine and immobilizer control units sit behind it." }
+    handed: true
+    explode: { dir: [-0.4, 0, 1], dist: 320 }
+    contacts: [dashboard]
+    placement: { pos: [-955, 360, 1115], rot: [0, -20, 0] }
+    ewd: [J285, J119, G1, G3, G5, G21, Y4, H11, L10, L95, K1, K2, K3, K4, K7, K18, K28, K29, K47, K65, K75, K94, K105, K106, K123, K124, K125, K126, K127]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 45, says: "Elektronisch gesteuerter Schalttafeleinsatz; das Steuergerät ist in der Platine integriert; Diagnose ausschließlich über den Diagnoseanschluß" }, { ref: vw-wd-1997, locator: "No. 3/1–3/7" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [70, 330, 130], r: 16, mat: interior-trim }
+        - { gen: box, size: [6, 300, 104], r: 10, pos: [-36, 0, 0], mat: glass }
+
+  - id: steering-wheel
+    kind: assembly
+    name: Steering wheel with driver airbag and horn plate
+    aliases: [wheel, steering]
+    location: { zone: cabin-front, text: "Driver's side (left on LHD)" }
+    access:
+      from: [cabin-front]
+      notes: "Disconnect the battery earth strap first; on refitting switch the ignition on before reconnecting it. Airbag unit bolts (internal splines) 8 Nm; steering wheel nut 50 Nm (renew the self-locking nut). The steering wheel must be centred with the wheels straight ahead."
+      sources: [{ ref: ru-manual, locator: "shar_steering_rus.pdf p. 3, fig. 10.22, steps 12–28" }]
+    handed: true
+    explode: { dir: [-1, 0, 0.5], dist: 360 }
+    placement: { pos: [-1150, 360, 1000], rot: [0, 25, 0] }
+    verification: { sources: [{ ref: ru-manual, locator: "shar_steering_rus.pdf p. 3" }, { ref: vw-wd-1997, locator: "No. 19/2, No. 62/2" }] }
+  - { id: steering-wheel-rim, parent: steering-wheel, kind: part, name: Steering wheel, explode: { dir: [-1, 0, 0], dist: 120 }, geometry: { gen: steering-wheel, r: 190, grip: 16 } }
+  - id: driver-airbag
+    parent: steering-wheel
+    kind: part
+    name: Driver airbag unit
+    aliases: [airbag, N95]
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    ewd: [N95]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 19/2", says: "N95 Airbag igniter, driver's side" }] }
+    geometry: { gen: box, size: [40, 150, 120], r: 24, pos: [-24, 0, 0], mat: interior-dark }
+  - id: horn-plate
+    parent: steering-wheel
+    kind: part
+    name: Horn plate
+    aliases: [horn button, H]
+    explode: { dir: [-1, 0, 0.3], dist: 180 }
+    ewd: [H]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 62/2", says: "H Horn plate" }] }
+    geometry: { gen: box, size: [8, 160, 40], r: 4, pos: [-8, 0, -70], mat: interior-trim }
+
+  - id: steering-column
+    kind: part
+    name: Steering column with switches, ignition lock and airbag coil connector
+    aliases: [column, stalks, indicator stalk, wiper stalk, ignition switch]
+    summary: Height- and reach-adjustable safety column with two universal joints. It carries the turn signal / dipper-flasher stalk and the wiper stalk (with the multi-function display button), the cruise control switch where fitted, the ignition/starter switch with the immobilizer reading coil, and the airbag coil connector under the wheel.
+    handed: true
+    explode: { dir: [-1, 0, 0.6], dist: 300 }
+    material: steel-black
+    contacts: [dashboard, steering-intermediate-shaft, bulkhead, instrument-cluster, steering-wheel, dash-crossbeam]
+    ewd: [E2, E4, E22, E86, E45, D, D2, F138]
+    verification:
+      sources: [{ ref: ssp-169, locator: p. 28, says: "Höhen- und längsverstellbare Sicherheits-Lenksäule mit zwei Kreuzgelenken" }, { ref: vw-wd-1997, locator: "No. 1/3, 4/5–4/6, 8/4, 19/2, 63/3, 3/4, 14/8" }]
+    geometry:
+      gen: compound
+      parts:
+        - { gen: tube, r: 30, points: [[-1125, 360, 988], [-900, 360, 885], [-700, 360, 790], [-482, 360, 666]] }
+        - { gen: box, size: [140, 150, 110], r: 20, pos: [-1050, 360, 950], mat: interior-dark }
+
+  # ---------------------------------------------------------------- dash and console controls
+  - id: lighting-switch
+    kind: part
+    name: Lighting switch with headlight range adjuster and instrument dimmer
+    aliases: [light switch, E1, headlight switch]
+    location: { zone: cabin-dashboard, text: "Dash panel, left of the steering wheel" }
+    handed: true
+    explode: { dir: [-1, 0, 0], dist: 160 }
+    contacts: [dashboard]
+    ewd: [E1, E102, E20, E19, E23, L9, K13, K17]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 4/2–4/3", says: "E1 Lighting switch; E102 Headlight range control adjuster; E20 lighting control; E23 Front and rear fog light switch; L9 Lighting switch light bulb" }, { ref: vw-fitting-locations-1997, locator: "000566860202-006, No. 2/6", says: "Lighting switch E1 / E102" }] }
+    geometry: { gen: box, size: [40, 90, 70], r: 10, pos: [-985, 640, 1050], mat: interior-trim }
+  - id: switch-panel
+    kind: part
+    name: Centre switch panel (hazard lights, heated windows, seat heating, rear windows and vent wings)
+    aliases: [switch pack, hazard switch, rocker switches]
+    location: { zone: cabin-dashboard, text: "Centre of the dash panel, above the heater controls" }
+    explode: { dir: [-1, 0, 0.2], dist: 160 }
+    contacts: [dashboard]
+    ewd: [E3, K6, E15, L39, K10, E180, K122, E39, E53, E55, E94, E95, L44, E140, E141, L53]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 4/6, 7/3, 21/2, 23/5, 40/2–40/3", says: "E3 Hazard warning light switch; E15 Heated rear window switch; E180 Heated windscreen switch; E39 Rear window lifter isolation switch; E53/E55 Window lifter switch, rear (in console); E94/E95 seat heating; E140/E141 Vent wing switch" }] }
+    geometry: { gen: box, size: [40, 260, 50], r: 8, pos: [-985, 0, 1060], mat: interior-trim }
+  - id: heater-controls
+    kind: part
+    name: Heating and air-conditioning controls
+    aliases: [heater panel, climate controls, A/C switch, blower switch]
+    summary: Three rotary controls (blower 0–4 with push for recirculation, temperature with the A/C on/off function, air distribution) working the heater unit by Bowden cables; switches for the rear heater (2nd heat exchanger) where fitted.
+    location: { zone: cabin-centre-console, text: "Centre stack, below the switch panel" }
+    explode: { dir: [-1, 0, 0], dist: 180 }
+    contacts: [dashboard, centre-stack]
+    ewd: [E35, E184, K84, K114, L16, E13, E100, G275, L83, L94, K11]
+    verification: { sources: [{ ref: ssp-169, locator: "pp. 61–64", says: "Temperaturschalter mit Klimaanlagen-EIN/AUS-Funktion; Gebläseschalter (0–4), durch Drücken Umluftbetrieb" }, { ref: vw-wd-1997, locator: "No. 74/2, No. 80/2" }] }
+    geometry: { gen: box, size: [40, 240, 90], r: 10, pos: [-975, 0, 960], mat: interior-trim }
+  - id: radio
+    kind: part
+    name: Radio (Ford)
+    aliases: [head unit, stereo, R]
+    summary: Ford radio in the centre stack; it has an anti-theft code that must be entered after the battery has been disconnected. Its wiring is not in the VW diagrams beyond the supply.
+    location: { zone: cabin-centre-console, text: "Centre stack" }
+    access: { from: [cabin-front], sources: [{ ref: ru-manual, locator: "shar_el_body_rus.pdf pp. 12–13, sections 32–33" }] }
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    contacts: [centre-stack]
+    ewd: [R]
+    verification: { notes: "Ford unit; position estimated.", sources: [{ ref: vw-wd-1997, locator: "No. 2/3", says: "R Radio" }] }
+    geometry: { gen: box, size: [150, 180, 55], r: 6, pos: [-915, 0, 870], mat: interior-dark }
+  - id: clock
+    kind: part
+    name: Digital clock
+    aliases: [Y2, L75]
+    location: { zone: cabin-dashboard, text: "Top of the dash panel, centre (estimated)" }
+    explode: { dir: [0, 0, 1], dist: 140 }
+    contacts: [dashboard]
+    ewd: [Y2, L75]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/7", says: "Y2 Digital clock; L75 Digital display illumination" }] }
+    geometry: { gen: box, size: [40, 90, 30], r: 6, pos: [-900, 0, 1205], mat: interior-trim }
+  - id: centre-stack
+    kind: part
+    name: Centre stack and console
+    material: interior-dark
+    location: { zone: cabin-centre-console, text: "Below the centre of the dash panel down to the tunnel" }
+    explode: { dir: [-1, 0, 0.3], dist: 260 }
+    contacts: [dashboard, diagnosis-connector, gear-lever, dash-crossbeam, tunnel]
+    geometry: { gen: box, size: [180, 300, 560], r: 20, pos: [-870, 0, 710] }
+  - id: ashtray-and-lighter
+    parent: centre-stack
+    kind: part
+    name: Ashtray with cigarette lighter
+    aliases: [U1, L28, L15, cigarette lighter]
+    summary: The self-diagnosis connector is behind the ashtray housing cover; to reach it, open the ashtray, press the flaps on both sides and pull the insert and housing out.
+    explode: { dir: [-1, 0, 0], dist: 160 }
+    ewd: [U1, L28, L15]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/2" }, { ref: vw-heating, locator: p. 5, says: "Open ash tray, press flap on both sides, pull opened ash tray housing out of centre console, join diagnosis connection" }] }
+    geometry: { gen: box, size: [30, 150, 60], r: 6, pos: [-962, 0, 780], mat: interior-trim }
+  - id: glovebox
+    kind: part
+    name: Glove box with light
+    aliases: [glove compartment, W6]
+    handed: true
+    location: { zone: cabin-passenger-footwell, text: "Passenger side of the dash panel" }
+    explode: { dir: [-1, 0, 0], dist: 220 }
+    material: interior-trim
+    contacts: [dashboard]
+    ewd: [W6]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/3", says: "W6 Glove box light" }] }
+    geometry: { gen: box, size: [150, 380, 170], r: 12, pos: [-930, -430, 900] }
+  - id: passenger-airbag
+    kind: part
+    name: Front passenger airbag
+    aliases: [N131]
+    handed: true
+    location: { zone: cabin-dashboard, text: "In the dash panel above the glove box" }
+    explode: { dir: [0, 0, 1], dist: 240 }
+    contacts: [dashboard]
+    ewd: [N131]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 19/2", says: "N131 Airbag igniter 1, front passenger side" }, { ref: adac-galaxy-19tdi }] }
+    geometry: { gen: box, size: [200, 300, 110], r: 20, pos: [-650, -400, 1150], mat: interior-dark }
+  - id: airbag-control-unit
+    kind: part
+    name: Airbag control unit
+    aliases: [J234, SRS control unit, crash sensor unit]
+    location: { zone: cabin-centre-console, text: "Behind the console, on the tunnel" }
+    explode: { dir: [0, 0, 1], dist: 200 }
+    contacts: [tunnel, centre-stack]
+    ewd: [J234]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 19/2", says: "J234 Airbag control unit, behind console" }] }
+    geometry: { gen: box, size: [140, 110, 60], r: 8, pos: [-780, 0, 455], mat: aluminium-cast }
+
+  # ---------------------------------------------------------------- pedals (LHD)
+  - id: pedal-box
+    kind: assembly
+    name: Pedal box (LHD)
+    location: { zone: cabin-driver-footwell, text: "Driver's footwell (left on LHD)" }
+    handed: true
+    explode: { dir: [-1, 0, 0], dist: 260 }
+    contacts: [bulkhead, clutch-master-cylinder, brake-servo]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_clutch_cv_rus.pdf p. 2, fig. 1.0b" }] }
+  - { id: pedal-bracket, parent: pedal-box, kind: part, name: Pedal bracket, material: steel-black, explode: { dir: [-1, 0, 0.3], dist: 100 }, geometry: { gen: box, size: [100, 420, 110], r: 6, pos: [-560, 400, 830] } }
+  - id: clutch-pedal
+    parent: pedal-box
+    kind: part
+    name: Clutch pedal with clutch pedal switch
+    aliases: [F36]
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-600, 560, 840], rot: [0, 0, 180] }
+    ewd: [F36]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 45, item 5; p. 70", says: "Clutch pedal switch (F36)" }] }
+    geometry: { gen: pedal, len: 300, pad: [70, 64] }
+  - id: brake-pedal
+    parent: pedal-box
+    kind: part
+    name: Brake pedal with brake light switch and brake pedal switch
+    aliases: [F, F47, stop light switch]
+    summary: The brake light switch (F) and the brake pedal switch for the diesel control unit (F47) sit on the pedal bracket.
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-600, 412, 840], rot: [0, 0, 180] }
+    ewd: [F, F47]
+    verification: { sources: [{ ref: vw-diesel, locator: "p. 45, items 6–7; p. 68" }, { ref: ru-manual, locator: "shar_brake_rus.pdf p. 11" }] }
+    geometry: { gen: pedal, len: 300, pad: [80, 64] }
+  - id: accelerator-pedal
+    parent: pedal-box
+    kind: part
+    name: Accelerator pedal with accelerator position sender
+    aliases: [throttle pedal, gas pedal, G79, F60, F8]
+    summary: The pedal works the accelerator position sender (with idling and kick-down switches) on a mounting pedestal through a cable cam; the sender is set with the fault reader so that the pedal reads 0 % at rest and 100 % just before full throttle (adjustment bolt 7 Nm).
+    explode: { dir: [-1, 0, 0], dist: 120 }
+    placement: { pos: [-590, 230, 800], rot: [0, 0, 180] }
+    ewd: [G79, F60, F8]
+    specs: [{ label: Adjustment bolt, value: "7 Nm; cable cam fixing 10 Nm", source: { ref: vw-diesel, locator: "pp. 56–58" } }]
+    verification: { sources: [{ ref: vw-diesel, locator: "pp. 56–59", says: "Accelerator pedal position sender (G79), console, mounting pedestal, cable cam" }, { ref: vw-wd-1997, locator: "No. 14/7" }] }
+    geometry: { gen: pedal, len: 260, pad: [54, 100] }
+
+  # ---------------------------------------------------------------- handbrake
+  - id: handbrake-lever
+    kind: part
+    name: Handbrake lever with warning switch
+    aliases: [parking brake lever, F9]
+    location: { zone: cabin-centre-console, text: "Between the front seats" }
+    explode: { dir: [0, 0, 1], dist: 260 }
+    contacts: [tunnel, floor-console]
+    ewd: [F9]
+    specs: [{ label: Lever to floor, value: "25 Nm", source: { ref: ru-manual, locator: "shar_brake_rus.pdf p. 8, fig. 7.0" } }]
+    verification: { sources: [{ ref: ru-manual, locator: "shar_brake_rus.pdf p. 8, fig. 7.0" }, { ref: vw-wd-1997, locator: "No. 3/6", says: "F9 Handbrake warning switch" }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: box, size: [200, 50, 40], r: 8, pos: [-1300, 0, 450], mat: steel-black }
+        - { gen: tube, r: 14, points: [[-1250, 0, 465], [-1450, 0, 560], [-1560, 0, 600]], mat: interior-dark }
+
+  # ---------------------------------------------------------------- seats
+  - id: seat-driver
+    kind: part
+    name: Driver's seat (with seat heating)
+    location: { zone: cabin-front, text: "Front left (LHD)" }
+    handed: true
+    explode: { dir: [0, 0.4, 1], dist: 300 }
+    placement: { pos: [-1560, 450, 300] }
+    contacts: [seat-crossmember-l, floor-front-l]
+    geometry: { gen: seat, width: 500 }
+  - id: seat-heating-driver
+    parent: seat-driver
+    kind: part
+    name: Driver's seat heating (cushion and backrest elements, sensor, control unit)
+    aliases: [Z6, Z7, G59, J131, heated seat]
+    fitment: Seat heating
+    explode: { dir: [0, 0, -1], dist: 120 }
+    ewd: [Z6, Z7, G59, J131]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 40/2", says: "J131 Heated driver seat control unit, under driver's seat; Z6 seat; Z7 backrest; G59 sensor" }] }
+    geometry: { gen: box, size: [120, 90, 40], r: 6, pos: [0, 0, 120], mat: plastic-black }
+  - id: seat-passenger
+    kind: part
+    name: Front passenger seat (with seat heating)
+    location: { zone: cabin-front, text: "Front right (LHD)" }
+    handed: true
+    explode: { dir: [0, -0.4, 1], dist: 300 }
+    placement: { pos: [-1560, -450, 300] }
+    contacts: [seat-crossmember-r, floor-front-r, socket-fuse]
+    geometry: { gen: seat, width: 500 }
+  - id: seat-heating-passenger
+    parent: seat-passenger
+    kind: part
+    name: Front passenger seat heating (elements, sensor, control unit)
+    aliases: [Z8, Z9, G60, J132]
+    fitment: Seat heating
+    explode: { dir: [0, 0, -1], dist: 120 }
+    ewd: [Z8, Z9, G60, J132]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 40/3", says: "J132 Heated front passenger's seat control unit, under front passenger's seat" }] }
+    geometry: { gen: box, size: [120, 90, 40], r: 6, pos: [0, 0, 120], mat: plastic-black }
+  - id: seats-second-row
+    kind: part
+    name: Second-row seats (three individual seats)
+    location: { zone: cabin-rear, text: "Second row, above the fuel tank" }
+    explode: { dir: [0, 0, 1], dist: 300 }
+    contacts: [floor-rear, floor-front-l, floor-front-r, tunnel]
+    verification: { notes: "Three individual seats; their positions are estimated.", sources: [{ ref: ssp-169, locator: p. 8 }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: seat, width: 420, recline: 14, pos: [-2180, 450, 333] }
+        - { gen: seat, width: 420, recline: 14, pos: [-2180, 0, 333] }
+        - { gen: seat, width: 420, recline: 14, pos: [-2180, -450, 333] }
+  - id: seats-third-row
+    kind: part
+    name: Third-row seats (two seats)
+    fitment: 7-seat version
+    location: { zone: cabin-rear, text: "Third row, over the rear axle" }
+    explode: { dir: [-0.3, 0, 1], dist: 300 }
+    contacts: [floor-rear]
+    verification: { notes: "The Galaxy was sold with 5 to 7 seats; the third row is shown as the 7-seat fitment.", sources: [{ ref: adac-galaxy-19tdi }] }
+    geometry:
+      gen: compound
+      parts:
+        - { gen: seat, width: 440, recline: 10, heights: [200, 110, 500], pos: [-2850, 280, 533] }
+        - { gen: seat, width: 440, recline: 10, heights: [200, 110, 500], pos: [-2850, -280, 533] }
+
+  # ---------------------------------------------------------------- interior lights
+  - id: front-interior-light
+    kind: part
+    name: Front interior light
+    aliases: [dome light, W]
+    location: { zone: roof, text: "Roof, above the windscreen centre" }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [W]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/4" }, { ref: ru-manual, locator: "shar_el_body_rus.pdf p. 1, bulb table" }] }
+    geometry: { gen: box, size: [120, 200, 30], r: 8, pos: [-1090, 0, 1570], mat: lens-clear }
+  - id: centre-reading-lights
+    kind: part
+    sides: [left, right]
+    name: Centre reading light (second row)
+    aliases: [W39, W40]
+    location: { zone: roof, text: "Roof above the second row" }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [W39:l, W40:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/5" }] }
+    geometry: { gen: box, size: [70, 70, 24], r: 8, pos: [-1950, 350, 1570], mat: lens-clear }
+  - id: rear-reading-lamps
+    kind: part
+    sides: [left, right]
+    name: Rear reading lamp (third row)
+    aliases: [W11, W12]
+    location: { zone: roof, text: "Roof above the third row" }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [W11:l, W12:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/5" }] }
+    geometry: { gen: box, size: [70, 70, 24], r: 8, pos: [-2750, 420, 1570], mat: lens-clear }
+  - id: rear-interior-light
+    kind: part
+    name: Rear interior light with centre reading light
+    aliases: [W43, W44]
+    location: { zone: roof, text: "Roof, rear centre" }
+    explode: { dir: [0, 0, -1], dist: 160 }
+    ewd: [W43, W44]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/5" }] }
+    geometry: { gen: box, size: [120, 200, 26], r: 8, pos: [-2950, 0, 1570], mat: lens-clear }
+  - id: sun-visor
+    kind: part
+    sides: [left, right]
+    name: Sun visor with illuminated make-up mirror
+    aliases: [W20, W14, vanity mirror]
+    location: { zone: cabin-front, text: "Above the windscreen" }
+    explode: { dir: [-1, 0, -0.5], dist: 160 }
+    contacts: [roof-bows]
+    ewd: [W20:l, W14:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/6", says: "W20 Illuminated make-up mirror, driver's side; W14 front passenger's side" }] }
+    geometry: { gen: box, size: [180, 380, 22], r: 10, pos: [-1000, 360, 1570], rot: [0, 15, 0], mat: interior-trim }
+  - id: roof-console-switches
+    kind: part
+    name: Sunroof switch with illumination
+    aliases: [E8, L65]
+    fitment: Sliding/tilting sunroof
+    location: { zone: roof, text: "Roof, beside the front interior light" }
+    explode: { dir: [0, 0, -1], dist: 140 }
+    ewd: [E8, L65]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 39/2" }] }
+    geometry: { gen: box, size: [60, 80, 24], r: 6, pos: [-1190, 0, 1570], mat: interior-dark }
+  - id: luggage-lights
+    kind: part
+    sides: [left, right]
+    name: Luggage compartment light
+    aliases: [W18, W35, boot light]
+    location: { zone: luggage, text: "Luggage compartment side trim" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    ewd: [W18:l, W35:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/4" }] }
+    geometry: { gen: box, size: [80, 20, 40], r: 6, pos: [-3520, 588, 900], mat: lens-clear }
+  - id: front-door-lights
+    parent: front-door
+    kind: part
+    name: Front door warning lamp and entry light
+    aliases: [W30, W36, W31, W32, puddle light, courtesy light]
+    summary: Red warning lamp on the door's rear edge and an entry light at the bottom of the door trim (the legend prints W32 as "rear right"; taken as the front right door's, pairing W31).
+    explode: { dir: [0, -1, -0.3], dist: 140 }
+    ewd: [W30:l, W36:r, W31:l, W32:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/3–5/4" }] }
+    geometry: { gen: box, size: [100, 20, 30], r: 6, pos: [-1300, 765, 450], mat: lens-red }
+  - id: rear-door-lights
+    parent: rear-door
+    kind: part
+    name: Rear door warning lamp and entry light
+    aliases: [W37, W38, W33, W34]
+    explode: { dir: [0, -1, -0.3], dist: 140 }
+    ewd: [W37:l, W38:r, W33:l, W34:r]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/3–5/4" }] }
+    geometry: { gen: box, size: [100, 20, 30], r: 6, pos: [-2300, 765, 450], mat: lens-red }
+  - id: luggage-socket
+    kind: part
+    name: 12 V socket in the luggage compartment
+    aliases: [U5, power outlet]
+    location: { zone: luggage, text: "Luggage compartment, rear left" }
+    explode: { dir: [0, -1, 0], dist: 140 }
+    ewd: [U5]
+    verification: { sources: [{ ref: vw-wd-1997, locator: "No. 5/7", says: "U5 12V socket, on rear left luggage compartment" }] }
+    geometry: { gen: cyl, r: 16, h: 40, axis: y, pos: [-3480, 588, 760], mat: plastic-black }
